@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profil - Faction Ratio</title>
+    <title>Mon Profil - Faction R4TIO</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
@@ -24,31 +24,71 @@
             color: var(--text-light);
             min-height: 100vh;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            padding: 1rem;
+            padding: 2rem 1rem;
+            box-sizing: border-box;
         }
-        .profile-container {
+        .profile-content {
+            width: 100%;
+            max-width: 700px;
+        }
+        .profile-header {
             background-color: var(--card-bg-color);
             padding: 2.5rem;
             border-radius: 10px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            width: 100%;
-            max-width: 500px;
             border: 1px solid #444;
+            margin-bottom: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             text-align: center;
+            position: relative;
         }
-        #profile-image {
+        @media (min-width: 768px) {
+            .profile-header {
+                flex-direction: row;
+                text-align: left;
+            }
+        }
+        #edit-profile-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: #333;
+            border: 1px solid #555;
+            color: var(--text-medium);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #edit-profile-btn:hover {
+            background-color: var(--primary-red);
+            color: var(--text-light);
+        }
+        #profile-picture-display {
             width: 120px;
             height: 120px;
             border-radius: 50%;
             border: 4px solid var(--primary-red);
             object-fit: cover;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
         }
-        #username {
+        @media (min-width: 768px) {
+            #profile-picture-display {
+                margin-bottom: 0;
+                margin-right: 1.5rem;
+            }
+        }
+        #user-name {
             font-family: 'Anton', sans-serif;
-            font-size: 2.5rem;
+            font-size: 3rem;
             color: var(--text-light);
             margin: 0;
             text-transform: uppercase;
@@ -56,97 +96,289 @@
         #user-role {
             font-size: 1.2rem;
             color: var(--primary-red);
-            margin-bottom: 1.5rem;
-        }
-        .info-item {
-            color: var(--text-medium);
             margin-bottom: 0.5rem;
         }
-        .info-item i {
-            margin-right: 0.5rem;
-            color: var(--primary-red);
+        #user-email {
+            font-size: 0.9rem;
+            color: var(--text-medium);
         }
-        #logout-btn {
-            width: 100%;
-            background-color: transparent;
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background-color: var(--card-bg-color);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 1px solid #444;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .stat-card i {
+            font-size: 2.5rem;
             color: var(--primary-red);
+            width: 40px;
+            text-align: center;
+        }
+        .stat-card .stat-value {
+            font-size: 1.5rem;
             font-weight: bold;
-            padding: 0.8rem 1rem;
-            border: 2px solid var(--primary-red);
-            border-radius: 5px;
-            cursor: pointer;
-            text-transform: uppercase;
-            transition: all 0.3s;
-            margin-top: 2rem;
         }
-        #logout-btn:hover {
-            background-color: var(--primary-red);
+        .stat-card .stat-label {
+            color: var(--text-medium);
+        }
+        .actions-container {
+            background-color: var(--card-bg-color);
+            padding: 2rem;
+            border-radius: 10px;
+            border: 1px solid #444;
+            text-align: center;
+        }
+        .home-btn, .logout-btn {
             color: var(--text-light);
+            text-decoration: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            border: 2px solid;
+            transition: all 0.3s ease;
+            margin: 0 0.5rem;
+            cursor: pointer;
         }
+        .home-btn {
+            border-color: #555;
+            background-color: #333;
+        }
+        .home-btn:hover {
+            background-color: #444;
+            border-color: #666;
+        }
+        .logout-btn {
+            border-color: var(--primary-red);
+        }
+        .logout-btn:hover {
+            background-color: var(--primary-red);
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.7);
+        }
+        .modal-content {
+            background-color: var(--card-bg-color);
+            margin: 10% auto;
+            padding: 2rem;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 10px;
+            position: relative;
+        }
+        .modal-content h2 { font-family: 'Anton', sans-serif; font-size: 2rem; color: var(--primary-red); text-align: center; margin-bottom: 1.5rem; text-transform: uppercase; }
+        .modal-content label { display: block; color: var(--text-medium); font-weight: bold; margin-bottom: 0.5rem; }
+        .modal-content input { width: 100%; padding: 0.75rem 1rem; border-radius: 5px; background-color: #333; color: var(--text-light); border: 2px solid #555; box-sizing: border-box; transition: border-color 0.3s; }
+        .modal-content input:focus { outline: none; border-color: var(--primary-red); }
+        .modal-buttons { display: flex; gap: 1rem; margin-top: 1.5rem; }
+        .modal-buttons button { width: 100%; font-weight: bold; padding: 0.8rem 1rem; border: none; border-radius: 5px; cursor: pointer; text-transform: uppercase; transition: background-color 0.3s; }
+        #save-profile-btn { background-color: var(--primary-red); color: white; }
+        #save-profile-btn:hover { background-color: var(--primary-red-dark); }
+        #cancel-edit-btn { background-color: #555; color: white; }
+        #cancel-edit-btn:hover { background-color: #666; }
     </style>
 </head>
 <body>
 
-    <div class="profile-container">
-        <img id="profile-image" src="" alt="Photo de profil">
-        <h2 id="username">Chargement...</h2>
-        <p id="user-role"></p>
-        
-        <div class="info-item">
-            <i class="fa-brands fa-discord"></i>
-            <span id="discord-tag"></span>
-        </div>
-        <div class="info-item">
-            <i class="fas fa-envelope"></i>
-            <span id="user-email"></span>
+    <div id="profile-content">
+        <div class="profile-header">
+            <button id="edit-profile-btn" title="Modifier le profil"><i class="fas fa-pencil-alt"></i></button>
+            <img id="profile-picture-display" src="" alt="Photo de profil">
+            <div>
+                <h1 id="user-name">Chargement...</h1>
+                <p id="user-role"></p>
+                <p id="user-email"></p>
+            </div>
         </div>
 
-        <button id="logout-btn">Déconnexion</button>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <i class="fa-brands fa-discord"></i>
+                <div>
+                    <p id="discord-tag" class="stat-value">N/A</p>
+                    <p class="stat-label">Tag Discord</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-shield-halved"></i>
+                <div>
+                    <p id="kills-stat" class="stat-value">0</p>
+                    <p class="stat-label">Kills (à venir)</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-skull"></i>
+                <div>
+                    <p id="deaths-stat" class="stat-value">0</p>
+                    <p class="stat-label">Morts (à venir)</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="actions-container">
+            <a href="index.html" class="home-btn">Accueil</a>
+            <button id="logout-button" class="logout-btn">Déconnexion</button>
+        </div>
+    </div>
+
+    <!-- Modal de modification -->
+    <div id="edit-profile-modal" class="modal">
+        <div class="modal-content">
+            <h2>Modifier le Profil</h2>
+            <form id="edit-form">
+                <div style="margin-bottom: 1rem;">
+                    <label for="edit-photo">Photo de profil (laisser vide pour ne pas changer)</label>
+                    <input type="file" id="edit-photo" accept="image/*">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label for="edit-username">Pseudo Minecraft</label>
+                    <input type="text" id="edit-username" required>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label for="edit-discord">Tag Discord</label>
+                    <input type="text" id="edit-discord" required>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label for="edit-role">Rôle principal en jeu</label>
+                    <input type="text" id="edit-role" required>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" id="cancel-edit-btn">Annuler</button>
+                    <button type="submit" id="save-profile-btn">Sauvegarder</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script type="module">
-        import { auth, db } from './firebase-config.js';
+        import { auth, db, storage } from './firebase-config.js';
         import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
-        import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+        import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+        import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-storage.js";
 
-        const profileImage = document.getElementById('profile-image');
-        const usernameElem = document.getElementById('username');
-        const userRoleElem = document.getElementById('user-role');
-        const discordTagElem = document.getElementById('discord-tag');
-        const userEmailElem = document.getElementById('user-email');
-        const logoutBtn = document.getElementById('logout-btn');
+        const ui = {
+            profilePicture: document.getElementById('profile-picture-display'),
+            userName: document.getElementById('user-name'),
+            userRole: document.getElementById('user-role'),
+            userEmail: document.getElementById('user-email'),
+            discordTag: document.getElementById('discord-tag'),
+            logoutButton: document.getElementById('logout-button'),
+            editBtn: document.getElementById('edit-profile-btn'),
+            editModal: document.getElementById('edit-profile-modal'),
+            cancelBtn: document.getElementById('cancel-edit-btn'),
+            editForm: document.getElementById('edit-form'),
+            editPhoto: document.getElementById('edit-photo'),
+            editUsername: document.getElementById('edit-username'),
+            editDiscord: document.getElementById('edit-discord'),
+            editRole: document.getElementById('edit-role'),
+            saveBtn: document.getElementById('save-profile-btn')
+        };
+
+        let currentUser;
+        let currentUserData;
+
+        function displayProfileData(data, email) {
+            ui.profilePicture.src = data.photoURL || `https://mc-heads.net/avatar/${data.username}/100`;
+            ui.userName.textContent = data.username || 'Utilisateur';
+            ui.userRole.textContent = data.role || 'Membre';
+            ui.userEmail.textContent = email;
+            ui.discordTag.textContent = data.discordTag || 'Non spécifié';
+        }
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // Utilisateur connecté, on récupère ses infos
+                currentUser = user;
                 const userRef = doc(db, 'users', user.uid);
                 const docSnap = await getDoc(userRef);
 
                 if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    profileImage.src = data.photoURL || `https://mc-heads.net/avatar/${user.uid}/120`;
-                    usernameElem.textContent = data.username || 'Utilisateur';
-                    userRoleElem.textContent = data.role || 'Membre';
-                    discordTagElem.textContent = data.discordTag || 'Non spécifié';
-                    userEmailElem.textContent = user.email;
+                    currentUserData = docSnap.data();
+                    displayProfileData(currentUserData, user.email);
                 } else {
-                    // Si l'utilisateur est connecté mais n'a pas de profil, on le renvoie le créer
                     window.location.href = 'onboarding.html';
                 }
             } else {
-                // Utilisateur non connecté, on le renvoie à la connexion
                 window.location.href = 'login.html';
             }
         });
 
-        logoutBtn.addEventListener('click', () => {
-            signOut(auth).then(() => {
-                // Déconnexion réussie, redirection vers l'accueil
-                window.location.href = 'index.html';
-            }).catch((error) => {
-                console.error("Erreur de déconnexion:", error);
-            });
+        ui.logoutButton.addEventListener('click', () => {
+            signOut(auth).then(() => window.location.href = 'index.html');
         });
+
+        ui.editBtn.addEventListener('click', () => {
+            if (!currentUserData) return;
+            ui.editUsername.value = currentUserData.username || '';
+            ui.editDiscord.value = currentUserData.discordTag || '';
+            ui.editRole.value = currentUserData.role || '';
+            ui.editPhoto.value = ''; // Clear file input
+            ui.editModal.style.display = 'block';
+        });
+
+        ui.cancelBtn.addEventListener('click', () => {
+            ui.editModal.style.display = 'none';
+        });
+
+        ui.editForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentUser) return;
+
+            ui.saveBtn.disabled = true;
+            ui.saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sauvegarde...';
+
+            try {
+                let newPhotoURL = currentUserData.photoURL;
+                const file = ui.editPhoto.files[0];
+
+                if (file) {
+                    const storageRef = ref(storage, `users/${currentUser.uid}/profilePicture.jpg`);
+                    const snapshot = await uploadBytes(storageRef, file);
+                    newPhotoURL = await getDownloadURL(snapshot.ref);
+                }
+
+                const updatedData = {
+                    username: ui.editUsername.value,
+                    discordTag: ui.editDiscord.value,
+                    role: ui.editRole.value,
+                    photoURL: newPhotoURL
+                };
+
+                const userRef = doc(db, 'users', currentUser.uid);
+                await updateDoc(userRef, updatedData);
+
+                // Mettre à jour les données locales et l'affichage
+                currentUserData = { ...currentUserData, ...updatedData };
+                displayProfileData(currentUserData, currentUser.email);
+                
+                ui.editModal.style.display = 'none';
+
+            } catch (error) {
+                console.error("Erreur de mise à jour du profil:", error);
+                alert("Une erreur est survenue. Veuillez réessayer.");
+            } finally {
+                ui.saveBtn.disabled = false;
+                ui.saveBtn.textContent = 'Sauvegarder';
+            }
+        });
+
     </script>
 </body>
 </html>

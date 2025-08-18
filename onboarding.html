@@ -215,7 +215,7 @@
         <p>Pour commencer, dis-nous en un peu plus sur toi.</p>
         
         <form id="onboarding-form">
-            <div class="profile-picture-section">
+            <div class="profile-picture-section" id="profile-picture-section">
                 <label class="font-bold text-gray-300">Photo de profil</label>
                 <div id="profile-picture-container">
                     <img id="profile-picture-preview" src="" alt="Aperçu">
@@ -288,15 +288,20 @@
                         return;
                     }
 
-                    // Pré-remplissage des champs
+                    // Pré-remplissage et gestion de l'affichage de la photo de profil
+                    const profilePictureSection = document.getElementById('profile-picture-section');
                     if (user.providerData.length > 0) {
                         const providerId = user.providerData[0].providerId;
-                        if (providerId === 'oidc.discord') {
-                            document.getElementById('discordTag').value = user.displayName || '';
-                            const usernameWithoutTag = user.displayName.split('#')[0];
-                            document.getElementById('username').value = usernameWithoutTag;
-                        } else if (providerId === 'google.com') {
-                            document.getElementById('username').value = user.displayName || '';
+                        if (providerId === 'password') {
+                            profilePictureSection.style.display = 'none'; // On cache la section pour les inscriptions par email
+                        } else {
+                            if (providerId === 'oidc.discord') {
+                                document.getElementById('discordTag').value = user.displayName || '';
+                                const usernameWithoutTag = user.displayName.split('#')[0];
+                                document.getElementById('username').value = usernameWithoutTag;
+                            } else if (providerId === 'google.com') {
+                                document.getElementById('username').value = user.displayName || '';
+                            }
                         }
                     }
 
@@ -362,10 +367,21 @@
                 button.disabled = true;
                 button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enregistrement...';
 
+                let photoURL = null; // Par défaut, pas de photo
+                const providerId = auth.currentUser.providerData[0].providerId;
                 const profilePictureFile = document.getElementById('profilePicture').files[0];
-                let photoURL = document.getElementById('profile-picture-preview').src;
 
-                // Récupérer les rôles sélectionnés
+                if (providerId !== 'password') {
+                    // Si ce n'est pas une inscription par email, on gère la photo
+                    photoURL = auth.currentUser.photoURL; // On prend celle du fournisseur par défaut
+                    if (profilePictureFile) {
+                        // Si une nouvelle a été choisie, on la téléverse
+                        const storageRef = ref(storage, `users/${currentUserId}/profilePicture.jpg`);
+                        const snapshot = await uploadBytes(storageRef, profilePictureFile);
+                        photoURL = await getDownloadURL(snapshot.ref);
+                    }
+                }
+
                 const selectedRoles = [];
                 checkboxes.querySelectorAll('input:checked').forEach(input => {
                     selectedRoles.push(input.value);
@@ -379,18 +395,12 @@
                 }
 
                 try {
-                    if (profilePictureFile) {
-                        const storageRef = ref(storage, `users/${currentUserId}/profilePicture.jpg`);
-                        const snapshot = await uploadBytes(storageRef, file);
-                        photoURL = await getDownloadURL(snapshot.ref);
-                    }
-
                     const userProfile = {
                         username: document.getElementById('username').value,
                         discordTag: document.getElementById('discordTag').value,
-                        gameRoles: selectedRoles, // Rôles en jeu (tableau)
-                        role: 'Visiteur', // Rôle par défaut du système
-                        photoURL: photoURL,
+                        gameRoles: selectedRoles,
+                        role: 'Visiteur',
+                        photoURL: photoURL, // Sera null pour les inscriptions par email
                         createdAt: new Date().toISOString()
                     };
                     

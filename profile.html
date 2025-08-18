@@ -296,8 +296,13 @@
         let currentUserData;
 
         function displayProfileData(data, email) {
-            // CORRECTION: Utilisation d'un proxy CORS pour l'image par défaut
-            ui.profilePicture.src = data.photoURL || `https://corsproxy.io/?https://mc-heads.net/avatar/${data.username}/100`;
+            if (data.photoURL) {
+                ui.profilePicture.src = data.photoURL;
+            } else {
+                const username = data.username || 'Steve';
+                // CORRECTION: Utilisation d'un proxy CORS pour l'image par défaut
+                ui.profilePicture.src = `https://corsproxy.io/?https://mc-heads.net/avatar/${username}/100`;
+            }
             ui.userName.textContent = data.username || 'Utilisateur';
             ui.userRole.textContent = data.role || 'Membre';
             ui.userEmail.textContent = email;
@@ -365,7 +370,6 @@
                 const userRef = doc(db, 'users', currentUser.uid);
                 await updateDoc(userRef, updatedData);
 
-                // Mettre à jour les données locales et l'affichage
                 currentUserData = { ...currentUserData, ...updatedData };
                 displayProfileData(currentUserData, currentUser.email);
                 

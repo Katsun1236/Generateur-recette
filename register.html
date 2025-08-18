@@ -212,7 +212,7 @@
 
     <script type="module">
         import { auth } from './firebase-config.js';
-        import { createUserWithEmailAndPassword, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+        import { createUserWithEmailAndPassword, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
         
         function showMessage(message) {
             const box = document.getElementById('message-box');
@@ -223,7 +223,7 @@
 
         onAuthStateChanged(auth, (user) => {
             if (user && !user.isAnonymous) {
-                window.location.href = '/onboarding.html';
+                window.location.href = 'onboarding.html'; 
             }
         });
 
@@ -275,7 +275,6 @@
                 showMessage("Erreur lors de l'inscription avec Google.");
             }
         });
-        */
     </script>
 </body>
 </html>

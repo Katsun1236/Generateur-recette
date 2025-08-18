@@ -292,7 +292,11 @@
         });
 
         document.getElementById('discord-signup-button').addEventListener('click', async () => {
-            const provider = new OAuthProvider('discord.com');
+            // CORRECTION: Utilisation de l'ID du fournisseur et ajout des scopes
+            const provider = new OAuthProvider('oidc.discord');
+            provider.addScope('identify');
+            provider.addScope('email');
+
             try {
                 await signInWithPopup(auth, provider);
                 showMessage("Inscription avec Discord réussie !");

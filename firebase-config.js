@@ -1,24 +1,23 @@
-// Importez les fonctions nécessaires depuis les SDK Firebase
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
-import { getStorage } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-storage.js";
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
 
-// TODO: Remplacez l'objet ci-dessous par la configuration de VOTRE projet Firebase
-// Vous trouverez ces informations dans les paramètres de votre projet sur la console Firebase.
-const firebaseConfig = {
-  apiKey: "VOTRE_API_KEY",
-  authDomain: "VOTRE_AUTH_DOMAIN",
-  projectId: "VOTRE_PROJECT_ID",
-  storageBucket: "VOTRE_STORAGE_BUCKET",
-  messagingSenderId: "VOTRE_MESSAGING_SENDER_ID",
-  appId: "VOTRE_APP_ID"
-};
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyBZMnlHt0TzR33sRVaGJ9HZLLZVzEGnu-k",
+    authDomain: "ratio-faction.firebaseapp.com",
+    projectId: "ratio-faction",
+    storageBucket: "ratio-faction.firebasestorage.app",
+    messagingSenderId: "402552344518",
+    appId: "1:402552344518:web:cad898ebb7f701770cecc7",
+    measurementId: "G-20WL3ZM0XJ"
+  };
 
-// Initialiser Firebase
-const app = initializeApp(firebaseConfig);
-
-// Exporter les services Firebase pour les utiliser dans d'autres fichiers
-export const auth = getAuth(app);
-export const db = getFirestore(app);
-export const storage = getStorage(app);
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>

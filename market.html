@@ -58,7 +58,7 @@
         }
         .market-header {
             text-align: center;
-            margin-bottom: 3rem;
+            margin-bottom: 2rem;
         }
         .market-header h1 {
             font-family: 'Anton', sans-serif;
@@ -72,6 +72,50 @@
             font-size: 1.1rem;
         }
         
+        .market-controls {
+            background-color: var(--card-bg-color);
+            padding: 1rem;
+            border-radius: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        .search-bar {
+            flex-grow: 2;
+            background-color: #333;
+            border: 2px solid #555;
+            border-radius: 5px;
+            color: var(--text-light);
+            padding: 0.75rem;
+            font-size: 1rem;
+        }
+        .filter-select {
+            flex-grow: 1;
+            background-color: #333;
+            border: 2px solid #555;
+            border-radius: 5px;
+            color: var(--text-light);
+            padding: 0.75rem;
+            cursor: pointer;
+        }
+        .special-order-btn {
+            flex-grow: 1;
+            background-color: transparent;
+            border: 2px solid var(--primary-red);
+            color: var(--primary-red);
+            padding: 0.75rem;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .special-order-btn:hover {
+            background-color: var(--primary-red);
+            color: var(--text-light);
+        }
+
         .category-section {
             margin-bottom: 3rem;
         }
@@ -105,7 +149,7 @@
         }
         .item-image-container {
             width: 100%;
-            padding-top: 100%; /* Aspect ratio 1:1 */
+            padding-top: 100%;
             position: relative;
             background-color: #333;
         }
@@ -118,25 +162,28 @@
             object-fit: contain;
             padding: 1rem;
             box-sizing: border-box;
+            image-rendering: pixelated;
         }
         .item-info {
             padding: 1rem;
             flex-grow: 1;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: space-between;
         }
         .item-info h3 {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             margin: 0 0 0.75rem 0;
             color: var(--text-light);
             font-weight: normal;
+            height: 40px;
         }
         .price-container {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            margin-bottom: 1rem;
         }
         .original-price {
             text-decoration: line-through;
@@ -147,6 +194,36 @@
             font-size: 1.5rem;
             font-weight: bold;
             color: var(--primary-red);
+        }
+        .buy-btn {
+            width: 100%;
+            background-color: var(--primary-red);
+            color: white;
+            font-weight: bold;
+            padding: 0.6rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: background-color 0.3s;
+        }
+        .buy-btn:hover {
+            background-color: var(--primary-red-dark);
+        }
+        #message-box {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            background-color: var(--card-bg-color);
+            color: var(--text-light);
+            padding: 1rem;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            display: none;
+            z-index: 3000;
+            border-left: 4px solid var(--primary-red);
+            opacity: 0;
+            transition: opacity 0.5s;
         }
     </style>
 </head>
@@ -173,10 +250,26 @@
             <p>Achetez des objets directement auprès de la faction R4TIO à prix réduit.</p>
         </div>
 
+        <div class="market-controls">
+            <input type="search" id="search-bar" class="search-bar" placeholder="Rechercher un objet...">
+            <select id="category-filter" class="filter-select">
+                <option value="all">Toutes les catégories</option>
+            </select>
+            <select id="price-filter" class="filter-select">
+                <option value="all">Tous les prix</option>
+                <option value="0-100">0 - 100$</option>
+                <option value="101-1000">101 - 1000$</option>
+                <option value="1001-10000">1001 - 10000$</option>
+                <option value="10001+">10001$ et +</option>
+            </select>
+            <button id="special-order-btn" class="special-order-btn">Passer Commande</button>
+        </div>
+
         <div id="market-sections">
-            <!-- Les sections et les objets seront générés ici par le script -->
         </div>
     </div>
+    
+    <div id="message-box"></div>
 
     <script type="module">
         import { auth, db } from './firebase-config.js';
@@ -202,89 +295,149 @@
         });
 
         const marketData = {
-          "Blocs": [
-            {id: "DIRT", buyPrice: 5}, {id: "MYCELIUM", buyPrice: 5}, {id: "COARSE_DIRT", buyPrice: 5}, {id: "PODZOL", buyPrice: 5}, {id: "SAND", buyPrice: 15}, {id: "SANDSTONE", buyPrice: 15}, {id: "CUT_SANDSTONE", buyPrice: 15}, {id: "RED_SAND", buyPrice: 15}, {id: "RED_SANDSTONE", buyPrice: 15}, {id: "CUT_RED_SANDSTONE", buyPrice: 15}, {id: "STONE", buyPrice: 15}, {id: "STONE_BRICKS", buyPrice: 15}, {id: "MOSSY_STONE_BRICKS", buyPrice: 15}, {id: "CRACKED_STONE_BRICKS", buyPrice: 15}, {id: "CHISELED_STONE_BRICKS", buyPrice: 15}, {id: "COBBLESTONE", buyPrice: 15}, {id: "MOSSY_COBBLESTONE", buyPrice: 15}, {id: "GRAVEL", buyPrice: 15}, {id: "GRANITE", buyPrice: 15}, {id: "DIORITE", buyPrice: 15}, {id: "ANDESITE", buyPrice: 15}, {id: "POLISHED_GRANITE", buyPrice: 15}, {id: "POLISHED_DIORITE", buyPrice: 15}, {id: "POLISHED_ANDESITE", buyPrice: 15}, {id: "OBSIDIAN", buyPrice: 500}, {id: "OAK_PLANKS", buyPrice: 15}, {id: "SPRUCE_PLANKS", buyPrice: 15}, {id: "BIRCH_PLANKS", buyPrice: 15}, {id: "ACACIA_PLANKS", buyPrice: 15}, {id: "JUNGLE_PLANKS", buyPrice: 15}, {id: "DARK_OAK_PLANKS", buyPrice: 15}, {id: "SLIME_BLOCK", buyPrice: 15}
-          ],
-          "Items": [
-            {id: "ARROW", buyPrice: 10}, {id: "TORCH", buyPrice: 3}, {id: "ENDER_PEARL", buyPrice: 1500}, {id: "END_ROD", buyPrice: 175}, {id: "SPLASH_POTION", buyPrice: 1500, name: "Strong Healing Splash Potion"}, {id: "CRAFTING_TABLE", buyPrice: 100}, {id: "ENCHANTING_TABLE", buyPrice: 1000}, {id: "ANVIL", buyPrice: 1000}, {id: "ENDER_CHEST", buyPrice: 800}, {id: "CHEST", buyPrice: 100}, {id: "RED_BED", buyPrice: 100, name: "Bed"}, {id: "FURNACE", buyPrice: 100}, {id: "JUKEBOX", buyPrice: 1000}
-          ],
-          "Minerais": [
-            {id: "CLAY_BALL", buyPrice: 15}, {id: "FLINT", buyPrice: 15}, {id: "COAL", buyPrice: 200}, {id: "IRON_INGOT", buyPrice: 200}, {id: "GOLD_INGOT", buyPrice: 500}, {id: "REDSTONE", buyPrice: 50, name: "Redstone Dust"}, {id: "DIAMOND", buyPrice: 500}, {id: "COAL_ORE", buyPrice: 200}, {id: "IRON_ORE", buyPrice: 200}, {id: "GOLD_ORE", buyPrice: 500}, {id: "REDSTONE_ORE", buyPrice: 450}, {id: "DIAMOND_ORE", buyPrice: 1000}, {id: "HISTERITE_ORE", buyPrice: 10000}, {id: "RANDOM_ORE", buyPrice: 20000}, {id: "COAL_BLOCK", buyPrice: 1800}, {id: "IRON_BLOCK", buyPrice: 1800}, {id: "GOLD_BLOCK", buyPrice: 4500}, {id: "REDSTONE_BLOCK", buyPrice: 450}, {id: "DIAMOND_BLOCK", buyPrice: 9000}, {id: "HISTERITE_BLOCK", buyPrice: 90000}
-          ],
-          "Nature": [
-            {id: "ACACIA_WOOD", buyPrice: 50}, {id: "JUNGLE_WOOD", buyPrice: 50}, {id: "BIRCH_WOOD", buyPrice: 50}, {id: "OAK_WOOD", buyPrice: 50}, {id: "DARK_OAK_WOOD", buyPrice: 50}, {id: "SPRUCE_WOOD", buyPrice: 50}, {id: "COOKED_BEEF", buyPrice: 50, name: "Steak"}, {id: "CACTUS", buyPrice: 500}, {id: "ACACIA_LOG", buyPrice: 50}, {id: "JUNGLE_LOG", buyPrice: 50}, {id: "BIRCH_LOG", buyPrice: 50}, {id: "OAK_LOG", buyPrice: 50}, {id: "DARK_OAK_LOG", buyPrice: 50}, {id: "SPRUCE_LOG", buyPrice: 50}, {id: "PUMPKIN", buyPrice: 225}, {id: "MELON_SLICE", buyPrice: 225, name: "Melon"}, {id: "STRIPPED_ACACIA_LOG", buyPrice: 50}, {id: "STRIPPED_JUNGLE_LOG", buyPrice: 50}, {id: "STRIPPED_BIRCH_LOG", buyPrice: 50}, {id: "STRIPPED_OAK_LOG", buyPrice: 50}, {id: "STRIPPED_DARK_OAK_LOG", buyPrice: 50}, {id: "STRIPPED_SPRUCE_LOG", buyPrice: 50}, {id: "POTATO", buyPrice: 50}, {id: "BEETROOT", buyPrice: 50}, {id: "ACACIA_SAPLING", buyPrice: 100}, {id: "JUNGLE_SAPLING", buyPrice: 100}, {id: "BIRCH_SAPLING", buyPrice: 100}, {id: "OAK_SAPLING", buyPrice: 100}, {id: "DARK_OAK_SAPLING", buyPrice: 100}, {id: "SPRUCE_SAPLING", buyPrice: 100}, {id: "CARROT", buyPrice: 50}, {id: "WHEAT", buyPrice: 50}, {id: "ACACIA_LEAVES", buyPrice: 20}, {id: "JUNGLE_LEAVES", buyPrice: 20}, {id: "BIRCH_LEAVES", buyPrice: 20}, {id: "OAK_LEAVES", buyPrice: 20}, {id: "DARK_OAK_LEAVES", buyPrice: 20}, {id: "SPRUCE_LEAVES", buyPrice: 20}, {id: "WHEAT_SEEDS", buyPrice: 10, name: "Seeds"}, {id: "APPLE", buyPrice: 100}, {id: "BONE_MEAL", buyPrice: 100}, {id: "GRASS_BLOCK", buyPrice: 200, name: "Grass"}, {id: "VINE", buyPrice: 200}, {id: "SUGAR_CANE", buyPrice: 200}, {id: "RED_MUSHROOM", buyPrice: 200}, {id: "BROWN_MUSHROOM", buyPrice: 200}, {id: "RED_MUSHROOM_BLOCK", buyPrice: 1800}, {id: "BROWN_MUSHROOM_BLOCK", buyPrice: 1800}, {id: "CAKE", buyPrice: 100}, {id: "GRASS", buyPrice: 100, name: "Tall Grass"}, {id: "FERN", buyPrice: 100}, {id: "LARGE_FERN", buyPrice: 100}, {id: "DEAD_BUSH", buyPrice: 100}, {id: "CARVED_PUMPKIN", buyPrice: 100}, {id: "MUSHROOM_STEM", buyPrice: 100}, {id: "DANDELION", buyPrice: 100}, {id: "POPPY", buyPrice: 100}, {id: "BLUE_ORCHID", buyPrice: 100}, {id: "ALLIUM", buyPrice: 100}, {id: "AZURE_BLUET", buyPrice: 100}, {id: "RED_TULIP", buyPrice: 100}, {id: "ORANGE_TULIP", buyPrice: 100}, {id: "WHITE_TULIP", buyPrice: 100}, {id: "PINK_TULIP", buyPrice: 100}, {id: "OXEYE_DAISY", buyPrice: 100}, {id: "CORNFLOWER", buyPrice: 100}, {id: "LILAC", buyPrice: 100}, {id: "SUNFLOWER", buyPrice: 100}, {id: "ROSE_BUSH", buyPrice: 100}, {id: "PEONY", buyPrice: 100}
-          ],
-          "Objets Spéciaux": [
-            {id: "CHEST_FINDER", buyPrice: 15000}, {id: "FERTILIZED_DIRT", buyPrice: 200000}, {id: "HISTERITE_APPLE", buyPrice: 200000}, {id: "OBSIDIAN_BREAKER", buyPrice: 10000}, {id: "TNT", buyPrice: 600, name: "Dynamite"}, {id: "SPONGE", buyPrice: 1000, name: "Sponger"}, {id: "CHEST_EXPLORER", buyPrice: 10000}, {id: "ELYTRA", buyPrice: 20000, name: "Hang Glider"}
-          ],
-          "Décoration": [
-            {id: "WHITE_TERRACOTTA", buyPrice: 50}, {id: "ORANGE_TERRACOTTA", buyPrice: 50}, {id: "MAGENTA_TERRACOTTA", buyPrice: 50}, {id: "LIGHT_BLUE_TERRACOTTA", buyPrice: 50}, {id: "YELLOW_TERRACOTTA", buyPrice: 50}, {id: "LIME_TERRACOTTA", buyPrice: 50}, {id: "PINK_TERRACOTTA", buyPrice: 50}, {id: "GRAY_TERRACOTTA", buyPrice: 50}, {id: "LIGHT_GRAY_TERRACOTTA", buyPrice: 50}, {id: "PURPLE_TERRACOTTA", buyPrice: 50}, {id: "BLUE_TERRACOTTA", buyPrice: 50}, {id: "BROWN_TERRACOTTA", buyPrice: 50}, {id: "GREEN_TERRACOTTA", buyPrice: 50}, {id: "RED_TERRACOTTA", buyPrice: 50}, {id: "BLACK_TERRACOTTA", buyPrice: 50}, {id: "WHITE_GLAZED_TERRACOTTA", buyPrice: 50}, {id: "ORANGE_GLAZED_TERRACOTTA", buyPrice: 50}, {id: "MAGENTA_GLAZED_TERRACOTTA", buyPrice: 50}, {id: "LIGHT_BLUE_GLAZED_TERRACOTTA", buyPrice: 50}, {id: "YELLOW_GLAZED_TERRACOTTA", buyPrice: 50}, {id: "LIME_GLAZED_TERRACOTTA", buyPrice: 50}, {id: "PINK_GLAZED_TERRACOTTA", buyPrice: 50}, {id: "GRAY_GLAZED_TERRACOTTA", buyPrice: 50}, {id: "LIGHT_GRAY_GLAZED_TERRACOTTA", buyPrice: 50}, {id: "PURPLE_GLAZED_TERRACOTTA", buyPrice: 50}, {id: "BLUE_GLAZED_TERRACOTTA", buyPrice: 50}, {id: "BROWN_GLAZED_TERRACOTTA", buyPrice: 50}, {id: "GREEN_GLAZED_TERRACOTTA", buyPrice: 50}, {id: "RED_GLAZED_TERRACOTTA", buyPrice: 50}, {id: "BLACK_GLAZED_TERRACOTTA", buyPrice: 50}, {id: "WHITE_CONCRETE", buyPrice: 50}, {id: "ORANGE_CONCRETE", buyPrice: 50}, {id: "MAGENTA_CONCRETE", buyPrice: 50}, {id: "LIGHT_BLUE_CONCRETE", buyPrice: 50}, {id: "YELLOW_CONCRETE", buyPrice: 50}, {id: "LIME_CONCRETE", buyPrice: 50}, {id: "PINK_CONCRETE", buyPrice: 50}, {id: "GRAY_CONCRETE", buyPrice: 50}, {id: "LIGHT_GRAY_CONCRETE", buyPrice: 50}, {id: "CYAN_CONCRETE", buyPrice: 50}, {id: "PURPLE_CONCRETE", buyPrice: 50}, {id: "BLUE_CONCRETE", buyPrice: 50}, {id: "BROWN_CONCRETE", buyPrice: 50}, {id: "GREEN_CONCRETE", buyPrice: 50}, {id: "RED_CONCRETE", buyPrice: 50}, {id: "BLACK_CONCRETE", buyPrice: 50}, {id: "WHITE_CONCRETE_POWDER", buyPrice: 50}, {id: "ORANGE_CONCRETE_POWDER", buyPrice: 50}, {id: "MAGENTA_CONCRETE_POWDER", buyPrice: 50}, {id: "LIGHT_BLUE_CONCRETE_POWDER", buyPrice: 50}, {id: "YELLOW_CONCRETE_POWDER", buyPrice: 50}, {id: "LIME_CONCRETE_POWDER", buyPrice: 50}, {id: "PINK_CONCRETE_POWDER", buyPrice: 50}, {id: "GRAY_CONCRETE_POWDER", buyPrice: 50}, {id: "LIGHT_GRAY_CONCRETE_POWDER", buyPrice: 50}, {id: "CYAN_CONCRETE_POWDER", buyPrice: 50}, {id: "PURPLE_CONCRETE_POWDER", buyPrice: 50}, {id: "BLUE_CONCRETE_POWDER", buyPrice: 50}, {id: "BROWN_CONCRETE_POWDER", buyPrice: 50}, {id: "GREEN_CONCRETE_POWDER", buyPrice: 50}, {id: "RED_CONCRETE_POWDER", buyPrice: 50}, {id: "BLACK_CONCRETE_POWDER", buyPrice: 50}, {id: "WHITE_WOOL", buyPrice: 50}, {id: "ORANGE_WOOL", buyPrice: 50}, {id: "MAGENTA_WOOL", buyPrice: 50}, {id: "LIGHT_BLUE_WOOL", buyPrice: 50}, {id: "YELLOW_WOOL", buyPrice: 50}, {id: "LIME_WOOL", buyPrice: 50}, {id: "PINK_WOOL", buyPrice: 50}, {id: "GRAY_WOOL", buyPrice: 50}, {id: "LIGHT_GRAY_WOOL", buyPrice: 50}, {id: "PURPLE_WOOL", buyPrice: 50}, {id: "BLUE_WOOL", buyPrice: 50}, {id: "BROWN_WOOL", buyPrice: 50}, {id: "GREEN_WOOL", buyPrice: 50}, {id: "RED_WOOL", buyPrice: 50}, {id: "BLACK_WOOL", buyPrice: 50}, {id: "SEA_LANTERN", buyPrice: 50}, {id: "END_STONE", buyPrice: 50}, {id: "GLOWSTONE", buyPrice: 50}, {id: "QUARTZ_BLOCK", buyPrice: 50}, {id: "PRISMARINE", buyPrice: 50}, {id: "PRISMARINE_BRICKS", buyPrice: 50}, {id: "DARK_PRISMARINE", buyPrice: 50}, {id: "TERRACOTTA", buyPrice: 50}, {id: "SNOW_BLOCK", buyPrice: 20}, {id: "PACKED_ICE", buyPrice: 100}, {id: "BLUE_ICE", buyPrice: 100}, {id: "GLASS", buyPrice: 100}, {id: "BRICKS", buyPrice: 100}, {id: "IRON_BARS", buyPrice: 100}, {id: "FLOWER_POT", buyPrice: 100}, {id: "OAK_SLAB", buyPrice: 100}, {id: "SPRUCE_SLAB", buyPrice: 100}, {id: "BIRCH_SLAB", buyPrice: 100}, {id: "ACACIA_SLAB", buyPrice: 100}, {id: "JUNGLE_SLAB", buyPrice: 100}, {id: "DARK_OAK_SLAB", buyPrice: 100}, {id: "BRICK_SLAB", buyPrice: 100}, {id: "SMOOTH_STONE_SLAB", buyPrice: 100}, {id: "PRISMARINE_SLAB", buyPrice: 100}, {id: "DARK_PRISMARINE_SLAB", buyPrice: 100}, {id: "SANDSTONE_SLAB", buyPrice: 100}, {id: "RED_SANDSTONE_SLAB", buyPrice: 100}, {id: "OAK_STAIRS", buyPrice: 100}, {id: "SPRUCE_STAIRS", buyPrice: 100}, {id: "BIRCH_STAIRS", buyPrice: 100}, {id: "ACACIA_STAIRS", buyPrice: 100}, {id: "JUNGLE_STAIRS", buyPrice: 100}, {id: "DARK_OAK_STAIRS", buyPrice: 100}, {id: "BRICK_STAIRS", buyPrice: 100}, {id: "PRISMARINE_STAIRS", buyPrice: 100}, {id: "DARK_PRISMARINE_STAIRS", buyPrice: 100}, {id: "SANDSTONE_STAIRS", buyPrice: 100}, {id: "RED_SANDSTONE_STAIRS", buyPrice: 100}, {id: "OAK_DOOR", buyPrice: 100}, {id: "SPRUCE_DOOR", buyPrice: 100}, {id: "BIRCH_DOOR", buyPrice: 100}, {id: "ACACIA_DOOR", buyPrice: 100}, {id: "JUNGLE_DOOR", buyPrice: 100}, {id: "DARK_OAK_DOOR", buyPrice: 100}, {id: "OAK_FENCE", buyPrice: 100}, {id: "SPRUCE_FENCE", buyPrice: 100}, {id: "BIRCH_FENCE", buyPrice: 100}, {id: "ACACIA_FENCE", buyPrice: 100}, {id: "JUNGLE_FENCE", buyPrice: 100}, {id: "DARK_OAK_FENCE", buyPrice: 100}, {id: "OAK_FENCE_GATE", buyPrice: 100}, {id: "SPRUCE_FENCE_GATE", buyPrice: 100}, {id: "BIRCH_FENCE_GATE", buyPrice: 100}, {id: "ACACIA_FENCE_GATE", buyPrice: 100}, {id: "JUNGLE_FENCE_GATE", buyPrice: 100}, {id: "DARK_OAK_FENCE_GATE", buyPrice: 100}, {id: "OAK_TRAPDOOR", buyPrice: 100}, {id: "SPRUCE_TRAPDOOR", buyPrice: 100}, {id: "BIRCH_TRAPDOOR", buyPrice: 100}, {id: "ACACIA_TRAPDOOR", buyPrice: 100}, {id: "JUNGLE_TRAPDOOR", buyPrice: 100}, {id: "DARK_OAK_TRAPDOOR", buyPrice: 100}, {id: "OAK_SIGN", buyPrice: 100}, {id: "SPRUCE_SIGN", buyPrice: 100}, {id: "BIRCH_SIGN", buyPrice: 100}, {id: "ACACIA_SIGN", buyPrice: 100}, {id: "JUNGLE_SIGN", buyPrice: 100}, {id: "DARK_OAK_SIGN", buyPrice: 100}, {id: "WHITE_STAINED_GLASS", buyPrice: 50}, {id: "ORANGE_STAINED_GLASS", buyPrice: 50}, {id: "MAGENTA_STAINED_GLASS", buyPrice: 50}, {id: "LIGHT_BLUE_STAINED_GLASS", buyPrice: 50}, {id: "YELLOW_STAINED_GLASS", buyPrice: 50}, {id: "LIME_STAINED_GLASS", buyPrice: 50}, {id: "PINK_STAINED_GLASS", buyPrice: 50}, {id: "GRAY_STAINED_GLASS", buyPrice: 50}, {id: "LIGHT_GRAY_STAINED_GLASS", buyPrice: 50}, {id: "PURPLE_STAINED_GLASS", buyPrice: 50}, {id: "BLUE_STAINED_GLASS", buyPrice: 50}, {id: "BROWN_STAINED_GLASS", buyPrice: 50}, {id: "GREEN_STAINED_GLASS", buyPrice: 50}, {id: "RED_STAINED_GLASS", buyPrice: 50}, {id: "BLACK_STAINED_GLASS", buyPrice: 50}, {id: "WHITE_CARPET", buyPrice: 50}, {id: "ORANGE_CARPET", buyPrice: 50}, {id: "MAGENTA_CARPET", buyPrice: 50}, {id: "LIGHT_BLUE_CARPET", buyPrice: 50}, {id: "YELLOW_CARPET", buyPrice: 50}, {id: "LIME_CARPET", buyPrice: 50}, {id: "PINK_CARPET", buyPrice: 50}, {id: "GRAY_CARPET", buyPrice: 50}, {id: "LIGHT_GRAY_CARPET", buyPrice: 50}, {id: "PURPLE_CARPET", buyPrice: 50}, {id: "BLUE_CARPET", buyPrice: 50}, {id: "BROWN_CARPET", buyPrice: 50}, {id: "GREEN_CARPET", buyPrice: 50}, {id: "RED_CARPET", buyPrice: 50}, {id: "BLACK_CARPET", buyPrice: 50}, {id: "COBWEB", buyPrice: 50}, {id: "LADDER", buyPrice: 50}, {id: "LANTERN", buyPrice: 50}, {id: "REDSTONE_LAMP", buyPrice: 50}
-          ]
+            "Blocs": [
+                {id: "DIRT", fr: "Terre", buyPrice: 5}, {id: "MYCELIUM", fr: "Mycélium", buyPrice: 5}, {id: "COARSE_DIRT", fr: "Terre stérile", buyPrice: 5}, {id: "PODZOL", fr: "Podzol", buyPrice: 5}, {id: "SAND", fr: "Sable", buyPrice: 15}, {id: "SANDSTONE", fr: "Grès", buyPrice: 15}, {id: "CUT_SANDSTONE", fr: "Grès taillé", buyPrice: 15}, {id: "RED_SAND", fr: "Sable rouge", buyPrice: 15}, {id: "RED_SANDSTONE", fr: "Grès rouge", buyPrice: 15}, {id: "CUT_RED_SANDSTONE", fr: "Grès rouge taillé", buyPrice: 15}, {id: "STONE", fr: "Roche", buyPrice: 15}, {id: "STONE_BRICKS", fr: "Briques de pierre", buyPrice: 15}, {id: "MOSSY_STONE_BRICKS", fr: "Briques de pierre moussues", buyPrice: 15}, {id: "CRACKED_STONE_BRICKS", fr: "Briques de pierre craquelées", buyPrice: 15}, {id: "CHISELED_STONE_BRICKS", fr: "Briques de pierre sculptées", buyPrice: 15}, {id: "COBBLESTONE", fr: "Pierre", buyPrice: 15}, {id: "MOSSY_COBBLESTONE", fr: "Pierre moussue", buyPrice: 15}, {id: "GRAVEL", fr: "Gravier", buyPrice: 15}, {id: "GRANITE", fr: "Granite", buyPrice: 15}, {id: "DIORITE", fr: "Diorite", buyPrice: 15}, {id: "ANDESITE", fr: "Andésite", buyPrice: 15}, {id: "POLISHED_GRANITE", fr: "Granite poli", buyPrice: 15}, {id: "POLISHED_DIORITE", fr: "Diorite polie", buyPrice: 15}, {id: "POLISHED_ANDESITE", fr: "Andésite polie", buyPrice: 15}, {id: "OBSIDIAN", fr: "Obsidienne", buyPrice: 500}, {id: "OAK_PLANKS", fr: "Planches de chêne", buyPrice: 15}, {id: "SPRUCE_PLANKS", fr: "Planches de sapin", buyPrice: 15}, {id: "BIRCH_PLANKS", fr: "Planches de bouleau", buyPrice: 15}, {id: "ACACIA_PLANKS", fr: "Planches d'acacia", buyPrice: 15}, {id: "JUNGLE_PLANKS", fr: "Planches d'acajou", buyPrice: 15}, {id: "DARK_OAK_PLANKS", fr: "Planches de chêne noir", buyPrice: 15}, {id: "SLIME_BLOCK", fr: "Bloc de Slime", buyPrice: 15}
+            ],
+            "Items": [
+                {id: "ARROW", fr: "Flèche", buyPrice: 10}, {id: "TORCH", fr: "Torche", buyPrice: 3}, {id: "ENDER_PEARL", fr: "Perle de l'Ender", buyPrice: 1500}, {id: "END_ROD", fr: "Barre de l'End", buyPrice: 175}, {id: "SPLASH_POTION", fr: "Potion de soin volatile", buyPrice: 1500}, {id: "CRAFTING_TABLE", fr: "Table de craft", buyPrice: 100}, {id: "ENCHANTING_TABLE", fr: "Table d'enchantement", buyPrice: 1000}, {id: "ANVIL", fr: "Enclume", buyPrice: 1000}, {id: "ENDER_CHEST", fr: "Coffre de l'Ender", buyPrice: 800}, {id: "CHEST", fr: "Coffre", buyPrice: 100}, {id: "RED_BED", fr: "Lit", buyPrice: 100}, {id: "FURNACE", fr: "Four", buyPrice: 100}, {id: "JUKEBOX", fr: "Jukebox", buyPrice: 1000}
+            ],
+            "Minerais": [
+                {id: "CLAY_BALL", fr: "Argile", buyPrice: 15}, {id: "FLINT", fr: "Silex", buyPrice: 15}, {id: "COAL", fr: "Charbon", buyPrice: 200}, {id: "IRON_INGOT", fr: "Lingot de fer", buyPrice: 200}, {id: "GOLD_INGOT", fr: "Lingot d'or", buyPrice: 500}, {id: "REDSTONE", fr: "Poussière de Redstone", buyPrice: 50}, {id: "DIAMOND", fr: "Diamant", buyPrice: 500}, {id: "COAL_ORE", fr: "Minerai de charbon", buyPrice: 200}, {id: "IRON_ORE", fr: "Minerai de fer", buyPrice: 200}, {id: "GOLD_ORE", fr: "Minerai d'or", buyPrice: 500}, {id: "REDSTONE_ORE", fr: "Minerai de Redstone", buyPrice: 450}, {id: "DIAMOND_ORE", fr: "Minerai de diamant", buyPrice: 1000}, {id: "DIAMOND_BLOCK", fr: "Bloc d'Histerite", buyPrice: 10000, name: "Histerite Ore"}, {id: "EMERALD_BLOCK", fr: "Minerai Aléatoire", buyPrice: 20000, name: "Random Ore"}, {id: "COAL_BLOCK", fr: "Bloc de charbon", buyPrice: 1800}, {id: "IRON_BLOCK", fr: "Bloc de fer", buyPrice: 1800}, {id: "GOLD_BLOCK", fr: "Bloc d'or", buyPrice: 4500}, {id: "REDSTONE_BLOCK", fr: "Bloc de Redstone", buyPrice: 450}, {id: "DIAMOND_BLOCK", fr: "Bloc de diamant", buyPrice: 9000}, {id: "DIAMOND_BLOCK", fr: "Bloc d'Histerite", buyPrice: 90000, name: "Histerite Block"}
+            ],
+            "Nature": [
+                {id: "ACACIA_WOOD", fr: "Bois d'acacia", buyPrice: 50}, {id: "JUNGLE_WOOD", fr: "Bois d'acajou", buyPrice: 50}, {id: "BIRCH_WOOD", fr: "Bois de bouleau", buyPrice: 50}, {id: "OAK_WOOD", fr: "Bois de chêne", buyPrice: 50}, {id: "DARK_OAK_WOOD", fr: "Bois de chêne noir", buyPrice: 50}, {id: "SPRUCE_WOOD", fr: "Bois de sapin", buyPrice: 50}, {id: "COOKED_BEEF", fr: "Steak", buyPrice: 50}, {id: "CACTUS", fr: "Cactus", buyPrice: 500}, {id: "ACACIA_LOG", fr: "Bûche d'acacia", buyPrice: 50}, {id: "JUNGLE_LOG", fr: "Bûche d'acajou", buyPrice: 50}, {id: "BIRCH_LOG", fr: "Bûche de bouleau", buyPrice: 50}, {id: "OAK_LOG", fr: "Bûche de chêne", buyPrice: 50}, {id: "DARK_OAK_LOG", fr: "Bûche de chêne noir", buyPrice: 50}, {id: "SPRUCE_LOG", fr: "Bûche de sapin", buyPrice: 50}, {id: "PUMPKIN", fr: "Citrouille", buyPrice: 225}, {id: "MELON_SLICE", fr: "Melon", buyPrice: 225}, {id: "STRIPPED_ACACIA_LOG", fr: "Bûche d'acacia écorcée", buyPrice: 50}, {id: "STRIPPED_JUNGLE_LOG", fr: "Bûche d'acajou écorcée", buyPrice: 50}, {id: "STRIPPED_BIRCH_LOG", fr: "Bûche de bouleau écorcée", buyPrice: 50}, {id: "STRIPPED_OAK_LOG", fr: "Bûche de chêne écorcée", buyPrice: 50}, {id: "STRIPPED_DARK_OAK_LOG", fr: "Bûche de chêne noir écorcée", buyPrice: 50}, {id: "STRIPPED_SPRUCE_LOG", fr: "Bûche de sapin écorcée", buyPrice: 50}, {id: "POTATO", fr: "Pomme de terre", buyPrice: 50}, {id: "BEETROOT", fr: "Betterave", buyPrice: 50}, {id: "ACACIA_SAPLING", fr: "Pousse d'acacia", buyPrice: 100}, {id: "JUNGLE_SAPLING", fr: "Pousse d'acajou", buyPrice: 100}, {id: "BIRCH_SAPLING", fr: "Pousse de bouleau", buyPrice: 100}, {id: "OAK_SAPLING", fr: "Pousse de chêne", buyPrice: 100}, {id: "DARK_OAK_SAPLING", fr: "Pousse de chêne noir", buyPrice: 100}, {id: "SPRUCE_SAPLING", fr: "Pousse de sapin", buyPrice: 100}, {id: "CARROT", fr: "Carotte", buyPrice: 50}, {id: "WHEAT", fr: "Blé", buyPrice: 50}, {id: "ACACIA_LEAVES", fr: "Feuilles d'acacia", buyPrice: 20}, {id: "JUNGLE_LEAVES", fr: "Feuilles d'acajou", buyPrice: 20}, {id: "BIRCH_LEAVES", fr: "Feuilles de bouleau", buyPrice: 20}, {id: "OAK_LEAVES", fr: "Feuilles de chêne", buyPrice: 20}, {id: "DARK_OAK_LEAVES", fr: "Feuilles de chêne noir", buyPrice: 20}, {id: "SPRUCE_LEAVES", fr: "Feuilles de sapin", buyPrice: 20}, {id: "WHEAT_SEEDS", fr: "Graines", buyPrice: 10}, {id: "APPLE", fr: "Pomme", buyPrice: 100}, {id: "BONE_MEAL", fr: "Poudre d'os", buyPrice: 100}, {id: "GRASS_BLOCK", fr: "Bloc d'herbe", buyPrice: 200}, {id: "VINE", fr: "Liane", buyPrice: 200}, {id: "SUGAR_CANE", fr: "Canne à sucre", buyPrice: 200}, {id: "RED_MUSHROOM", fr: "Champignon rouge", buyPrice: 200}, {id: "BROWN_MUSHROOM", fr: "Champignon brun", buyPrice: 200}, {id: "RED_MUSHROOM_BLOCK", fr: "Bloc de champignon rouge", buyPrice: 1800}, {id: "BROWN_MUSHROOM_BLOCK", fr: "Bloc de champignon brun", buyPrice: 1800}, {id: "CAKE", fr: "Gâteau", buyPrice: 100}, {id: "GRASS", fr: "Herbes hautes", buyPrice: 100}, {id: "FERN", fr: "Fougère", buyPrice: 100}, {id: "LARGE_FERN", fr: "Grande fougère", buyPrice: 100}, {id: "DEAD_BUSH", fr: "Arbuste mort", buyPrice: 100}, {id: "CARVED_PUMPKIN", fr: "Citrouille sculptée", buyPrice: 100}, {id: "MUSHROOM_STEM", fr: "Tige de champignon", buyPrice: 100}, {id: "DANDELION", fr: "Pissenlit", buyPrice: 100}, {id: "POPPY", fr: "Coquelicot", buyPrice: 100}, {id: "BLUE_ORCHID", fr: "Orchidée bleue", buyPrice: 100}, {id: "ALLIUM", fr: "Allium", buyPrice: 100}, {id: "AZURE_BLUET", fr: "Houstonie bleue", buyPrice: 100}, {id: "RED_TULIP", fr: "Tulipe rouge", buyPrice: 100}, {id: "ORANGE_TULIP", fr: "Tulipe orange", buyPrice: 100}, {id: "WHITE_TULIP", fr: "Tulipe blanche", buyPrice: 100}, {id: "PINK_TULIP", fr: "Tulipe rose", buyPrice: 100}, {id: "OXEYE_DAISY", fr: "Marguerite", buyPrice: 100}, {id: "CORNFLOWER", fr: "Bleuet", buyPrice: 100}, {id: "LILAC", fr: "Lilas", buyPrice: 100}, {id: "SUNFLOWER", fr: "Tournesol", buyPrice: 100}, {id: "ROSE_BUSH", fr: "Rosier", buyPrice: 100}, {id: "PEONY", fr: "Pivoine", buyPrice: 100}
+            ],
+            "Objets Spéciaux": [
+                {id: "COMPASS", fr: "Chest Finder", buyPrice: 15000}, {id: "FARMLAND", fr: "Fertilized Dirt", buyPrice: 200000}, {id: "ENCHANTED_GOLDEN_APPLE", fr: "Histerite Apple", buyPrice: 200000}, {id: "NETHERITE_PICKAXE", fr: "Obsidian Breaker", buyPrice: 10000}, {id: "TNT", fr: "Dynamite", buyPrice: 600}, {id: "SPONGE", fr: "Sponger", buyPrice: 1000}, {id: "SPYGLASS", fr: "Chest Explorer", buyPrice: 10000}, {id: "ELYTRA", fr: "Hang Glider", buyPrice: 20000}
+            ],
+            "Décoration": [
+                {id: "WHITE_TERRACOTTA", fr: "Terre cuite blanche", buyPrice: 50}, {id: "ORANGE_TERRACOTTA", fr: "Terre cuite orange", buyPrice: 50}, {id: "MAGENTA_TERRACOTTA", fr: "Terre cuite magenta", buyPrice: 50}, {id: "LIGHT_BLUE_TERRACOTTA", fr: "Terre cuite bleu clair", buyPrice: 50}, {id: "YELLOW_TERRACOTTA", fr: "Terre cuite jaune", buyPrice: 50}, {id: "LIME_TERRACOTTA", fr: "Terre cuite citron vert", buyPrice: 50}, {id: "PINK_TERRACOTTA", fr: "Terre cuite rose", buyPrice: 50}, {id: "GRAY_TERRACOTTA", fr: "Terre cuite grise", buyPrice: 50}, {id: "LIGHT_GRAY_TERRACOTTA", fr: "Terre cuite gris clair", buyPrice: 50}, {id: "PURPLE_TERRACOTTA", fr: "Terre cuite violette", buyPrice: 50}, {id: "BLUE_TERRACOTTA", fr: "Terre cuite bleue", buyPrice: 50}, {id: "BROWN_TERRACOTTA", fr: "Terre cuite marron", buyPrice: 50}, {id: "GREEN_TERRACOTTA", fr: "Terre cuite verte", buyPrice: 50}, {id: "RED_TERRACOTTA", fr: "Terre cuite rouge", buyPrice: 50}, {id: "BLACK_TERRACOTTA", fr: "Terre cuite noire", buyPrice: 50}, {id: "WHITE_GLAZED_TERRACOTTA", fr: "Terre cuite émaillée blanche", buyPrice: 50}, {id: "ORANGE_GLAZED_TERRACOTTA", fr: "Terre cuite émaillée orange", buyPrice: 50}, {id: "MAGENTA_GLAZED_TERRACOTTA", fr: "Terre cuite émaillée magenta", buyPrice: 50}, {id: "LIGHT_BLUE_GLAZED_TERRACOTTA", fr: "Terre cuite émaillée bleu clair", buyPrice: 50}, {id: "YELLOW_GLAZED_TERRACOTTA", fr: "Terre cuite émaillée jaune", buyPrice: 50}, {id: "LIME_GLAZED_TERRACOTTA", fr: "Terre cuite émaillée citron vert", buyPrice: 50}, {id: "PINK_GLAZED_TERRACOTTA", fr: "Terre cuite émaillée rose", buyPrice: 50}, {id: "GRAY_GLAZED_TERRACOTTA", fr: "Terre cuite émaillée grise", buyPrice: 50}, {id: "LIGHT_GRAY_GLAZED_TERRACOTTA", fr: "Terre cuite émaillée gris clair", buyPrice: 50}, {id: "PURPLE_GLAZED_TERRACOTTA", fr: "Terre cuite émaillée violette", buyPrice: 50}, {id: "BLUE_GLAZED_TERRACOTTA", fr: "Terre cuite émaillée bleue", buyPrice: 50}, {id: "BROWN_GLAZED_TERRACOTTA", fr: "Terre cuite émaillée marron", buyPrice: 50}, {id: "GREEN_GLAZED_TERRACOTTA", fr: "Terre cuite émaillée verte", buyPrice: 50}, {id: "RED_GLAZED_TERRACOTTA", fr: "Terre cuite émaillée rouge", buyPrice: 50}, {id: "BLACK_GLAZED_TERRACOTTA", fr: "Terre cuite émaillée noire", buyPrice: 50}, {id: "WHITE_CONCRETE", fr: "Béton blanc", buyPrice: 50}, {id: "ORANGE_CONCRETE", fr: "Béton orange", buyPrice: 50}, {id: "MAGENTA_CONCRETE", fr: "Béton magenta", buyPrice: 50}, {id: "LIGHT_BLUE_CONCRETE", fr: "Béton bleu clair", buyPrice: 50}, {id: "YELLOW_CONCRETE", fr: "Béton jaune", buyPrice: 50}, {id: "LIME_CONCRETE", fr: "Béton citron vert", buyPrice: 50}, {id: "PINK_CONCRETE", fr: "Béton rose", buyPrice: 50}, {id: "GRAY_CONCRETE", fr: "Béton gris", buyPrice: 50}, {id: "LIGHT_GRAY_CONCRETE", fr: "Béton gris clair", buyPrice: 50}, {id: "CYAN_CONCRETE", fr: "Béton cyan", buyPrice: 50}, {id: "PURPLE_CONCRETE", fr: "Béton violet", buyPrice: 50}, {id: "BLUE_CONCRETE", fr: "Béton bleu", buyPrice: 50}, {id: "BROWN_CONCRETE", fr: "Béton marron", buyPrice: 50}, {id: "GREEN_CONCRETE", fr: "Béton vert", buyPrice: 50}, {id: "RED_CONCRETE", fr: "Béton rouge", buyPrice: 50}, {id: "BLACK_CONCRETE", fr: "Béton noir", buyPrice: 50}, {id: "WHITE_CONCRETE_POWDER", fr: "Poudre de béton blanche", buyPrice: 50}, {id: "ORANGE_CONCRETE_POWDER", fr: "Poudre de béton orange", buyPrice: 50}, {id: "MAGENTA_CONCRETE_POWDER", fr: "Poudre de béton magenta", buyPrice: 50}, {id: "LIGHT_BLUE_CONCRETE_POWDER", fr: "Poudre de béton bleu clair", buyPrice: 50}, {id: "YELLOW_CONCRETE_POWDER", fr: "Poudre de béton jaune", buyPrice: 50}, {id: "LIME_CONCRETE_POWDER", fr: "Poudre de béton citron vert", buyPrice: 50}, {id: "PINK_CONCRETE_POWDER", fr: "Poudre de béton rose", buyPrice: 50}, {id: "GRAY_CONCRETE_POWDER", fr: "Poudre de béton grise", buyPrice: 50}, {id: "LIGHT_GRAY_CONCRETE_POWDER", fr: "Poudre de béton gris clair", buyPrice: 50}, {id: "CYAN_CONCRETE_POWDER", fr: "Poudre de béton cyan", buyPrice: 50}, {id: "PURPLE_CONCRETE_POWDER", fr: "Poudre de béton violette", buyPrice: 50}, {id: "BLUE_CONCRETE_POWDER", fr: "Poudre de béton bleue", buyPrice: 50}, {id: "BROWN_CONCRETE_POWDER", fr: "Poudre de béton marron", buyPrice: 50}, {id: "GREEN_CONCRETE_POWDER", fr: "Poudre de béton verte", buyPrice: 50}, {id: "RED_CONCRETE_POWDER", fr: "Poudre de béton rouge", buyPrice: 50}, {id: "BLACK_CONCRETE_POWDER", fr: "Poudre de béton noire", buyPrice: 50}, {id: "WHITE_WOOL", fr: "Laine blanche", buyPrice: 50}, {id: "ORANGE_WOOL", fr: "Laine orange", buyPrice: 50}, {id: "MAGENTA_WOOL", fr: "Laine magenta", buyPrice: 50}, {id: "LIGHT_BLUE_WOOL", fr: "Laine bleu clair", buyPrice: 50}, {id: "YELLOW_WOOL", fr: "Laine jaune", buyPrice: 50}, {id: "LIME_WOOL", fr: "Laine citron vert", buyPrice: 50}, {id: "PINK_WOOL", fr: "Laine rose", buyPrice: 50}, {id: "GRAY_WOOL", fr: "Laine grise", buyPrice: 50}, {id: "LIGHT_GRAY_WOOL", fr: "Laine gris clair", buyPrice: 50}, {id: "PURPLE_WOOL", fr: "Laine violette", buyPrice: 50}, {id: "BLUE_WOOL", fr: "Laine bleue", buyPrice: 50}, {id: "BROWN_WOOL", fr: "Laine marron", buyPrice: 50}, {id: "GREEN_WOOL", fr: "Laine verte", buyPrice: 50}, {id: "RED_WOOL", fr: "Laine rouge", buyPrice: 50}, {id: "BLACK_WOOL", fr: "Laine noire", buyPrice: 50}, {id: "SEA_LANTERN", fr: "Lanterne aquatique", buyPrice: 50}, {id: "END_STONE", fr: "Pierre de l'End", buyPrice: 50}, {id: "GLOWSTONE", fr: "Pierre lumineuse", buyPrice: 50}, {id: "QUARTZ_BLOCK", fr: "Bloc de quartz", buyPrice: 50}, {id: "PRISMARINE", fr: "Prismarine", buyPrice: 50}, {id: "PRISMARINE_BRICKS", fr: "Briques de prismarine", buyPrice: 50}, {id: "DARK_PRISMARINE", fr: "Prismarine sombre", buyPrice: 50}, {id: "TERRACOTTA", fr: "Terre cuite", buyPrice: 50}, {id: "SNOW_BLOCK", fr: "Bloc de neige", buyPrice: 20}, {id: "PACKED_ICE", fr: "Glace compactée", buyPrice: 100}, {id: "BLUE_ICE", fr: "Glace bleue", buyPrice: 100}, {id: "GLASS", fr: "Verre", buyPrice: 100}, {id: "BRICKS", fr: "Briques", buyPrice: 100}, {id: "IRON_BARS", fr: "Barreaux de fer", buyPrice: 100}, {id: "FLOWER_POT", fr: "Pot de fleurs", buyPrice: 100}, {id: "OAK_SLAB", fr: "Dalle en chêne", buyPrice: 100}, {id: "SPRUCE_SLAB", fr: "Dalle en sapin", buyPrice: 100}, {id: "BIRCH_SLAB", fr: "Dalle en bouleau", buyPrice: 100}, {id: "ACACIA_SLAB", fr: "Dalle en acacia", buyPrice: 100}, {id: "JUNGLE_SLAB", fr: "Dalle en acajou", buyPrice: 100}, {id: "DARK_OAK_SLAB", fr: "Dalle en chêne noir", buyPrice: 100}, {id: "BRICK_SLAB", fr: "Dalle en brique", buyPrice: 100}, {id: "SMOOTH_STONE_SLAB", fr: "Dalle en pierre lisse", buyPrice: 100}, {id: "PRISMARINE_SLAB", fr: "Dalle en prismarine", buyPrice: 100}, {id: "DARK_PRISMARINE_SLAB", fr: "Dalle en prismarine sombre", buyPrice: 100}, {id: "SANDSTONE_SLAB", fr: "Dalle en grès", buyPrice: 100}, {id: "RED_SANDSTONE_SLAB", fr: "Dalle en grès rouge", buyPrice: 100}, {id: "OAK_STAIRS", fr: "Escalier en chêne", buyPrice: 100}, {id: "SPRUCE_STAIRS", fr: "Escalier en sapin", buyPrice: 100}, {id: "BIRCH_STAIRS", fr: "Escalier en bouleau", buyPrice: 100}, {id: "ACACIA_STAIRS", fr: "Escalier en acacia", buyPrice: 100}, {id: "JUNGLE_STAIRS", fr: "Escalier en acajou", buyPrice: 100}, {id: "DARK_OAK_STAIRS", fr: "Escalier en chêne noir", buyPrice: 100}, {id: "BRICK_STAIRS", fr: "Escalier en brique", buyPrice: 100}, {id: "PRISMARINE_STAIRS", fr: "Escalier en prismarine", buyPrice: 100}, {id: "DARK_PRISMARINE_STAIRS", fr: "Escalier en prismarine sombre", buyPrice: 100}, {id: "SANDSTONE_STAIRS", fr: "Escalier en grès", buyPrice: 100}, {id: "RED_SANDSTONE_STAIRS", fr: "Escalier en grès rouge", buyPrice: 100}, {id: "OAK_DOOR", fr: "Porte en chêne", buyPrice: 100}, {id: "SPRUCE_DOOR", fr: "Porte en sapin", buyPrice: 100}, {id: "BIRCH_DOOR", fr: "Porte en bouleau", buyPrice: 100}, {id: "ACACIA_DOOR", fr: "Porte en acacia", buyPrice: 100}, {id: "JUNGLE_DOOR", fr: "Porte en acajou", buyPrice: 100}, {id: "DARK_OAK_DOOR", fr: "Porte en chêne noir", buyPrice: 100}, {id: "OAK_FENCE", fr: "Barrière en chêne", buyPrice: 100}, {id: "SPRUCE_FENCE", fr: "Barrière en sapin", buyPrice: 100}, {id: "BIRCH_FENCE", fr: "Barrière en bouleau", buyPrice: 100}, {id: "ACACIA_FENCE", fr: "Barrière en acacia", buyPrice: 100}, {id: "JUNGLE_FENCE", fr: "Barrière en acajou", buyPrice: 100}, {id: "DARK_OAK_FENCE", fr: "Barrière en chêne noir", buyPrice: 100}, {id: "OAK_FENCE_GATE", fr: "Portillon en chêne", buyPrice: 100}, {id: "SPRUCE_FENCE_GATE", fr: "Portillon en sapin", buyPrice: 100}, {id: "BIRCH_FENCE_GATE", fr: "Portillon en bouleau", buyPrice: 100}, {id: "ACACIA_FENCE_GATE", fr: "Portillon en acacia", buyPrice: 100}, {id: "JUNGLE_FENCE_GATE", fr: "Portillon en acajou", buyPrice: 100}, {id: "DARK_OAK_FENCE_GATE", fr: "Portillon en chêne noir", buyPrice: 100}, {id: "OAK_TRAPDOOR", fr: "Trappe en chêne", buyPrice: 100}, {id: "SPRUCE_TRAPDOOR", fr: "Trappe en sapin", buyPrice: 100}, {id: "BIRCH_TRAPDOOR", fr: "Trappe en bouleau", buyPrice: 100}, {id: "ACACIA_TRAPDOOR", fr: "Trappe en acacia", buyPrice: 100}, {id: "JUNGLE_TRAPDOOR", fr: "Trappe en acajou", buyPrice: 100}, {id: "DARK_OAK_TRAPDOOR", fr: "Trappe en chêne noir", buyPrice: 100}, {id: "OAK_SIGN", fr: "Pancarte en chêne", buyPrice: 100}, {id: "SPRUCE_SIGN", fr: "Pancarte en sapin", buyPrice: 100}, {id: "BIRCH_SIGN", fr: "Pancarte en bouleau", buyPrice: 100}, {id: "ACACIA_SIGN", fr: "Pancarte en acacia", buyPrice: 100}, {id: "JUNGLE_SIGN", fr: "Pancarte en acajou", buyPrice: 100}, {id: "DARK_OAK_SIGN", fr: "Pancarte en chêne noir", buyPrice: 100}, {id: "WHITE_STAINED_GLASS", fr: "Verre teinté blanc", buyPrice: 50}, {id: "ORANGE_STAINED_GLASS", fr: "Verre teinté orange", buyPrice: 50}, {id: "MAGENTA_STAINED_GLASS", fr: "Verre teinté magenta", buyPrice: 50}, {id: "LIGHT_BLUE_STAINED_GLASS", fr: "Verre teinté bleu clair", buyPrice: 50}, {id: "YELLOW_STAINED_GLASS", fr: "Verre teinté jaune", buyPrice: 50}, {id: "LIME_STAINED_GLASS", fr: "Verre teinté citron vert", buyPrice: 50}, {id: "PINK_STAINED_GLASS", fr: "Verre teinté rose", buyPrice: 50}, {id: "GRAY_STAINED_GLASS", fr: "Verre teinté gris", buyPrice: 50}, {id: "LIGHT_GRAY_STAINED_GLASS", fr: "Verre teinté gris clair", buyPrice: 50}, {id: "PURPLE_STAINED_GLASS", fr: "Verre teinté violet", buyPrice: 50}, {id: "BLUE_STAINED_GLASS", fr: "Verre teinté bleu", buyPrice: 50}, {id: "BROWN_STAINED_GLASS", fr: "Verre teinté marron", buyPrice: 50}, {id: "GREEN_STAINED_GLASS", fr: "Verre teinté vert", buyPrice: 50}, {id: "RED_STAINED_GLASS", fr: "Verre teinté rouge", buyPrice: 50}, {id: "BLACK_STAINED_GLASS", fr: "Verre teinté noir", buyPrice: 50}, {id: "WHITE_CARPET", fr: "Tapis blanc", buyPrice: 50}, {id: "ORANGE_CARPET", fr: "Tapis orange", buyPrice: 50}, {id: "MAGENTA_CARPET", fr: "Tapis magenta", buyPrice: 50}, {id: "LIGHT_BLUE_CARPET", fr: "Tapis bleu clair", buyPrice: 50}, {id: "YELLOW_CARPET", fr: "Tapis jaune", buyPrice: 50}, {id: "LIME_CARPET", fr: "Tapis citron vert", buyPrice: 50}, {id: "PINK_CARPET", fr: "Tapis rose", buyPrice: 50}, {id: "GRAY_CARPET", fr: "Tapis gris", buyPrice: 50}, {id: "LIGHT_GRAY_CARPET", fr: "Tapis gris clair", buyPrice: 50}, {id: "PURPLE_CARPET", fr: "Tapis violet", buyPrice: 50}, {id: "BLUE_CARPET", fr: "Tapis bleu", buyPrice: 50}, {id: "BROWN_CARPET", fr: "Tapis marron", buyPrice: 50}, {id: "GREEN_CARPET", fr: "Tapis vert", buyPrice: 50}, {id: "RED_CARPET", fr: "Tapis rouge", buyPrice: 50}, {id: "BLACK_CARPET", fr: "Tapis noir", buyPrice: 50}, {id: "COBWEB", fr: "Toile d'araignée", buyPrice: 50}, {id: "LADDER", fr: "Échelle", buyPrice: 50}, {id: "LANTERN", fr: "Lanterne", buyPrice: 50}, {id: "REDSTONE_LAMP", fr: "Lampe de Redstone", buyPrice: 50}
+            ]
         };
 
         const marketSectionsContainer = document.getElementById('market-sections');
+        const categoryFilter = document.getElementById('category-filter');
+        const priceFilter = document.getElementById('price-filter');
+        const searchBar = document.getElementById('search-bar');
+        const specialOrderBtn = document.getElementById('special-order-btn');
 
-        function formatItemName(id) {
-            return id.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        function showMessage(message) {
+            const box = document.getElementById('message-box');
+            box.textContent = message;
+            box.style.display = 'block';
+            box.style.opacity = 1;
+            setTimeout(() => {
+                box.style.opacity = 0;
+                setTimeout(() => box.style.display = 'none', 500);
+            }, 3000);
         }
 
         function getItemImage(id) {
-            // Exceptions for special item names
             const exceptions = {
-                'HISTERITE_ORE': null,
-                'RANDOM_ORE': null,
-                'HISTERITE_BLOCK': null,
-                'CHEST_FINDER': null,
-                'FERTILIZED_DIRT': null,
-                'HISTERITE_APPLE': null,
-                'OBSIDIAN_BREAKER': null,
-                'CHEST_EXPLORER': null
+                'HISTERITE_ORE': 'DIAMOND_BLOCK', 'RANDOM_ORE': 'EMERALD_BLOCK', 'HISTERITE_BLOCK': 'DIAMOND_BLOCK', 'CHEST_FINDER': 'COMPASS', 'FERTILIZED_DIRT': 'FARMLAND', 'HISTERITE_APPLE': 'ENCHANTED_GOLDEN_APPLE', 'OBSIDIAN_BREAKER': 'NETHERITE_PICKAXE', 'SPONGER': 'SPONGE', 'CHEST_EXPLORER': 'SPYGLASS', 'HANG_GLIDER': 'ELYTRA'
             };
-            if (id in exceptions) {
-                return `https://placehold.co/128x128/2c2c2c/e74c3c?text=${formatItemName(id).replace(/\s+/g, '+')}`;
-            }
-            // Using a public CDN for Minecraft item sprites
-            return `https://raw.githubusercontent.com/oskar-anderson/minecraft-items/master/src/assets/${id.toLowerCase()}.png`;
+            const finalId = exceptions[id] || id;
+            return `https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/1.17.1/assets/minecraft/textures/item/${finalId.toLowerCase()}.png`;
         }
         
-        for (const category in marketData) {
-            const section = document.createElement('div');
-            section.className = 'category-section';
+        function renderMarket() {
+            marketSectionsContainer.innerHTML = '';
+            const searchTerm = searchBar.value.toLowerCase();
+            const categoryF = categoryFilter.value;
+            const priceF = priceFilter.value;
 
-            const title = document.createElement('h2');
-            title.className = 'category-title';
-            title.textContent = category;
-            section.appendChild(title);
+            for (const category in marketData) {
+                if (categoryF !== 'all' && category !== categoryF) {
+                    continue;
+                }
 
-            const grid = document.createElement('div');
-            grid.className = 'market-grid';
-            
-            marketData[category].forEach(item => {
-                const card = document.createElement('div');
-                card.className = 'item-card';
+                const filteredItems = marketData[category].filter(item => {
+                    const itemName = (item.fr || item.id).toLowerCase();
+                    const newPrice = item.buyPrice - 1;
 
-                const itemName = item.name || formatItemName(item.id);
-                const itemImage = getItemImage(item.id);
-                const newPrice = item.buyPrice - 1;
+                    const matchesSearch = itemName.includes(searchTerm);
+                    
+                    let matchesPrice = false;
+                    switch(priceF) {
+                        case '0-100': matchesPrice = newPrice <= 100; break;
+                        case '101-1000': matchesPrice = newPrice > 100 && newPrice <= 1000; break;
+                        case '1001-10000': matchesPrice = newPrice > 1000 && newPrice <= 10000; break;
+                        case '10001+': matchesPrice = newPrice > 10000; break;
+                        default: matchesPrice = true;
+                    }
+                    
+                    return matchesSearch && matchesPrice;
+                });
 
-                card.innerHTML = `
-                    <div class="item-image-container">
-                        <img src="${itemImage}" alt="${itemName}" onerror="this.src='https://placehold.co/128x128/2c2c2c/e74c3c?text=Image+N/A'; this.onerror=null;">
-                    </div>
-                    <div class="item-info">
-                        <h3>${itemName}</h3>
-                        <div class="price-container">
-                            <span class="original-price">${item.buyPrice}$</span>
-                            <span class="new-price">${newPrice}$</span>
+                if (filteredItems.length === 0) {
+                    continue;
+                }
+
+                const section = document.createElement('div');
+                section.className = 'category-section';
+
+                const title = document.createElement('h2');
+                title.className = 'category-title';
+                title.textContent = category;
+                section.appendChild(title);
+
+                const grid = document.createElement('div');
+                grid.className = 'market-grid';
+                
+                filteredItems.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'item-card';
+
+                    const itemName = item.fr || item.id;
+                    const itemImage = getItemImage(item.id);
+                    const newPrice = item.buyPrice - 1;
+
+                    card.innerHTML = `
+                        <div class="item-image-container">
+                            <img src="${itemImage}" alt="${itemName}" onerror="this.src='https://placehold.co/128x128/2c2c2c/e74c3c?text=Image+N/A'; this.onerror=null;">
                         </div>
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
+                        <div class="item-info">
+                            <h3>${itemName}</h3>
+                            <div class="price-container">
+                                <span class="original-price">${item.buyPrice}$</span>
+                                <span class="new-price">${newPrice}$</span>
+                            </div>
+                            <button class="buy-btn">Acheter</button>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
 
-            section.appendChild(grid);
-            marketSectionsContainer.appendChild(section);
+                section.appendChild(grid);
+                marketSectionsContainer.appendChild(section);
+            }
         }
+
+        function populateCategories() {
+            for (const category in marketData) {
+                const option = document.createElement('option');
+                option.value = category;
+                option.textContent = category;
+                categoryFilter.appendChild(option);
+            }
+        }
+
+        searchBar.addEventListener('input', renderMarket);
+        categoryFilter.addEventListener('change', renderMarket);
+        priceFilter.addEventListener('change', renderMarket);
+        
+        document.body.addEventListener('click', function(e) {
+            if (e.target && e.target.classList.contains('buy-btn')) {
+                showMessage("Fonctionnalité d'achat bientôt disponible !");
+            }
+        });
+
+        specialOrderBtn.addEventListener('click', () => {
+             showMessage("Contactez un membre du staff sur Discord pour les commandes spéciales.");
+        });
+
+        populateCategories();
+        renderMarket();
 
     </script>
 </body>

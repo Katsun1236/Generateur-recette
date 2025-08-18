@@ -23,7 +23,7 @@
             background-image: url('https://www.transparenttextures.com/patterns/dark-denim-3.png');
             color: var(--text-light);
             margin: 0;
-            padding-top: 80px; /* Espace pour la navbar */
+            padding-top: 80px;
         }
         .navbar {
             background-color: rgba(20, 20, 20, 0.9);
@@ -122,8 +122,9 @@
             justify-content: center;
             gap: 0.75rem;
             margin-bottom: 0.5rem;
+            flex-wrap: wrap;
         }
-        #user-game-role {
+        #user-game-roles {
             font-size: 1.2rem;
             color: var(--primary-red);
         }
@@ -239,7 +240,7 @@
             <div>
                 <h1 id="user-name">Chargement...</h1>
                 <div class="role-container">
-                    <p id="user-game-role"></p>
+                    <p id="user-game-roles"></p>
                     <span id="user-system-role"></span>
                 </div>
                 <p id="user-email"></p>
@@ -293,8 +294,8 @@
                     <input type="text" id="edit-discord" required>
                 </div>
                 <div style="margin-bottom: 1rem;">
-                    <label for="edit-gameRole">Rôle principal en jeu</label>
-                    <input type="text" id="edit-gameRole" required>
+                    <label>Rôles principaux en jeu (non modifiable ici)</label>
+                    <p id="edit-game-roles-display" style="padding: 0.75rem 1rem; background-color: #222; border-radius: 5px;"></p>
                 </div>
                 <div class="modal-buttons">
                     <button type="button" id="cancel-edit-btn">Annuler</button>
@@ -314,7 +315,7 @@
             profilePictureNav: document.getElementById('profile-pic'),
             profilePictureDisplay: document.getElementById('profile-picture-display'),
             userName: document.getElementById('user-name'),
-            userGameRole: document.getElementById('user-game-role'),
+            userGameRoles: document.getElementById('user-game-roles'),
             userSystemRole: document.getElementById('user-system-role'),
             userEmail: document.getElementById('user-email'),
             discordTag: document.getElementById('discord-tag'),
@@ -326,7 +327,7 @@
             editPhoto: document.getElementById('edit-photo'),
             editUsername: document.getElementById('edit-username'),
             editDiscord: document.getElementById('edit-discord'),
-            editGameRole: document.getElementById('edit-gameRole'),
+            editGameRolesDisplay: document.getElementById('edit-game-roles-display'),
             saveBtn: document.getElementById('save-profile-btn')
         };
 
@@ -340,7 +341,7 @@
             ui.profilePictureDisplay.src = data.photoURL || defaultAvatar;
             ui.profilePictureNav.src = data.photoURL || navAvatar;
             ui.userName.textContent = data.username || 'Utilisateur';
-            ui.userGameRole.textContent = data.gameRole || 'Membre';
+            ui.userGameRoles.textContent = (data.gameRoles || []).join(', ');
             ui.userSystemRole.textContent = data.role || 'Visiteur';
             ui.userEmail.textContent = email;
             ui.discordTag.textContent = data.discordTag || 'Non spécifié';
@@ -371,7 +372,7 @@
             if (!currentUserData) return;
             ui.editUsername.value = currentUserData.username || '';
             ui.editDiscord.value = currentUserData.discordTag || '';
-            ui.editGameRole.value = currentUserData.gameRole || '';
+            ui.editGameRolesDisplay.textContent = (currentUserData.gameRoles || []).join(', ');
             ui.editPhoto.value = '';
             ui.editModal.style.display = 'block';
         });
@@ -400,7 +401,6 @@
                 const updatedData = {
                     username: ui.editUsername.value,
                     discordTag: ui.editDiscord.value,
-                    gameRole: ui.editGameRole.value,
                     photoURL: newPhotoURL
                 };
 

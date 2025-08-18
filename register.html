@@ -292,7 +292,6 @@
         });
 
         document.getElementById('discord-signup-button').addEventListener('click', async () => {
-            // CORRECTION: Utilisation de l'ID du fournisseur et ajout des scopes
             const provider = new OAuthProvider('oidc.discord');
             provider.addScope('identify');
             provider.addScope('email');

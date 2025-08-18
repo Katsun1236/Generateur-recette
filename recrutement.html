@@ -76,7 +76,6 @@
             margin: 0 auto;
         }
         
-        /* --- Formulaire de candidature --- */
         .form-container { background-color: var(--card-bg-color); padding: 2rem; border-radius: 10px; border: 1px solid #444; }
         .form-section h2 { font-family: 'Anton', sans-serif; font-size: 1.8rem; color: var(--primary-red); border-bottom: 2px solid var(--primary-red); padding-bottom: 0.5rem; margin-bottom: 1.5rem; }
         .form-group { margin-bottom: 1.5rem; }
@@ -88,14 +87,12 @@
         .submit-btn:hover { background-color: var(--primary-red-dark); }
         .submit-btn:disabled { background-color: #555; cursor: not-allowed; }
 
-        /* --- Vue Candidat & Membre --- */
         .status-box { background-color: var(--card-bg-color); padding: 3rem; border-radius: 10px; border: 1px solid #444; text-align: center; }
         .status-box i { font-size: 4rem; margin-bottom: 1rem; }
         .status-box .fa-clock { color: var(--yellow); }
         .status-box .fa-check-circle { color: var(--green); }
         .status-box h2 { font-family: 'Anton', sans-serif; font-size: 2.5rem; color: var(--text-light); margin-bottom: 0.5rem; }
         
-        /* --- Vue Recruteur --- */
         .recruiter-section { margin-bottom: 2.5rem; }
         .recruiter-section h2 { font-family: 'Anton', sans-serif; font-size: 2rem; color: var(--text-medium); border-bottom: 2px solid #555; padding-bottom: 0.5rem; margin-bottom: 1.5rem; }
         .application-card {
@@ -140,7 +137,7 @@
             padding: 0 1.5rem;
         }
         .application-card.open .application-body {
-            max-height: 1500px; /* Assez grand pour tout le contenu */
+            max-height: 1500px;
             padding: 1rem 1.5rem 1.5rem;
         }
         .application-body p { margin: 0 0 1rem 0; line-height: 1.6; word-wrap: break-word; }
@@ -173,7 +170,6 @@
     </nav>
 
     <div class="page-container">
-        <!-- Vue Visiteur: Formulaire -->
         <div id="visitor-view" class="hidden">
             <div class="page-header">
                 <h1>Devenir un membre R4TIO</h1>
@@ -205,7 +201,6 @@
             </form>
         </div>
 
-        <!-- Vue Candidat: Statut en attente -->
         <div id="candidate-view" class="hidden">
             <div class="status-box">
                 <i class="fas fa-clock"></i>
@@ -214,7 +209,6 @@
             </div>
         </div>
 
-        <!-- Vue Membre Approuvé -->
         <div id="member-view" class="hidden">
             <div class="status-box">
                 <i class="fas fa-check-circle"></i>
@@ -223,7 +217,6 @@
             </div>
         </div>
 
-        <!-- Vue Recruteur: Liste des candidatures -->
         <div id="recruiter-view" class="hidden">
             <div class="page-header">
                 <h1>Gestion des Candidatures</h1>

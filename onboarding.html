@@ -154,8 +154,6 @@
             z-index: 3000;
             border-left: 4px solid var(--primary-red);
         }
-
-        /* --- Style du menu déroulant multi-sélection --- */
         .multiselect {
             position: relative;
         }
@@ -288,12 +286,11 @@
                         return;
                     }
 
-                    // Pré-remplissage et gestion de l'affichage de la photo de profil
                     const profilePictureSection = document.getElementById('profile-picture-section');
                     if (user.providerData.length > 0) {
                         const providerId = user.providerData[0].providerId;
                         if (providerId === 'password') {
-                            profilePictureSection.style.display = 'none'; // On cache la section pour les inscriptions par email
+                            profilePictureSection.style.display = 'none';
                         } else {
                             if (providerId === 'oidc.discord') {
                                 document.getElementById('discordTag').value = user.displayName || '';
@@ -313,7 +310,6 @@
                 }
             });
 
-            // Logique pour le menu déroulant
             const selectBox = document.getElementById('select-box');
             const checkboxes = document.getElementById('checkboxes');
             const selectText = document.getElementById('select-text');
@@ -367,15 +363,13 @@
                 button.disabled = true;
                 button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enregistrement...';
 
-                let photoURL = null; // Par défaut, pas de photo
+                let photoURL = null;
                 const providerId = auth.currentUser.providerData[0].providerId;
                 const profilePictureFile = document.getElementById('profilePicture').files[0];
 
                 if (providerId !== 'password') {
-                    // Si ce n'est pas une inscription par email, on gère la photo
-                    photoURL = auth.currentUser.photoURL; // On prend celle du fournisseur par défaut
+                    photoURL = auth.currentUser.photoURL;
                     if (profilePictureFile) {
-                        // Si une nouvelle a été choisie, on la téléverse
                         const storageRef = ref(storage, `users/${currentUserId}/profilePicture.jpg`);
                         const snapshot = await uploadBytes(storageRef, profilePictureFile);
                         photoURL = await getDownloadURL(snapshot.ref);
@@ -400,7 +394,7 @@
                         discordTag: document.getElementById('discordTag').value,
                         gameRoles: selectedRoles,
                         role: 'Visiteur',
-                        photoURL: photoURL, // Sera null pour les inscriptions par email
+                        photoURL: photoURL,
                         createdAt: new Date().toISOString()
                     };
                     

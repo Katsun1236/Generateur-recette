@@ -331,9 +331,9 @@
             ],
             "Items": [
                 {id: "ARROW", fr: "Flèche", buyPrice: 10, type: 'item'},
-                {id: "TORCH", fr: "Torche", buyPrice: 3, type: 'block'},
+                {id: "TORCH", fr: "Torche", buyPrice: 3, type: 'item'},
                 {id: "ENDER_PEARL", fr: "Perle de l'Ender", buyPrice: 1500, type: 'item'},
-                {id: "END_ROD", fr: "Barre de l'End", buyPrice: 175, type: 'block'},
+                {id: "END_ROD", fr: "Barre de l'End", buyPrice: 175, type: 'item'},
                 {id: "SPLASH_POTION", fr: "Potion de soin volatile", buyPrice: 1500, type: 'item'},
                 {id: "CRAFTING_TABLE", fr: "Table de craft", buyPrice: 100, type: 'block'},
                 {id: "ENCHANTING_TABLE", fr: "Table d'enchantement", buyPrice: 1000, type: 'block'},
@@ -653,8 +653,8 @@
                 'HISTERITE_ORE': 'DIAMOND_BLOCK', 'RANDOM_ORE': 'EMERALD_BLOCK', 'HISTERITE_BLOCK': 'DIAMOND_BLOCK', 'CHEST_FINDER': 'COMPASS', 'FERTILIZED_DIRT': 'FARMLAND', 'HISTERITE_APPLE': 'ENCHANTED_GOLDEN_APPLE', 'OBSIDIAN_BREAKER': 'NETHERITE_PICKAXE', 'SPONGER': 'SPONGE', 'CHEST_EXPLORER': 'SPYGLASS', 'HANG_GLIDER': 'ELYTRA'
             };
             const finalId = (exceptions[item.id] || item.id).toLowerCase();
-            const type = item.type || 'item';
-            return `https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/1.17.1/assets/minecraft/textures/${type}/${finalId}.png`;
+            const typeFolder = item.type + 's'; // 'block' -> 'blocks', 'item' -> 'items'
+            return `https://raw.githubusercontent.com/undrfined/mc-icons/master/pics/${typeFolder}/${finalId}.png`;
         }
         
         function renderMarket() {

@@ -18,7 +18,6 @@
             --text-medium: #cccccc;
             --card-bg-color: #2c2c2c;
             --discord-blue: #5865F2;
-            --discord-blue-dark: #4752C4;
         }
 
         html {
@@ -41,49 +40,67 @@
             top: 0;
             width: 100%;
             display: flex;
-            justify-content: center;
             align-items: center;
-            padding: 15px 20px;
+            padding: 15px 30px;
             z-index: 1000;
             border-bottom: 1px solid var(--card-bg-color);
+            box-sizing: border-box;
         }
 
         .nav-logo {
             height: 50px;
-            margin-right: auto;
         }
 
-        .nav-links a {
-            color: var(--text-light);
-            background: linear-gradient(to bottom, var(--primary-red), var(--primary-red-dark));
+        .nav-center {
+            flex-grow: 1;
+            text-align: center;
+        }
+        
+        .nav-center a {
+            color: var(--text-medium);
             text-decoration: none;
-            margin: 0 10px;
-            padding: 10px 20px;
+            margin: 0 15px;
+            font-weight: 700;
+            font-size: 1rem;
+            text-transform: uppercase;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-center a:hover {
+            color: var(--primary-red);
+        }
+
+        .nav-auth {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-auth a {
+            color: var(--text-light);
+            background-color: transparent;
+            text-decoration: none;
+            margin-left: 15px;
+            padding: 8px 18px;
             border-radius: 5px;
             font-weight: 700;
             text-transform: uppercase;
-            border: 1px solid #ff6b5a;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.2);
-            position: relative;
-            top: 0;
-            transition: all 0.2s ease;
+            border: 2px solid var(--primary-red);
+            transition: all 0.3s ease;
         }
 
-        .nav-links a:hover {
-            background: linear-gradient(to bottom, var(--primary-red-dark), #a93226);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.2);
-            top: 2px;
+        .nav-auth a:hover {
+            background-color: var(--primary-red);
+            color: var(--text-light);
         }
         
-        .nav-links a.discord-button {
-            background: linear-gradient(to bottom, var(--discord-blue), var(--discord-blue-dark));
-            border-color: #7a85f5;
+        .nav-auth a.register-btn {
+            background-color: var(--primary-red);
         }
         
-        .nav-links a.discord-button:hover {
-            background: linear-gradient(to bottom, var(--discord-blue-dark), #3A429B);
+        .nav-auth a.register-btn:hover {
+            background-color: var(--primary-red-dark);
+            border-color: var(--primary-red-dark);
         }
-
 
         .hero {
             display: flex;
@@ -181,61 +198,126 @@
         }
         
         .card .ally-discord-button {
-            background: linear-gradient(to bottom, var(--discord-blue), var(--discord-blue-dark));
-            border: 1px solid #7a85f5;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+            background-color: var(--discord-blue);
             color: var(--text-light);
             text-decoration: none;
             padding: 12px 20px;
             border-radius: 5px;
             font-weight: 700;
             text-transform: uppercase;
-            transition: all 0.2s ease;
+            transition: background-color 0.3s ease;
             margin-top: auto;
-            position: relative;
-            top: 0;
         }
         
         .card .ally-discord-button:hover {
-            background: linear-gradient(to bottom, var(--discord-blue-dark), #3A429B);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.2);
-            top: 2px;
+            background-color: #4752C4;
         }
 
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 0.9; }
-            50% { transform: scale(1.05); opacity: 1; }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.7);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-content {
+            background-color: var(--card-bg-color);
+            margin: 15% auto;
+            padding: 30px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 400px;
+            border-radius: 10px;
+            position: relative;
+            animation: slideIn 0.4s;
+        }
+
+        .close-btn {
+            color: #aaa;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close-btn:hover, .close-btn:focus {
+            color: var(--primary-red);
+            text-decoration: none;
+            cursor: pointer;
         }
         
-        @media (max-width: 768px) {
-            .navbar {
-                justify-content: center;
-                flex-wrap: wrap;
-            }
-            .nav-logo {
-                margin: 0 0 15px 0;
-                width: 100%;
-                text-align: center;
-            }
-            .nav-links a {
-                padding: 8px 12px;
-                font-size: 0.8rem;
-            }
-            .content-section {
-                padding: 60px 15px;
-            }
+        .modal-content h2 {
+            text-align: center;
+            color: var(--primary-red);
+            font-family: 'Anton', sans-serif;
+        }
+        
+        .modal-content input {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #555;
+            border-radius: 4px;
+            box-sizing: border-box;
+            background-color: #333;
+            color: var(--text-light);
+        }
+        
+        .modal-content button {
+            width: 100%;
+            background-color: var(--primary-red);
+            color: white;
+            padding: 14px 20px;
+            margin: 15px 0 0 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: background-color 0.3s;
+        }
+        
+        .modal-content button:hover {
+            background-color: var(--primary-red-dark);
         }
 
+        @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
+        @keyframes slideIn { from {top: -100px; opacity: 0;} to {top: 0; opacity: 1;} }
+        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 0.9; } 50% { transform: scale(1.05); opacity: 1; } }
+        
+        @media (max-width: 850px) {
+            .navbar {
+                flex-direction: column;
+                padding: 10px;
+            }
+            .nav-logo { margin: 0 0 15px 0; }
+            .nav-center { margin-bottom: 15px; }
+            .nav-auth { display: flex; }
+            .content-section { padding: 60px 15px; }
+        }
     </style>
 </head>
 <body>
 
     <nav class="navbar">
         <img src="Logo.png" alt="Logo Ratio" class="nav-logo">
-        <div class="nav-links">
-            <a href="https://discord.gg/UFVCDc4mkU" target="_blank" class="discord-button">Discord</a>
+        <div class="nav-center">
+            <a href="https://discord.gg/UFVCDc4mkU" target="_blank">Discord</a>
             <a href="recrutement.html">Recrutement</a>
             <a href="market.html">Marché</a>
+        </div>
+        <div class="nav-auth">
+            <a href="#" id="login-btn">Connexion</a>
+            <a href="#" id="register-btn" class="register-btn">Inscription</a>
         </div>
     </nav>
 
@@ -280,10 +362,10 @@
             <h2>Nos Alliances</h2>
             <div class="grid-container">
                 <div class="card">
-                    <img src="https://cdn.discordapp.com/icons/1395758234379358299/b63df920c2970eacc38280515ad0bb06.png?size=4096" alt="Logo Alliance Vox">
+                    <img src="https://placehold.co/100x100/2c2c2c/ffffff?text=VOX" alt="Logo Alliance Vox">
                     <h3>Vox</h3>
-                    <p>Une alliance fondée sur la confiance et la puissance PvP.</p>
-                    <a href="https://discord.gg/eWnSUaYu7q" class="ally-discord-button">Rejoindre leur Discord</a>
+                    <p>Une alliance fondée sur la confiance et la puissance militaire.</p>
+                    <a href="#" class="ally-discord-button">Rejoindre leur Discord</a>
                 </div>
             </div>
         </section>
@@ -306,6 +388,56 @@
             </div>
         </section>
     </main>
+
+    <div id="register-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Inscription</h2>
+            <form>
+                <input type="text" placeholder="Pseudo Minecraft" required>
+                <input type="email" placeholder="Adresse e-mail" required>
+                <input type="password" placeholder="Mot de passe" required>
+                <button type="submit">S'inscrire</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Connexion</h2>
+            <form>
+                <input type="email" placeholder="Adresse e-mail" required>
+                <input type="password" placeholder="Mot de passe" required>
+                <button type="submit">Se connecter</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const registerModal = document.getElementById('register-modal');
+        const loginModal = document.getElementById('login-modal');
+        const registerBtn = document.getElementById('register-btn');
+        const loginBtn = document.getElementById('login-btn');
+        const closeBtns = document.querySelectorAll('.close-btn');
+
+        registerBtn.onclick = () => registerModal.style.display = 'block';
+        loginBtn.onclick = () => loginModal.style.display = 'block';
+
+        closeBtns.forEach(btn => {
+            btn.onclick = () => {
+                registerModal.style.display = 'none';
+                loginModal.style.display = 'none';
+            };
+        });
+
+        window.onclick = (event) => {
+            if (event.target == registerModal || event.target == loginModal) {
+                registerModal.style.display = 'none';
+                loginModal.style.display = 'none';
+            }
+        };
+    </script>
 
 </body>
 </html>

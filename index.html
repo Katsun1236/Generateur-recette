@@ -41,7 +41,7 @@
             width: 100%;
             display: flex;
             align-items: center;
-            justify-content: space-between; /* Change this */
+            justify-content: space-between;
             padding: 15px 30px;
             z-index: 1000;
             border-bottom: 1px solid var(--card-bg-color);
@@ -108,6 +108,24 @@
             background-color: var(--primary-red-dark);
             border-color: var(--primary-red-dark);
         }
+        
+        #profile-link {
+            display: none; /* Caché par défaut */
+        }
+
+        #profile-pic {
+            height: 45px;
+            width: 45px;
+            border-radius: 50%;
+            border: 2px solid var(--primary-red);
+            object-fit: cover;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        #profile-pic:hover {
+            transform: scale(1.1);
+        }
+
 
         .hero {
             display: flex;
@@ -249,8 +267,13 @@
             <a href="market.html">Marché</a>
         </div>
         <div class="nav-auth">
-            <a href="login.html">Connexion</a>
-            <a href="register.html" class="register-btn">Inscription</a>
+            <div id="auth-buttons">
+                <a href="login.html">Connexion</a>
+                <a href="register.html" class="register-btn">Inscription</a>
+            </div>
+            <a href="profile.html" id="profile-link">
+                <img id="profile-pic" src="" alt="Photo de profil">
+            </a>
         </div>
     </nav>
 
@@ -321,6 +344,38 @@
             </div>
         </section>
     </main>
+
+    <script type="module">
+        import { auth, db } from './firebase-config.js';
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+        import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+        const authButtons = document.getElementById('auth-buttons');
+        const profileLink = document.getElementById('profile-link');
+        const profilePic = document.getElementById('profile-pic');
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // Utilisateur connecté
+                authButtons.style.display = 'none';
+                profileLink.style.display = 'block';
+
+                const userRef = doc(db, 'users', user.uid);
+                const docSnap = await getDoc(userRef);
+
+                if (docSnap.exists() && docSnap.data().photoURL) {
+                    profilePic.src = docSnap.data().photoURL;
+                } else {
+                    // Image par défaut si le profil n'a pas de photo
+                    profilePic.src = `https://mc-heads.net/avatar/${user.uid}/45`;
+                }
+            } else {
+                // Utilisateur déconnecté
+                authButtons.style.display = 'flex';
+                profileLink.style.display = 'none';
+            }
+        });
+    </script>
 
 </body>
 </html>

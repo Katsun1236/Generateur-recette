@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil - Faction Ratio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --main-bg-color: #1a1a1a;
+            --primary-red: #e74c3c;
+            --primary-red-dark: #c0392b;
+            --text-light: #f5f5f5;
+            --text-medium: #cccccc;
+            --card-bg-color: #2c2c2c;
+        }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--main-bg-color);
+            background-image: url('https://www.transparenttextures.com/patterns/dark-denim-3.png');
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .profile-container {
+            background-color: var(--card-bg-color);
+            padding: 2.5rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 500px;
+            border: 1px solid #444;
+            text-align: center;
+        }
+        #profile-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid var(--primary-red);
+            object-fit: cover;
+            margin-bottom: 1.5rem;
+        }
+        #username {
+            font-family: 'Anton', sans-serif;
+            font-size: 2.5rem;
+            color: var(--text-light);
+            margin: 0;
+            text-transform: uppercase;
+        }
+        #user-role {
+            font-size: 1.2rem;
+            color: var(--primary-red);
+            margin-bottom: 1.5rem;
+        }
+        .info-item {
+            color: var(--text-medium);
+            margin-bottom: 0.5rem;
+        }
+        .info-item i {
+            margin-right: 0.5rem;
+            color: var(--primary-red);
+        }
+        #logout-btn {
+            width: 100%;
+            background-color: transparent;
+            color: var(--primary-red);
+            font-weight: bold;
+            padding: 0.8rem 1rem;
+            border: 2px solid var(--primary-red);
+            border-radius: 5px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.3s;
+            margin-top: 2rem;
+        }
+        #logout-btn:hover {
+            background-color: var(--primary-red);
+            color: var(--text-light);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="profile-container">
+        <img id="profile-image" src="" alt="Photo de profil">
+        <h2 id="username">Chargement...</h2>
+        <p id="user-role"></p>
+        
+        <div class="info-item">
+            <i class="fa-brands fa-discord"></i>
+            <span id="discord-tag"></span>
+        </div>
+        <div class="info-item">
+            <i class="fas fa-envelope"></i>
+            <span id="user-email"></span>
+        </div>
+
+        <button id="logout-btn">Déconnexion</button>
+    </div>
+
+    <script type="module">
+        import { auth, db } from './firebase-config.js';
+        import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+        import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+        const profileImage = document.getElementById('profile-image');
+        const usernameElem = document.getElementById('username');
+        const userRoleElem = document.getElementById('user-role');
+        const discordTagElem = document.getElementById('discord-tag');
+        const userEmailElem = document.getElementById('user-email');
+        const logoutBtn = document.getElementById('logout-btn');
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // Utilisateur connecté, on récupère ses infos
+                const userRef = doc(db, 'users', user.uid);
+                const docSnap = await getDoc(userRef);
+
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    profileImage.src = data.photoURL || `https://mc-heads.net/avatar/${user.uid}/120`;
+                    usernameElem.textContent = data.username || 'Utilisateur';
+                    userRoleElem.textContent = data.role || 'Membre';
+                    discordTagElem.textContent = data.discordTag || 'Non spécifié';
+                    userEmailElem.textContent = user.email;
+                } else {
+                    // Si l'utilisateur est connecté mais n'a pas de profil, on le renvoie le créer
+                    window.location.href = 'onboarding.html';
+                }
+            } else {
+                // Utilisateur non connecté, on le renvoie à la connexion
+                window.location.href = 'login.html';
+            }
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            signOut(auth).then(() => {
+                // Déconnexion réussie, redirection vers l'accueil
+                window.location.href = 'index.html';
+            }).catch((error) => {
+                console.error("Erreur de déconnexion:", error);
+            });
+        });
+    </script>
+</body>
+</html>

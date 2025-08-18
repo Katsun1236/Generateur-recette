@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inscription - Faction Ratio</title>
+    <title>Inscription - Faction R4TIO</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
@@ -16,6 +16,7 @@
             --text-light: #f5f5f5;
             --text-medium: #cccccc;
             --card-bg-color: #2c2c2c;
+            --discord-blue: #5865F2;
         }
         body {
             font-family: 'Roboto', sans-serif;
@@ -117,10 +118,8 @@
         .divider:not(:empty)::after {
             margin-left: .25em;
         }
-        .google-btn {
+        .social-btn {
             width: 100%;
-            background-color: #fff;
-            color: #333;
             font-weight: bold;
             padding: 0.8rem 1rem;
             border: none;
@@ -130,11 +129,23 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            margin-bottom: 0.75rem;
+        }
+        .google-btn {
+            background-color: #fff;
+            color: #333;
         }
         .google-btn:hover {
             background-color: #eee;
         }
-        .google-btn img {
+        .discord-btn {
+            background-color: var(--discord-blue);
+            color: white;
+        }
+        .discord-btn:hover {
+            background-color: #4752C4;
+        }
+        .social-btn i, .social-btn img {
             height: 1.25rem;
             margin-right: 0.75rem;
         }
@@ -198,9 +209,13 @@
 
         <div class="divider">OU</div>
 
-        <button id="google-signup-button" class="google-btn">
+        <button id="google-signup-button" class="social-btn google-btn">
             <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google logo">
             S'inscrire avec Google
+        </button>
+        <button id="discord-signup-button" class="social-btn discord-btn">
+            <i class="fa-brands fa-discord"></i>
+            S'inscrire avec Discord
         </button>
         
         <p class="login-link">
@@ -212,7 +227,7 @@
 
     <script type="module">
         import { auth } from './firebase-config.js';
-        import { createUserWithEmailAndPassword, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+        import { createUserWithEmailAndPassword, onAuthStateChanged, GoogleAuthProvider, OAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
         
         function showMessage(message) {
             const box = document.getElementById('message-box');
@@ -273,6 +288,17 @@
             } catch (error) {
                 console.error("Erreur d'inscription Google:", error);
                 showMessage("Erreur lors de l'inscription avec Google.");
+            }
+        });
+
+        document.getElementById('discord-signup-button').addEventListener('click', async () => {
+            const provider = new OAuthProvider('discord.com');
+            try {
+                await signInWithPopup(auth, provider);
+                showMessage("Inscription avec Discord réussie !");
+            } catch (error) {
+                console.error("Erreur d'inscription Discord:", error);
+                showMessage("Erreur lors de l'inscription avec Discord.");
             }
         });
     </script>

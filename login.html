@@ -16,6 +16,7 @@
             --text-light: #f5f5f5;
             --text-medium: #cccccc;
             --card-bg-color: #2c2c2c;
+            --discord-blue: #5865F2;
         }
         body {
             font-family: 'Roboto', sans-serif;
@@ -117,10 +118,8 @@
         .divider:not(:empty)::after {
             margin-left: .25em;
         }
-        .google-btn {
+        .social-btn {
             width: 100%;
-            background-color: #fff;
-            color: #333;
             font-weight: bold;
             padding: 0.8rem 1rem;
             border: none;
@@ -130,11 +129,23 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            margin-bottom: 0.75rem;
+        }
+        .google-btn {
+            background-color: #fff;
+            color: #333;
         }
         .google-btn:hover {
             background-color: #eee;
         }
-        .google-btn img {
+        .discord-btn {
+            background-color: var(--discord-blue);
+            color: white;
+        }
+        .discord-btn:hover {
+            background-color: #4752C4;
+        }
+        .social-btn i, .social-btn img {
             height: 1.25rem;
             margin-right: 0.75rem;
         }
@@ -190,9 +201,13 @@
 
         <div class="divider">OU</div>
 
-        <button id="google-login-button" class="google-btn">
+        <button id="google-login-button" class="social-btn google-btn">
             <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google logo">
             Se connecter avec Google
+        </button>
+        <button id="discord-login-button" class="social-btn discord-btn">
+            <i class="fa-brands fa-discord"></i>
+            Se connecter avec Discord
         </button>
         
         <p class="register-link">
@@ -204,7 +219,7 @@
 
     <script type="module">
         import { auth } from './firebase-config.js';
-        import { signInWithEmailAndPassword, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+        import { signInWithEmailAndPassword, onAuthStateChanged, GoogleAuthProvider, OAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
         
         function showMessage(message) {
             const box = document.getElementById('message-box');
@@ -215,7 +230,6 @@
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // Si l'utilisateur est déjà connecté, on le redirige vers l'accueil
                 window.location.href = 'index.html'; 
             }
         });
@@ -242,10 +256,9 @@
             try {
                 await signInWithEmailAndPassword(auth, email, password);
                 showMessage("Connexion réussie ! Redirection...");
-                // La redirection est gérée par onAuthStateChanged
             } catch (error) {
                 let msg = "Email ou mot de passe incorrect.";
-                if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
                     msg = "Email ou mot de passe incorrect.";
                 }
                 showMessage(msg);
@@ -259,10 +272,20 @@
             try {
                 await signInWithPopup(auth, provider);
                 showMessage("Connexion avec Google réussie !");
-                // La redirection est gérée par onAuthStateChanged
             } catch (error) {
                 console.error("Erreur de connexion Google:", error);
                 showMessage("Erreur lors de la connexion avec Google.");
+            }
+        });
+
+        document.getElementById('discord-login-button').addEventListener('click', async () => {
+            const provider = new OAuthProvider('discord.com');
+            try {
+                await signInWithPopup(auth, provider);
+                showMessage("Connexion avec Discord réussie !");
+            } catch (error) {
+                console.error("Erreur de connexion Discord:", error);
+                showMessage("Erreur lors de la connexion avec Discord.");
             }
         });
     </script>

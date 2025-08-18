@@ -13,9 +13,12 @@
         :root {
             --main-bg-color: #1a1a1a;
             --primary-red: #e74c3c;
+            --primary-red-dark: #c0392b;
             --text-light: #f5f5f5;
             --text-medium: #cccccc;
             --card-bg-color: #2c2c2c;
+            --discord-blue: #5865F2;
+            --discord-blue-dark: #4752C4;
         }
 
         html {
@@ -28,7 +31,7 @@
             font-family: 'Roboto', sans-serif;
             color: var(--text-light);
             margin: 0;
-            padding-top: 60px;
+            padding-top: 80px;
         }
 
         .navbar {
@@ -40,28 +43,47 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 10px 20px;
+            padding: 15px 20px;
             z-index: 1000;
             border-bottom: 1px solid var(--card-bg-color);
         }
 
         .nav-logo {
-            height: 40px;
-            margin-right: 20px;
+            height: 50px;
+            margin-right: auto;
         }
 
         .nav-links a {
-            color: var(--text-medium);
+            color: var(--text-light);
+            background: linear-gradient(to bottom, var(--primary-red), var(--primary-red-dark));
             text-decoration: none;
-            margin: 0 15px;
+            margin: 0 10px;
+            padding: 10px 20px;
+            border-radius: 5px;
             font-weight: 700;
             text-transform: uppercase;
-            transition: color 0.3s ease;
+            border: 1px solid #ff6b5a;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+            position: relative;
+            top: 0;
+            transition: all 0.2s ease;
         }
 
         .nav-links a:hover {
-            color: var(--primary-red);
+            background: linear-gradient(to bottom, var(--primary-red-dark), #a93226);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+            top: 2px;
         }
+        
+        .nav-links a.discord-button {
+            background: linear-gradient(to bottom, var(--discord-blue), var(--discord-blue-dark));
+            border-color: #7a85f5;
+        }
+        
+        .nav-links a.discord-button:hover {
+            background: linear-gradient(to bottom, var(--discord-blue-dark), #3A429B);
+        }
+
 
         .hero {
             display: flex;
@@ -69,7 +91,7 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            min-height: calc(100vh - 60px);
+            min-height: calc(100vh - 80px);
             padding: 20px;
         }
 
@@ -126,6 +148,9 @@
             text-align: center;
             border: 1px solid #444;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .card:hover {
@@ -139,7 +164,7 @@
             border-radius: 50%;
             object-fit: cover;
             border: 3px solid var(--primary-red);
-            margin-bottom: 15px;
+            margin: 0 auto 15px auto;
         }
 
         .card h3 {
@@ -152,22 +177,29 @@
             color: var(--text-medium);
             font-size: 1rem;
             line-height: 1.5;
+            margin-bottom: 20px;
         }
         
-        #alliances ul {
-            list-style: none;
-            padding: 0;
-            text-align: center;
+        .card .ally-discord-button {
+            background: linear-gradient(to bottom, var(--discord-blue), var(--discord-blue-dark));
+            border: 1px solid #7a85f5;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+            color: var(--text-light);
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            transition: all 0.2s ease;
+            margin-top: auto;
+            position: relative;
+            top: 0;
         }
-        #alliances li {
-            font-family: 'Anton', sans-serif;
-            font-size: 2rem;
-            color: var(--text-medium);
-            margin: 10px 0;
-            transition: color 0.3s ease;
-        }
-        #alliances li:hover {
-             color: var(--text-light);
+        
+        .card .ally-discord-button:hover {
+            background: linear-gradient(to bottom, var(--discord-blue-dark), #3A429B);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+            top: 2px;
         }
 
         @keyframes pulse {
@@ -177,14 +209,16 @@
         
         @media (max-width: 768px) {
             .navbar {
-                flex-direction: column;
-                padding: 10px;
+                justify-content: center;
+                flex-wrap: wrap;
             }
             .nav-logo {
-                margin-bottom: 10px;
+                margin: 0 0 15px 0;
+                width: 100%;
+                text-align: center;
             }
             .nav-links a {
-                margin: 0 8px;
+                padding: 8px 12px;
                 font-size: 0.8rem;
             }
             .content-section {
@@ -199,14 +233,13 @@
     <nav class="navbar">
         <img src="Logo.png" alt="Logo Ratio" class="nav-logo">
         <div class="nav-links">
-            <a href="#description">La Faction</a>
-            <a href="#membres">Membres</a>
-            <a href="#alliances">Alliances</a>
-            <a href="#exploits">Exploits</a>
+            <a href="https://discord.gg/UFVCDc4mkU" target="_blank" class="discord-button">Discord</a>
+            <a href="recrutement.html">Recrutement</a>
+            <a href="market.html">Marché</a>
         </div>
     </nav>
 
-    <header class="hero" id="accueil">
+    <header class="hero">
         <img src="Logo.png" alt="Logo de la faction Ratio" class="logo">
         <h1 class="faction-title">RATIO</h1>
         <p class="description">
@@ -236,7 +269,7 @@
                     <p>Bras droit</p>
                 </div>
                 <div class="card">
-                    <img src="https://cdn.discordapp.com/avatars/621013206772482078/b93ec81fdbe0e154b2d2c6f005f8aa71.png?size=4096&ignore=true)." alt="Avatar membre">
+                    <img src="https://cdn.discordapp.com/avatars/621013206772482078/b93ec81fdbe0e154b2d2c6f005f8aa71.png?size=4096&ignore=true" alt="Avatar membre">
                     <h3>Urfaveyes</h3>
                     <p>Officier</p>
                 </div>
@@ -245,9 +278,14 @@
 
         <section id="alliances" class="content-section">
             <h2>Nos Alliances</h2>
-            <ul>
-                <li>[Vox]</li>
-            </ul>
+            <div class="grid-container">
+                <div class="card">
+                    <img src="https://cdn.discordapp.com/icons/1395758234379358299/b63df920c2970eacc38280515ad0bb06.png?size=4096" alt="Logo Alliance Vox">
+                    <h3>Vox</h3>
+                    <p>Une alliance fondée sur la confiance et la puissance PvP.</p>
+                    <a href="https://discord.gg/eWnSUaYu7q" class="ally-discord-button">Rejoindre leur Discord</a>
+                </div>
+            </div>
         </section>
 
         <section id="exploits" class="content-section">
@@ -263,7 +301,7 @@
                 </div>
                 <div class="card">
                     <h3>Défense Héroïque</h3>
-                    <p>Repoussé un assaut de 3 factions coalisées contre notre base principale</p>
+                    <p>Repoussé un assaut de 3 factions coalisées contre notre base principale.</p>
                 </div>
             </div>
         </section>

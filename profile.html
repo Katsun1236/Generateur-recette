@@ -296,7 +296,8 @@
         let currentUserData;
 
         function displayProfileData(data, email) {
-            ui.profilePicture.src = data.photoURL || `https://mc-heads.net/avatar/${data.username}/100`;
+            // CORRECTION: Utilisation d'un proxy CORS pour l'image par défaut
+            ui.profilePicture.src = data.photoURL || `https://corsproxy.io/?https://mc-heads.net/avatar/${data.username}/100`;
             ui.userName.textContent = data.username || 'Utilisateur';
             ui.userRole.textContent = data.role || 'Membre';
             ui.userEmail.textContent = email;

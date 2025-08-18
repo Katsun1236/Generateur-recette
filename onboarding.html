@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premiers pas - Faction Ratio</title>
+    <title>Premiers pas - Faction R4TIO</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
@@ -204,7 +204,8 @@
             setTimeout(() => box.style.display = 'none', 3000);
         }
         
-        document.getElementById('profile-picture-preview').src = `https://mc-heads.net/avatar/Steve/100`;
+        // CORRECTION: Utilisation d'un proxy CORS pour l'image par défaut
+        document.getElementById('profile-picture-preview').src = `https://corsproxy.io/?https://mc-heads.net/avatar/Steve/100`;
 
         document.addEventListener('DOMContentLoaded', () => {
             onAuthStateChanged(auth, async (user) => {

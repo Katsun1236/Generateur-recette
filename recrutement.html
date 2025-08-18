@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recrutement - Faction R4TIO</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --main-bg-color: #1a1a1a;
+            --primary-red: #e74c3c;
+            --primary-red-dark: #c0392b;
+            --text-light: #f5f5f5;
+            --text-medium: #cccccc;
+            --card-bg-color: #2c2c2c;
+            --green: #2ecc71;
+            --yellow: #f1c40f;
+        }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--main-bg-color);
+            background-image: url('https://www.transparenttextures.com/patterns/dark-denim-3.png');
+            color: var(--text-light);
+            margin: 0;
+            padding-top: 80px;
+        }
+        .navbar {
+            background-color: rgba(20, 20, 20, 0.9);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 30px;
+            z-index: 1000;
+            border-bottom: 1px solid var(--card-bg-color);
+            box-sizing: border-box;
+        }
+        .nav-left { flex: 1 0 0; }
+        .nav-logo { height: 50px; }
+        .nav-center { flex-grow: 1; text-align: center; }
+        .nav-center a { color: var(--text-medium); text-decoration: none; margin: 0 15px; font-weight: 700; font-size: 1rem; text-transform: uppercase; transition: color 0.3s ease; }
+        .nav-center a:hover { color: var(--primary-red); }
+        .nav-auth { display: flex; align-items: center; flex: 1 0 0; justify-content: flex-end; }
+        #profile-link { display: none; }
+        #profile-pic { height: 45px; width: 45px; border-radius: 50%; border: 2px solid var(--primary-red); object-fit: cover; cursor: pointer; transition: transform 0.2s; }
+        #profile-pic:hover { transform: scale(1.1); }
+        
+        .page-container {
+            width: 100%;
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            box-sizing: border-box;
+        }
+        .page-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .page-header h1 {
+            font-family: 'Anton', sans-serif;
+            font-size: 3.5rem;
+            color: var(--primary-red);
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+        .page-header p {
+            color: var(--text-medium);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* --- Formulaire de candidature --- */
+        .form-container {
+            background-color: var(--card-bg-color);
+            padding: 2rem;
+            border-radius: 10px;
+            border: 1px solid #444;
+        }
+        .form-section h2 {
+            font-family: 'Anton', sans-serif;
+            font-size: 1.8rem;
+            color: var(--primary-red);
+            border-bottom: 2px solid var(--primary-red);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; color: var(--text-medium); font-weight: bold; margin-bottom: 0.5rem; }
+        .form-group input, .form-group textarea { width: 100%; padding: 0.75rem 1rem; border-radius: 5px; background-color: #333; color: var(--text-light); border: 2px solid #555; box-sizing: border-box; transition: border-color 0.3s; }
+        .form-group textarea { min-height: 100px; resize: vertical; }
+        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--primary-red); }
+        .submit-btn { width: 100%; background-color: var(--primary-red); color: white; font-weight: bold; padding: 1rem; border: none; border-radius: 5px; cursor: pointer; text-transform: uppercase; transition: background-color 0.3s; font-size: 1.2rem; }
+        .submit-btn:hover { background-color: var(--primary-red-dark); }
+        .submit-btn:disabled { background-color: #555; cursor: not-allowed; }
+
+        /* --- Vue Candidat et Recruteur --- */
+        .status-box {
+            background-color: var(--card-bg-color);
+            padding: 3rem;
+            border-radius: 10px;
+            border: 1px solid #444;
+            text-align: center;
+        }
+        .status-box i {
+            font-size: 4rem;
+            color: var(--yellow);
+            margin-bottom: 1rem;
+        }
+        .status-box h2 {
+            font-family: 'Anton', sans-serif;
+            font-size: 2.5rem;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+        }
+        
+        /* --- Vue Recruteur --- */
+        .application-card {
+            background-color: var(--card-bg-color);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 1px solid #444;
+            margin-bottom: 1rem;
+        }
+        .application-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #444;
+            padding-bottom: 1rem;
+        }
+        .application-header h3 {
+            font-family: 'Anton', sans-serif;
+            font-size: 1.8rem;
+            color: var(--primary-red);
+            margin: 0;
+        }
+        .application-body p {
+            margin: 0 0 1rem 0;
+            line-height: 1.6;
+        }
+        .application-body strong {
+            color: var(--text-light);
+        }
+        .application-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .action-btn {
+            flex-grow: 1;
+            color: white;
+            font-weight: bold;
+            padding: 0.7rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: opacity 0.3s;
+        }
+        .action-btn:hover { opacity: 0.8; }
+        .approve-btn { background-color: var(--green); }
+        .deny-btn { background-color: var(--primary-red); }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="index.html"><img src="Logo.png" alt="Logo R4TIO" class="nav-logo"></a>
+        </div>
+        <div class="nav-center">
+            <a href="https://discord.gg/UFVCDc4mkU" target="_blank">Discord</a>
+            <a href="recrutement.html">Recrutement</a>
+            <a href="market.html">Marché</a>
+        </div>
+        <div class="nav-auth">
+            <a href="profile.html" id="profile-link">
+                <img id="profile-pic" src="" alt="Photo de profil">
+            </a>
+        </div>
+    </nav>
+
+    <div class="page-container">
+        <!-- Vue Visiteur: Formulaire -->
+        <div id="visitor-view" class="hidden">
+            <div class="page-header">
+                <h1>Devenir un membre R4TIO</h1>
+                <p>Bonjour cher joueur Histeria, si tu es ici c’est pour te faire recruter ! Voici le questionnaire que tu dois absolument remplir.</p>
+            </div>
+            <form id="recruitment-form" class="form-container">
+                <div class="form-section">
+                    <h2>Informations personnelles</h2>
+                    <div class="form-group"><label for="age">Âge</label><input type="number" id="age" required></div>
+                    <div class="form-group"><label for="qualities">3 Qualités</label><input type="text" id="qualities" required></div>
+                    <div class="form-group"><label for="defects">3 Défauts</label><input type="text" id="defects" required></div>
+                </div>
+                <div class="form-section">
+                    <h2>Informations en jeu</h2>
+                    <div class="form-group"><label for="pseudo">Pseudo</label><input type="text" id="pseudo" required></div>
+                    <div class="form-group"><label for="version">Depuis quelle version jouez-vous ?</label><input type="text" id="version" required></div>
+                    <div class="form-group"><label for="knowledge">Connaissez-vous bien le serveur ?</label><textarea id="knowledge" required></textarea></div>
+                    <div class="form-group"><label for="speciality">Quelle est votre spécialité ?</label><input type="text" id="speciality" required></div>
+                </div>
+                <div class="form-section">
+                    <h2>Informations de Faction</h2>
+                    <div class="form-group"><label for="why-you">Pourquoi vous et pas un autre ?</label><textarea id="why-you" required></textarea></div>
+                    <div class="form-group"><label for="why-us">Pourquoi notre faction ?</label><textarea id="why-us" required></textarea></div>
+                    <div class="form-group"><label for="past-factions">Avez-vous déjà été dans d’autres factions ? Si oui, lesquelles ?</label><textarea id="past-factions" required></textarea></div>
+                    <div class="form-group"><label for="player-type">Êtes-vous un joueur PvP ou Farming ?</label><input type="text" id="player-type" required></div>
+                    <div class="form-group"><label for="social">Êtes-vous sociable ?</label><input type="text" id="social" required></div>
+                </div>
+                <button type="submit" class="submit-btn" id="submit-application-btn">Soumettre ma candidature</button>
+            </form>
+        </div>
+
+        <!-- Vue Candidat: Statut en attente -->
+        <div id="candidate-view" class="hidden">
+            <div class="status-box">
+                <i class="fas fa-clock"></i>
+                <h2>Candidature envoyée !</h2>
+                <p>Merci pour ton intérêt ! Ta candidature a bien été enregistrée. Le staff de la R4TIO va l'étudier et te contactera bientôt si ton profil est retenu pour un entretien oral.</p>
+            </div>
+        </div>
+
+        <!-- Vue Recruteur: Liste des candidatures -->
+        <div id="recruiter-view" class="hidden">
+            <div class="page-header">
+                <h1>Gestion des Candidatures</h1>
+                <p>Examinez les candidatures en attente et prenez votre décision.</p>
+            </div>
+            <div id="applications-list">
+                <!-- Les candidatures seront injectées ici par le script -->
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, db } from './firebase-config.js';
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+        import { doc, getDoc, setDoc, updateDoc, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+        const views = {
+            visitor: document.getElementById('visitor-view'),
+            candidate: document.getElementById('candidate-view'),
+            recruiter: document.getElementById('recruiter-view')
+        };
+        const profileLink = document.getElementById('profile-link');
+        const profilePic = document.getElementById('profile-pic');
+        const recruitmentForm = document.getElementById('recruitment-form');
+        const applicationsList = document.getElementById('applications-list');
+
+        let currentUserData = null;
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                profileLink.style.display = 'block';
+                const userRef = doc(db, 'users', user.uid);
+                const docSnap = await getDoc(userRef);
+
+                if (docSnap.exists()) {
+                    currentUserData = { id: user.uid, ...docSnap.data() };
+                    const photo = currentUserData.photoURL || `https://corsproxy.io/?https://mc-heads.net/avatar/${currentUserData.username}/45`;
+                    profilePic.src = photo;
+                    
+                    // Afficher la bonne vue en fonction du rôle
+                    switch (currentUserData.role) {
+                        case 'Candidat':
+                            views.candidate.classList.remove('hidden');
+                            break;
+                        case 'Recruteur':
+                            views.recruiter.classList.remove('hidden');
+                            loadApplications();
+                            break;
+                        default: // Visiteur
+                            views.visitor.classList.remove('hidden');
+                            document.getElementById('pseudo').value = currentUserData.username || '';
+                    }
+                } else {
+                    // Si l'utilisateur est connecté mais n'a pas de profil, le renvoyer le créer
+                    window.location.href = 'onboarding.html';
+                }
+            } else {
+                // Si non connecté, afficher le formulaire mais désactiver le bouton
+                views.visitor.classList.remove('hidden');
+                const submitBtn = document.getElementById('submit-application-btn');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Connectez-vous pour postuler';
+                submitBtn.style.cursor = 'pointer';
+                submitBtn.onclick = () => window.location.href = 'login.html';
+            }
+        });
+
+        // Logique de soumission du formulaire
+        recruitmentForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitBtn = document.getElementById('submit-application-btn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi...';
+
+            const applicationData = {
+                userId: currentUserData.id,
+                username: document.getElementById('pseudo').value,
+                age: document.getElementById('age').value,
+                qualities: document.getElementById('qualities').value,
+                defects: document.getElementById('defects').value,
+                version: document.getElementById('version').value,
+                knowledge: document.getElementById('knowledge').value,
+                speciality: document.getElementById('speciality').value,
+                whyYou: document.getElementById('why-you').value,
+                whyUs: document.getElementById('why-us').value,
+                pastFactions: document.getElementById('past-factions').value,
+                playerType: document.getElementById('player-type').value,
+                social: document.getElementById('social').value,
+                status: 'en attente',
+                submittedAt: new Date().toISOString()
+            };
+
+            try {
+                // Enregistrer la candidature
+                const applicationRef = doc(db, 'candidatures', currentUserData.id);
+                await setDoc(applicationRef, applicationData);
+
+                // Mettre à jour le rôle de l'utilisateur
+                const userRef = doc(db, 'users', currentUserData.id);
+                await updateDoc(userRef, { role: 'Candidat' });
+
+                // Afficher la vue de confirmation
+                views.visitor.classList.add('hidden');
+                views.candidate.classList.remove('hidden');
+
+            } catch (error) {
+                console.error("Erreur lors de la soumission :", error);
+                alert("Une erreur est survenue. Veuillez réessayer.");
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Soumettre ma candidature';
+            }
+        });
+
+        // Logique pour les recruteurs
+        async function loadApplications() {
+            applicationsList.innerHTML = '<p>Chargement des candidatures...</p>';
+            const q = query(collection(db, 'candidatures'), where("status", "==", "en attente"));
+            const querySnapshot = await getDocs(q);
+            
+            if (querySnapshot.empty) {
+                applicationsList.innerHTML = '<p>Aucune candidature en attente pour le moment.</p>';
+                return;
+            }
+
+            applicationsList.innerHTML = '';
+            querySnapshot.forEach(doc => {
+                const app = doc.data();
+                const card = document.createElement('div');
+                card.className = 'application-card';
+                card.innerHTML = `
+                    <div class="application-header">
+                        <h3>${app.username}</h3>
+                        <span>${new Date(app.submittedAt).toLocaleDateString('fr-FR')}</span>
+                    </div>
+                    <div class="application-body">
+                        <p><strong>Âge :</strong> ${app.age}</p>
+                        <p><strong>Spécialité :</strong> ${app.speciality}</p>
+                        <p><strong>Pourquoi nous ?</strong> ${app.whyUs}</p>
+                        <p><strong>Pourquoi lui ?</strong> ${app.whyYou}</p>
+                    </div>
+                    <div class="application-actions">
+                        <button class="action-btn approve-btn" data-id="${doc.id}">Approuver</button>
+                        <button class="action-btn deny-btn" data-id="${doc.id}">Refuser</button>
+                    </div>
+                `;
+                applicationsList.appendChild(card);
+            });
+        }
+
+    </script>
+</body>
+</html>

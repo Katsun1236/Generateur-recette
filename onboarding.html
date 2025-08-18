@@ -247,10 +247,9 @@
                     <div id="checkboxes" class="hidden">
                         <label><input type="checkbox" value="PvP"/> PvP</label>
                         <label><input type="checkbox" value="Farmeur"/> Farmeur</label>
-                        <label><input type="checkbox" value="Constructeur"/> Constructeur</label>
                         <label><input type="checkbox" value="Pilleur"/> Pilleur</label>
-                        <label><input type="checkbox" value="Décorateur"/> Décorateur</label>
-                        <label><input type="checkbox" value="Alchimiste"/> Alchimiste</label>
+                        <label><input type="checkbox" value="Buildeur"/> Buildeur</label>
+                        <label><input type="checkbox" value="Mineur"/> Mineur</label>
                     </div>
                 </div>
             </div>
@@ -292,7 +291,7 @@
                     // Pré-remplissage des champs
                     if (user.providerData.length > 0) {
                         const providerId = user.providerData[0].providerId;
-                        if (providerId === 'discord.com') {
+                        if (providerId === 'oidc.discord') {
                             document.getElementById('discordTag').value = user.displayName || '';
                             const usernameWithoutTag = user.displayName.split('#')[0];
                             document.getElementById('username').value = usernameWithoutTag;
@@ -382,7 +381,7 @@
                 try {
                     if (profilePictureFile) {
                         const storageRef = ref(storage, `users/${currentUserId}/profilePicture.jpg`);
-                        const snapshot = await uploadBytes(storageRef, profilePictureFile);
+                        const snapshot = await uploadBytes(storageRef, file);
                         photoURL = await getDownloadURL(snapshot.ref);
                     }
 

@@ -58,7 +58,7 @@
         }
         .market-header {
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 3rem;
         }
         .market-header h1 {
             font-family: 'Anton', sans-serif;
@@ -71,26 +71,22 @@
             color: var(--text-medium);
             font-size: 1.1rem;
         }
-        .add-item-btn {
-            background-color: var(--primary-red);
-            color: white;
-            font-weight: bold;
-            padding: 0.8rem 1.5rem;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-transform: uppercase;
-            transition: background-color 0.3s;
-            margin-top: 1rem;
-            font-size: 1rem;
+        
+        .category-section {
+            margin-bottom: 3rem;
         }
-        .add-item-btn:hover {
-            background-color: var(--primary-red-dark);
+        .category-title {
+            font-family: 'Anton', sans-serif;
+            font-size: 2.5rem;
+            color: var(--text-light);
+            border-bottom: 3px solid var(--primary-red);
+            padding-bottom: 0.5rem;
+            margin-bottom: 2rem;
         }
 
         .market-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 1.5rem;
         }
         .item-card {
@@ -101,54 +97,57 @@
             display: flex;
             flex-direction: column;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-align: center;
         }
         .item-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 8px 20px rgba(0,0,0,0.4);
         }
-        .item-card img {
+        .item-image-container {
             width: 100%;
-            height: 200px;
-            object-fit: cover;
+            padding-top: 100%; /* Aspect ratio 1:1 */
+            position: relative;
+            background-color: #333;
+        }
+        .item-card img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 1rem;
+            box-sizing: border-box;
         }
         .item-info {
             padding: 1rem;
             flex-grow: 1;
             display: flex;
             flex-direction: column;
+            justify-content: center;
         }
         .item-info h3 {
-            font-size: 1.5rem;
-            margin: 0 0 0.5rem 0;
-            color: var(--text-light);
-        }
-        .item-price {
             font-size: 1.2rem;
+            margin: 0 0 0.75rem 0;
+            color: var(--text-light);
+            font-weight: normal;
+        }
+        .price-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .original-price {
+            text-decoration: line-through;
+            color: #777;
+            font-size: 0.9rem;
+        }
+        .new-price {
+            font-size: 1.5rem;
             font-weight: bold;
             color: var(--primary-red);
-            margin-bottom: 1rem;
         }
-        .item-seller {
-            margin-top: auto;
-            padding-top: 1rem;
-            border-top: 1px solid #444;
-            font-size: 0.9rem;
-            color: var(--text-medium);
-        }
-        
-        /* Styles de la modale */
-        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.7); }
-        .modal-content { background-color: var(--card-bg-color); margin: 10% auto; padding: 2rem; border: 1px solid #888; width: 90%; max-width: 500px; border-radius: 10px; position: relative; }
-        .modal-content h2 { font-family: 'Anton', sans-serif; font-size: 2rem; color: var(--primary-red); text-align: center; margin-bottom: 1.5rem; text-transform: uppercase; }
-        .modal-content label { display: block; color: var(--text-medium); font-weight: bold; margin-bottom: 0.5rem; }
-        .modal-content input, .modal-content textarea { width: 100%; padding: 0.75rem 1rem; border-radius: 5px; background-color: #333; color: var(--text-light); border: 2px solid #555; box-sizing: border-box; transition: border-color 0.3s; margin-bottom: 1rem; }
-        .modal-content input:focus, .modal-content textarea:focus { outline: none; border-color: var(--primary-red); }
-        .modal-buttons { display: flex; gap: 1rem; margin-top: 1.5rem; }
-        .modal-buttons button { width: 100%; font-weight: bold; padding: 0.8rem 1rem; border: none; border-radius: 5px; cursor: pointer; text-transform: uppercase; transition: background-color 0.3s; }
-        #save-item-btn { background-color: var(--primary-red); color: white; }
-        #save-item-btn:hover { background-color: var(--primary-red-dark); }
-        #cancel-item-btn { background-color: #555; color: white; }
-        #cancel-item-btn:hover { background-color: #666; }
     </style>
 </head>
 <body>
@@ -171,57 +170,11 @@
     <div class="market-container">
         <div class="market-header">
             <h1>Marché de la Faction</h1>
-            <p>Achetez et vendez des objets rares avec les membres de R4TIO.</p>
-            <button id="add-item-btn" class="add-item-btn"><i class="fas fa-plus"></i> Mettre en vente</button>
+            <p>Achetez des objets directement auprès de la faction R4TIO à prix réduit.</p>
         </div>
 
-        <div class="market-grid" id="market-grid">
-            <!-- Exemple d'objet -->
-            <div class="item-card">
-                <img src="https://placehold.co/600x400/2c2c2c/e74c3c?text=Épée+en+Diamant" alt="Image de l'objet">
-                <div class="item-info">
-                    <h3>Épée Sharpness V</h3>
-                    <p class="item-price">10 Diamants</p>
-                    <div class="item-seller">
-                        <span>Vendu par : <strong>Coarse</strong></span>
-                    </div>
-                </div>
-            </div>
-             <div class="item-card">
-                <img src="https://placehold.co/600x400/2c2c2c/e74c3c?text=Plastron+en+Netherite" alt="Image de l'objet">
-                <div class="item-info">
-                    <h3>Plastron P4 Unbreaking III</h3>
-                    <p class="item-price">32 Diamants</p>
-                    <div class="item-seller">
-                        <span>Vendu par : <strong>Mixtaz</strong></span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modale pour ajouter un objet -->
-    <div id="add-item-modal" class="modal">
-        <div class="modal-content">
-            <h2>Mettre un objet en vente</h2>
-            <form id="add-item-form">
-                <div>
-                    <label for="item-name">Nom de l'objet</label>
-                    <input type="text" id="item-name" required>
-                </div>
-                <div>
-                    <label for="item-price">Prix</label>
-                    <input type="text" id="item-price" placeholder="Ex: 10 Diamants, 2 Netherite..." required>
-                </div>
-                <div>
-                    <label for="item-image">Lien de l'image (optionnel)</label>
-                    <input type="url" id="item-image" placeholder="https://...">
-                </div>
-                <div class="modal-buttons">
-                    <button type="button" id="cancel-item-btn">Annuler</button>
-                    <button type="submit" id="save-item-btn">Mettre en vente</button>
-                </div>
-            </form>
+        <div id="market-sections">
+            <!-- Les sections et les objets seront générés ici par le script -->
         </div>
     </div>
 
@@ -232,13 +185,6 @@
 
         const profileLink = document.getElementById('profile-link');
         const profilePic = document.getElementById('profile-pic');
-        const addItemModal = document.getElementById('add-item-modal');
-        const addItemBtn = document.getElementById('add-item-btn');
-        const cancelItemBtn = document.getElementById('cancel-item-btn');
-        const addItemForm = document.getElementById('add-item-form');
-        const marketGrid = document.getElementById('market-grid');
-
-        let currentUserData = null;
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
@@ -246,56 +192,99 @@
                 const userRef = doc(db, 'users', user.uid);
                 const docSnap = await getDoc(userRef);
                 if (docSnap.exists()) {
-                    currentUserData = docSnap.data();
+                    const currentUserData = docSnap.data();
                     const photo = currentUserData.photoURL || `https://corsproxy.io/?https://mc-heads.net/avatar/${currentUserData.username}/45`;
                     profilePic.src = photo;
                 }
             } else {
-                // Rediriger si non connecté ? Optionnel
-                // window.location.href = 'login.html';
+                profileLink.style.display = 'none';
             }
         });
 
-        addItemBtn.addEventListener('click', () => {
-            if (currentUserData) {
-                addItemModal.style.display = 'block';
-            } else {
-                alert("Vous devez être connecté pour vendre un objet.");
-                window.location.href = 'login.html';
+        const marketData = {
+          "Blocs": [
+            {id: "DIRT", buyPrice: 5}, {id: "MYCELIUM", buyPrice: 5}, {id: "COARSE_DIRT", buyPrice: 5}, {id: "PODZOL", buyPrice: 5}, {id: "SAND", buyPrice: 15}, {id: "SANDSTONE", buyPrice: 15}, {id: "CUT_SANDSTONE", buyPrice: 15}, {id: "RED_SAND", buyPrice: 15}, {id: "RED_SANDSTONE", buyPrice: 15}, {id: "CUT_RED_SANDSTONE", buyPrice: 15}, {id: "STONE", buyPrice: 15}, {id: "STONE_BRICKS", buyPrice: 15}, {id: "MOSSY_STONE_BRICKS", buyPrice: 15}, {id: "CRACKED_STONE_BRICKS", buyPrice: 15}, {id: "CHISELED_STONE_BRICKS", buyPrice: 15}, {id: "COBBLESTONE", buyPrice: 15}, {id: "MOSSY_COBBLESTONE", buyPrice: 15}, {id: "GRAVEL", buyPrice: 15}, {id: "GRANITE", buyPrice: 15}, {id: "DIORITE", buyPrice: 15}, {id: "ANDESITE", buyPrice: 15}, {id: "POLISHED_GRANITE", buyPrice: 15}, {id: "POLISHED_DIORITE", buyPrice: 15}, {id: "POLISHED_ANDESITE", buyPrice: 15}, {id: "OBSIDIAN", buyPrice: 500}, {id: "OAK_PLANKS", buyPrice: 15}, {id: "SPRUCE_PLANKS", buyPrice: 15}, {id: "BIRCH_PLANKS", buyPrice: 15}, {id: "ACACIA_PLANKS", buyPrice: 15}, {id: "JUNGLE_PLANKS", buyPrice: 15}, {id: "DARK_OAK_PLANKS", buyPrice: 15}, {id: "SLIME_BLOCK", buyPrice: 15}
+          ],
+          "Items": [
+            {id: "ARROW", buyPrice: 10}, {id: "TORCH", buyPrice: 3}, {id: "ENDER_PEARL", buyPrice: 1500}, {id: "END_ROD", buyPrice: 175}, {id: "SPLASH_POTION", buyPrice: 1500, name: "Strong Healing Splash Potion"}, {id: "CRAFTING_TABLE", buyPrice: 100}, {id: "ENCHANTING_TABLE", buyPrice: 1000}, {id: "ANVIL", buyPrice: 1000}, {id: "ENDER_CHEST", buyPrice: 800}, {id: "CHEST", buyPrice: 100}, {id: "RED_BED", buyPrice: 100, name: "Bed"}, {id: "FURNACE", buyPrice: 100}, {id: "JUKEBOX", buyPrice: 1000}
+          ],
+          "Minerais": [
+            {id: "CLAY_BALL", buyPrice: 15}, {id: "FLINT", buyPrice: 15}, {id: "COAL", buyPrice: 200}, {id: "IRON_INGOT", buyPrice: 200}, {id: "GOLD_INGOT", buyPrice: 500}, {id: "REDSTONE", buyPrice: 50, name: "Redstone Dust"}, {id: "DIAMOND", buyPrice: 500}, {id: "COAL_ORE", buyPrice: 200}, {id: "IRON_ORE", buyPrice: 200}, {id: "GOLD_ORE", buyPrice: 500}, {id: "REDSTONE_ORE", buyPrice: 450}, {id: "DIAMOND_ORE", buyPrice: 1000}, {id: "HISTERITE_ORE", buyPrice: 10000}, {id: "RANDOM_ORE", buyPrice: 20000}, {id: "COAL_BLOCK", buyPrice: 1800}, {id: "IRON_BLOCK", buyPrice: 1800}, {id: "GOLD_BLOCK", buyPrice: 4500}, {id: "REDSTONE_BLOCK", buyPrice: 450}, {id: "DIAMOND_BLOCK", buyPrice: 9000}, {id: "HISTERITE_BLOCK", buyPrice: 90000}
+          ],
+          "Nature": [
+            {id: "ACACIA_WOOD", buyPrice: 50}, {id: "JUNGLE_WOOD", buyPrice: 50}, {id: "BIRCH_WOOD", buyPrice: 50}, {id: "OAK_WOOD", buyPrice: 50}, {id: "DARK_OAK_WOOD", buyPrice: 50}, {id: "SPRUCE_WOOD", buyPrice: 50}, {id: "COOKED_BEEF", buyPrice: 50, name: "Steak"}, {id: "CACTUS", buyPrice: 500}, {id: "ACACIA_LOG", buyPrice: 50}, {id: "JUNGLE_LOG", buyPrice: 50}, {id: "BIRCH_LOG", buyPrice: 50}, {id: "OAK_LOG", buyPrice: 50}, {id: "DARK_OAK_LOG", buyPrice: 50}, {id: "SPRUCE_LOG", buyPrice: 50}, {id: "PUMPKIN", buyPrice: 225}, {id: "MELON_SLICE", buyPrice: 225, name: "Melon"}, {id: "STRIPPED_ACACIA_LOG", buyPrice: 50}, {id: "STRIPPED_JUNGLE_LOG", buyPrice: 50}, {id: "STRIPPED_BIRCH_LOG", buyPrice: 50}, {id: "STRIPPED_OAK_LOG", buyPrice: 50}, {id: "STRIPPED_DARK_OAK_LOG", buyPrice: 50}, {id: "STRIPPED_SPRUCE_LOG", buyPrice: 50}, {id: "POTATO", buyPrice: 50}, {id: "BEETROOT", buyPrice: 50}, {id: "ACACIA_SAPLING", buyPrice: 100}, {id: "JUNGLE_SAPLING", buyPrice: 100}, {id: "BIRCH_SAPLING", buyPrice: 100}, {id: "OAK_SAPLING", buyPrice: 100}, {id: "DARK_OAK_SAPLING", buyPrice: 100}, {id: "SPRUCE_SAPLING", buyPrice: 100}, {id: "CARROT", buyPrice: 50}, {id: "WHEAT", buyPrice: 50}, {id: "ACACIA_LEAVES", buyPrice: 20}, {id: "JUNGLE_LEAVES", buyPrice: 20}, {id: "BIRCH_LEAVES", buyPrice: 20}, {id: "OAK_LEAVES", buyPrice: 20}, {id: "DARK_OAK_LEAVES", buyPrice: 20}, {id: "SPRUCE_LEAVES", buyPrice: 20}, {id: "WHEAT_SEEDS", buyPrice: 10, name: "Seeds"}, {id: "APPLE", buyPrice: 100}, {id: "BONE_MEAL", buyPrice: 100}, {id: "GRASS_BLOCK", buyPrice: 200, name: "Grass"}, {id: "VINE", buyPrice: 200}, {id: "SUGAR_CANE", buyPrice: 200}, {id: "RED_MUSHROOM", buyPrice: 200}, {id: "BROWN_MUSHROOM", buyPrice: 200}, {id: "RED_MUSHROOM_BLOCK", buyPrice: 1800}, {id: "BROWN_MUSHROOM_BLOCK", buyPrice: 1800}, {id: "CAKE", buyPrice: 100}, {id: "GRASS", buyPrice: 100, name: "Tall Grass"}, {id: "FERN", buyPrice: 100}, {id: "LARGE_FERN", buyPrice: 100}, {id: "DEAD_BUSH", buyPrice: 100}, {id: "CARVED_PUMPKIN", buyPrice: 100}, {id: "MUSHROOM_STEM", buyPrice: 100}, {id: "DANDELION", buyPrice: 100}, {id: "POPPY", buyPrice: 100}, {id: "BLUE_ORCHID", buyPrice: 100}, {id: "ALLIUM", buyPrice: 100}, {id: "AZURE_BLUET", buyPrice: 100}, {id: "RED_TULIP", buyPrice: 100}, {id: "ORANGE_TULIP", buyPrice: 100}, {id: "WHITE_TULIP", buyPrice: 100}, {id: "PINK_TULIP", buyPrice: 100}, {id: "OXEYE_DAISY", buyPrice: 100}, {id: "CORNFLOWER", buyPrice: 100}, {id: "LILAC", buyPrice: 100}, {id: "SUNFLOWER", buyPrice: 100}, {id: "ROSE_BUSH", buyPrice: 100}, {id: "PEONY", buyPrice: 100}
+          ],
+          "Objets Spéciaux": [
+            {id: "CHEST_FINDER", buyPrice: 15000}, {id: "FERTILIZED_DIRT", buyPrice: 200000}, {id: "HISTERITE_APPLE", buyPrice: 200000}, {id: "OBSIDIAN_BREAKER", buyPrice: 10000}, {id: "TNT", buyPrice: 600, name: "Dynamite"}, {id: "SPONGE", buyPrice: 1000, name: "Sponger"}, {id: "CHEST_EXPLORER", buyPrice: 10000}, {id: "ELYTRA", buyPrice: 20000, name: "Hang Glider"}
+          ],
+          "Décoration": [
+            {id: "WHITE_TERRACOTTA", buyPrice: 50}, {id: "ORANGE_TERRACOTTA", buyPrice: 50}, {id: "MAGENTA_TERRACOTTA", buyPrice: 50}, {id: "LIGHT_BLUE_TERRACOTTA", buyPrice: 50}, {id: "YELLOW_TERRACOTTA", buyPrice: 50}, {id: "LIME_TERRACOTTA", buyPrice: 50}, {id: "PINK_TERRACOTTA", buyPrice: 50}, {id: "GRAY_TERRACOTTA", buyPrice: 50}, {id: "LIGHT_GRAY_TERRACOTTA", buyPrice: 50}, {id: "PURPLE_TERRACOTTA", buyPrice: 50}, {id: "BLUE_TERRACOTTA", buyPrice: 50}, {id: "BROWN_TERRACOTTA", buyPrice: 50}, {id: "GREEN_TERRACOTTA", buyPrice: 50}, {id: "RED_TERRACOTTA", buyPrice: 50}, {id: "BLACK_TERRACOTTA", buyPrice: 50}, {id: "WHITE_GLAZED_TERRACOTTA", buyPrice: 50}, {id: "ORANGE_GLAZED_TERRACOTTA", buyPrice: 50}, {id: "MAGENTA_GLAZED_TERRACOTTA", buyPrice: 50}, {id: "LIGHT_BLUE_GLAZED_TERRACOTTA", buyPrice: 50}, {id: "YELLOW_GLAZED_TERRACOTTA", buyPrice: 50}, {id: "LIME_GLAZED_TERRACOTTA", buyPrice: 50}, {id: "PINK_GLAZED_TERRACOTTA", buyPrice: 50}, {id: "GRAY_GLAZED_TERRACOTTA", buyPrice: 50}, {id: "LIGHT_GRAY_GLAZED_TERRACOTTA", buyPrice: 50}, {id: "PURPLE_GLAZED_TERRACOTTA", buyPrice: 50}, {id: "BLUE_GLAZED_TERRACOTTA", buyPrice: 50}, {id: "BROWN_GLAZED_TERRACOTTA", buyPrice: 50}, {id: "GREEN_GLAZED_TERRACOTTA", buyPrice: 50}, {id: "RED_GLAZED_TERRACOTTA", buyPrice: 50}, {id: "BLACK_GLAZED_TERRACOTTA", buyPrice: 50}, {id: "WHITE_CONCRETE", buyPrice: 50}, {id: "ORANGE_CONCRETE", buyPrice: 50}, {id: "MAGENTA_CONCRETE", buyPrice: 50}, {id: "LIGHT_BLUE_CONCRETE", buyPrice: 50}, {id: "YELLOW_CONCRETE", buyPrice: 50}, {id: "LIME_CONCRETE", buyPrice: 50}, {id: "PINK_CONCRETE", buyPrice: 50}, {id: "GRAY_CONCRETE", buyPrice: 50}, {id: "LIGHT_GRAY_CONCRETE", buyPrice: 50}, {id: "CYAN_CONCRETE", buyPrice: 50}, {id: "PURPLE_CONCRETE", buyPrice: 50}, {id: "BLUE_CONCRETE", buyPrice: 50}, {id: "BROWN_CONCRETE", buyPrice: 50}, {id: "GREEN_CONCRETE", buyPrice: 50}, {id: "RED_CONCRETE", buyPrice: 50}, {id: "BLACK_CONCRETE", buyPrice: 50}, {id: "WHITE_CONCRETE_POWDER", buyPrice: 50}, {id: "ORANGE_CONCRETE_POWDER", buyPrice: 50}, {id: "MAGENTA_CONCRETE_POWDER", buyPrice: 50}, {id: "LIGHT_BLUE_CONCRETE_POWDER", buyPrice: 50}, {id: "YELLOW_CONCRETE_POWDER", buyPrice: 50}, {id: "LIME_CONCRETE_POWDER", buyPrice: 50}, {id: "PINK_CONCRETE_POWDER", buyPrice: 50}, {id: "GRAY_CONCRETE_POWDER", buyPrice: 50}, {id: "LIGHT_GRAY_CONCRETE_POWDER", buyPrice: 50}, {id: "CYAN_CONCRETE_POWDER", buyPrice: 50}, {id: "PURPLE_CONCRETE_POWDER", buyPrice: 50}, {id: "BLUE_CONCRETE_POWDER", buyPrice: 50}, {id: "BROWN_CONCRETE_POWDER", buyPrice: 50}, {id: "GREEN_CONCRETE_POWDER", buyPrice: 50}, {id: "RED_CONCRETE_POWDER", buyPrice: 50}, {id: "BLACK_CONCRETE_POWDER", buyPrice: 50}, {id: "WHITE_WOOL", buyPrice: 50}, {id: "ORANGE_WOOL", buyPrice: 50}, {id: "MAGENTA_WOOL", buyPrice: 50}, {id: "LIGHT_BLUE_WOOL", buyPrice: 50}, {id: "YELLOW_WOOL", buyPrice: 50}, {id: "LIME_WOOL", buyPrice: 50}, {id: "PINK_WOOL", buyPrice: 50}, {id: "GRAY_WOOL", buyPrice: 50}, {id: "LIGHT_GRAY_WOOL", buyPrice: 50}, {id: "PURPLE_WOOL", buyPrice: 50}, {id: "BLUE_WOOL", buyPrice: 50}, {id: "BROWN_WOOL", buyPrice: 50}, {id: "GREEN_WOOL", buyPrice: 50}, {id: "RED_WOOL", buyPrice: 50}, {id: "BLACK_WOOL", buyPrice: 50}, {id: "SEA_LANTERN", buyPrice: 50}, {id: "END_STONE", buyPrice: 50}, {id: "GLOWSTONE", buyPrice: 50}, {id: "QUARTZ_BLOCK", buyPrice: 50}, {id: "PRISMARINE", buyPrice: 50}, {id: "PRISMARINE_BRICKS", buyPrice: 50}, {id: "DARK_PRISMARINE", buyPrice: 50}, {id: "TERRACOTTA", buyPrice: 50}, {id: "SNOW_BLOCK", buyPrice: 20}, {id: "PACKED_ICE", buyPrice: 100}, {id: "BLUE_ICE", buyPrice: 100}, {id: "GLASS", buyPrice: 100}, {id: "BRICKS", buyPrice: 100}, {id: "IRON_BARS", buyPrice: 100}, {id: "FLOWER_POT", buyPrice: 100}, {id: "OAK_SLAB", buyPrice: 100}, {id: "SPRUCE_SLAB", buyPrice: 100}, {id: "BIRCH_SLAB", buyPrice: 100}, {id: "ACACIA_SLAB", buyPrice: 100}, {id: "JUNGLE_SLAB", buyPrice: 100}, {id: "DARK_OAK_SLAB", buyPrice: 100}, {id: "BRICK_SLAB", buyPrice: 100}, {id: "SMOOTH_STONE_SLAB", buyPrice: 100}, {id: "PRISMARINE_SLAB", buyPrice: 100}, {id: "DARK_PRISMARINE_SLAB", buyPrice: 100}, {id: "SANDSTONE_SLAB", buyPrice: 100}, {id: "RED_SANDSTONE_SLAB", buyPrice: 100}, {id: "OAK_STAIRS", buyPrice: 100}, {id: "SPRUCE_STAIRS", buyPrice: 100}, {id: "BIRCH_STAIRS", buyPrice: 100}, {id: "ACACIA_STAIRS", buyPrice: 100}, {id: "JUNGLE_STAIRS", buyPrice: 100}, {id: "DARK_OAK_STAIRS", buyPrice: 100}, {id: "BRICK_STAIRS", buyPrice: 100}, {id: "PRISMARINE_STAIRS", buyPrice: 100}, {id: "DARK_PRISMARINE_STAIRS", buyPrice: 100}, {id: "SANDSTONE_STAIRS", buyPrice: 100}, {id: "RED_SANDSTONE_STAIRS", buyPrice: 100}, {id: "OAK_DOOR", buyPrice: 100}, {id: "SPRUCE_DOOR", buyPrice: 100}, {id: "BIRCH_DOOR", buyPrice: 100}, {id: "ACACIA_DOOR", buyPrice: 100}, {id: "JUNGLE_DOOR", buyPrice: 100}, {id: "DARK_OAK_DOOR", buyPrice: 100}, {id: "OAK_FENCE", buyPrice: 100}, {id: "SPRUCE_FENCE", buyPrice: 100}, {id: "BIRCH_FENCE", buyPrice: 100}, {id: "ACACIA_FENCE", buyPrice: 100}, {id: "JUNGLE_FENCE", buyPrice: 100}, {id: "DARK_OAK_FENCE", buyPrice: 100}, {id: "OAK_FENCE_GATE", buyPrice: 100}, {id: "SPRUCE_FENCE_GATE", buyPrice: 100}, {id: "BIRCH_FENCE_GATE", buyPrice: 100}, {id: "ACACIA_FENCE_GATE", buyPrice: 100}, {id: "JUNGLE_FENCE_GATE", buyPrice: 100}, {id: "DARK_OAK_FENCE_GATE", buyPrice: 100}, {id: "OAK_TRAPDOOR", buyPrice: 100}, {id: "SPRUCE_TRAPDOOR", buyPrice: 100}, {id: "BIRCH_TRAPDOOR", buyPrice: 100}, {id: "ACACIA_TRAPDOOR", buyPrice: 100}, {id: "JUNGLE_TRAPDOOR", buyPrice: 100}, {id: "DARK_OAK_TRAPDOOR", buyPrice: 100}, {id: "OAK_SIGN", buyPrice: 100}, {id: "SPRUCE_SIGN", buyPrice: 100}, {id: "BIRCH_SIGN", buyPrice: 100}, {id: "ACACIA_SIGN", buyPrice: 100}, {id: "JUNGLE_SIGN", buyPrice: 100}, {id: "DARK_OAK_SIGN", buyPrice: 100}, {id: "WHITE_STAINED_GLASS", buyPrice: 50}, {id: "ORANGE_STAINED_GLASS", buyPrice: 50}, {id: "MAGENTA_STAINED_GLASS", buyPrice: 50}, {id: "LIGHT_BLUE_STAINED_GLASS", buyPrice: 50}, {id: "YELLOW_STAINED_GLASS", buyPrice: 50}, {id: "LIME_STAINED_GLASS", buyPrice: 50}, {id: "PINK_STAINED_GLASS", buyPrice: 50}, {id: "GRAY_STAINED_GLASS", buyPrice: 50}, {id: "LIGHT_GRAY_STAINED_GLASS", buyPrice: 50}, {id: "PURPLE_STAINED_GLASS", buyPrice: 50}, {id: "BLUE_STAINED_GLASS", buyPrice: 50}, {id: "BROWN_STAINED_GLASS", buyPrice: 50}, {id: "GREEN_STAINED_GLASS", buyPrice: 50}, {id: "RED_STAINED_GLASS", buyPrice: 50}, {id: "BLACK_STAINED_GLASS", buyPrice: 50}, {id: "WHITE_CARPET", buyPrice: 50}, {id: "ORANGE_CARPET", buyPrice: 50}, {id: "MAGENTA_CARPET", buyPrice: 50}, {id: "LIGHT_BLUE_CARPET", buyPrice: 50}, {id: "YELLOW_CARPET", buyPrice: 50}, {id: "LIME_CARPET", buyPrice: 50}, {id: "PINK_CARPET", buyPrice: 50}, {id: "GRAY_CARPET", buyPrice: 50}, {id: "LIGHT_GRAY_CARPET", buyPrice: 50}, {id: "PURPLE_CARPET", buyPrice: 50}, {id: "BLUE_CARPET", buyPrice: 50}, {id: "BROWN_CARPET", buyPrice: 50}, {id: "GREEN_CARPET", buyPrice: 50}, {id: "RED_CARPET", buyPrice: 50}, {id: "BLACK_CARPET", buyPrice: 50}, {id: "COBWEB", buyPrice: 50}, {id: "LADDER", buyPrice: 50}, {id: "LANTERN", buyPrice: 50}, {id: "REDSTONE_LAMP", buyPrice: 50}
+          ]
+        };
+
+        const marketSectionsContainer = document.getElementById('market-sections');
+
+        function formatItemName(id) {
+            return id.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        }
+
+        function getItemImage(id) {
+            // Exceptions for special item names
+            const exceptions = {
+                'HISTERITE_ORE': null,
+                'RANDOM_ORE': null,
+                'HISTERITE_BLOCK': null,
+                'CHEST_FINDER': null,
+                'FERTILIZED_DIRT': null,
+                'HISTERITE_APPLE': null,
+                'OBSIDIAN_BREAKER': null,
+                'CHEST_EXPLORER': null
+            };
+            if (id in exceptions) {
+                return `https://placehold.co/128x128/2c2c2c/e74c3c?text=${formatItemName(id).replace(/\s+/g, '+')}`;
             }
-        });
+            // Using a public CDN for Minecraft item sprites
+            return `https://raw.githubusercontent.com/oskar-anderson/minecraft-items/master/src/assets/${id.toLowerCase()}.png`;
+        }
+        
+        for (const category in marketData) {
+            const section = document.createElement('div');
+            section.className = 'category-section';
 
-        cancelItemBtn.addEventListener('click', () => {
-            addItemModal.style.display = 'none';
-        });
+            const title = document.createElement('h2');
+            title.className = 'category-title';
+            title.textContent = category;
+            section.appendChild(title);
 
-        addItemForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const itemName = document.getElementById('item-name').value;
-            const itemPrice = document.getElementById('item-price').value;
-            const itemImage = document.getElementById('item-image').value;
+            const grid = document.createElement('div');
+            grid.className = 'market-grid';
             
-            const newItemCard = document.createElement('div');
-            newItemCard.className = 'item-card';
-            
-            const placeholderText = itemName.replace(/\s+/g, '+');
-            const imageSrc = itemImage || `https://placehold.co/600x400/2c2c2c/e74c3c?text=${placeholderText}`;
+            marketData[category].forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'item-card';
 
-            newItemCard.innerHTML = `
-                <img src="${imageSrc}" alt="Image de ${itemName}">
-                <div class="item-info">
-                    <h3>${itemName}</h3>
-                    <p class="item-price">${itemPrice}</p>
-                    <div class="item-seller">
-                        <span>Vendu par : <strong>${currentUserData.username}</strong></span>
+                const itemName = item.name || formatItemName(item.id);
+                const itemImage = getItemImage(item.id);
+                const newPrice = item.buyPrice - 1;
+
+                card.innerHTML = `
+                    <div class="item-image-container">
+                        <img src="${itemImage}" alt="${itemName}" onerror="this.src='https://placehold.co/128x128/2c2c2c/e74c3c?text=Image+N/A'; this.onerror=null;">
                     </div>
-                </div>
-            `;
-            marketGrid.prepend(newItemCard); // Ajoute le nouvel objet au début de la liste
-            
-            addItemModal.style.display = 'none';
-            addItemForm.reset();
-        });
+                    <div class="item-info">
+                        <h3>${itemName}</h3>
+                        <div class="price-container">
+                            <span class="original-price">${item.buyPrice}$</span>
+                            <span class="new-price">${newPrice}$</span>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            section.appendChild(grid);
+            marketSectionsContainer.appendChild(section);
+        }
 
     </script>
 </body>

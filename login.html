@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - Faction R4TIO</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --main-bg-color: #1a1a1a;
+            --primary-red: #e74c3c;
+            --primary-red-dark: #c0392b;
+            --text-light: #f5f5f5;
+            --text-medium: #cccccc;
+            --card-bg-color: #2c2c2c;
+        }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--main-bg-color);
+            background-image: url('https://www.transparenttextures.com/patterns/dark-denim-3.png');
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .form-container {
+            background-color: var(--card-bg-color);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid #444;
+        }
+        .form-container h2 {
+            font-family: 'Anton', sans-serif;
+            font-size: 2.5rem;
+            color: var(--primary-red);
+            text-align: center;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+        }
+        .form-group label {
+            display: block;
+            color: var(--text-medium);
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: 5px;
+            background-color: #333;
+            color: var(--text-light);
+            border: 2px solid #555;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-red);
+        }
+        .password-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .password-container input {
+            padding-right: 2.5rem;
+        }
+        .password-container .fa-eye, .password-container .fa-eye-slash {
+            position: absolute;
+            right: 0.75rem;
+            cursor: pointer;
+            color: #9ca3af;
+        }
+        .submit-btn {
+            width: 100%;
+            background-color: var(--primary-red);
+            color: white;
+            font-weight: bold;
+            padding: 0.8rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: background-color 0.3s;
+            margin-top: 1rem;
+        }
+        .submit-btn:hover {
+            background-color: var(--primary-red-dark);
+        }
+        .submit-btn:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+        }
+        .divider {
+            margin: 1.5rem 0;
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: var(--text-medium);
+        }
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #555;
+        }
+        .divider:not(:empty)::before {
+            margin-right: .25em;
+        }
+        .divider:not(:empty)::after {
+            margin-left: .25em;
+        }
+        .google-btn {
+            width: 100%;
+            background-color: #fff;
+            color: #333;
+            font-weight: bold;
+            padding: 0.8rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .google-btn:hover {
+            background-color: #eee;
+        }
+        .google-btn img {
+            height: 1.25rem;
+            margin-right: 0.75rem;
+        }
+        .register-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: var(--text-medium);
+        }
+        .register-link a {
+            color: var(--primary-red);
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+        #message-box {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            background-color: var(--card-bg-color);
+            color: var(--text-light);
+            padding: 1rem;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            display: none;
+            z-index: 3000;
+            border-left: 4px solid var(--primary-red);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="form-container">
+        <h2>Connexion</h2>
+        
+        <form id="login-form">
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label for="email">Adresse e-mail</label>
+                <input type="email" id="email" placeholder="ton.email@exemple.com" required>
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label for="password">Mot de passe</label>
+                <div class="password-container">
+                    <input type="password" id="password" placeholder="**********" required>
+                    <i class="fas fa-eye" id="togglePassword"></i>
+                </div>
+            </div>
+            
+            <button type="submit" class="submit-btn">Se connecter</button>
+        </form>
+
+        <div class="divider">OU</div>
+
+        <button id="google-login-button" class="google-btn">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google logo">
+            Se connecter avec Google
+        </button>
+        
+        <p class="register-link">
+            Pas encore de compte ? <a href="register.html">S'inscrire</a>
+        </p>
+    </div>
+
+    <div id="message-box"></div>
+
+    <script type="module">
+        import { auth } from './firebase-config.js';
+        import { signInWithEmailAndPassword, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+        
+        function showMessage(message) {
+            const box = document.getElementById('message-box');
+            box.textContent = message;
+            box.style.display = 'block';
+            setTimeout(() => box.style.display = 'none', 3000);
+        }
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // Si l'utilisateur est déjà connecté, on le redirige vers l'accueil
+                window.location.href = 'index.html'; 
+            }
+        });
+
+        function togglePasswordVisibility(inputId, toggleIcon) {
+            const passwordInput = document.getElementById(inputId);
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            toggleIcon.classList.toggle('fa-eye-slash');
+        }
+
+        const togglePassword = document.getElementById('togglePassword');
+        togglePassword.addEventListener('click', () => togglePasswordVisibility('password', togglePassword));
+
+        document.getElementById('login-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            const button = this.querySelector('button[type="submit"]');
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connexion...';
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                showMessage("Connexion réussie ! Redirection...");
+                // La redirection est gérée par onAuthStateChanged
+            } catch (error) {
+                let msg = "Email ou mot de passe incorrect.";
+                if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                    msg = "Email ou mot de passe incorrect.";
+                }
+                showMessage(msg);
+                button.disabled = false;
+                button.innerHTML = "Se connecter";
+            }
+        });
+        
+        document.getElementById('google-login-button').addEventListener('click', async () => {
+            const provider = new GoogleAuthProvider();
+            try {
+                await signInWithPopup(auth, provider);
+                showMessage("Connexion avec Google réussie !");
+                // La redirection est gérée par onAuthStateChanged
+            } catch (error) {
+                console.error("Erreur de connexion Google:", error);
+                showMessage("Erreur lors de la connexion avec Google.");
+            }
+        });
+    </script>
+</body>
+</html>

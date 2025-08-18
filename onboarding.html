@@ -179,8 +179,8 @@
             </div>
 
             <div class="form-group">
-                <label for="role">Rôle principal en jeu</label>
-                <input type="text" id="role" placeholder="PvP, Farmeur, Constructeur..." required>
+                <label for="gameRole">Rôle principal en jeu</label>
+                <input type="text" id="gameRole" placeholder="PvP, Farmeur, Constructeur..." required>
             </div>
 
             <button type="submit" class="submit-btn">C'est parti !</button>
@@ -204,7 +204,6 @@
             setTimeout(() => box.style.display = 'none', 3000);
         }
         
-        // CORRECTION: Utilisation d'un proxy CORS pour l'image par défaut
         document.getElementById('profile-picture-preview').src = `https://corsproxy.io/?https://mc-heads.net/avatar/Steve/100`;
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -260,7 +259,8 @@
                     const userProfile = {
                         username: document.getElementById('username').value,
                         discordTag: document.getElementById('discordTag').value,
-                        role: document.getElementById('role').value,
+                        gameRole: document.getElementById('gameRole').value, // Rôle en jeu
+                        role: 'Visiteur', // Rôle par défaut du système
                         photoURL: photoURL,
                         createdAt: new Date().toISOString()
                     };

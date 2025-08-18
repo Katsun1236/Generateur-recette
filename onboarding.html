@@ -50,6 +50,9 @@
             color: var(--text-medium);
             margin-bottom: 2rem;
         }
+        .form-group {
+            margin-bottom: 1rem;
+        }
         .form-group label {
             display: block;
             color: var(--text-medium);
@@ -110,9 +113,13 @@
         }
         .grid-inputs {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr;
             gap: 1rem;
-            margin-bottom: 1rem;
+        }
+        @media (min-width: 640px) {
+            .grid-inputs {
+                grid-template-columns: 1fr 1fr;
+            }
         }
         .submit-btn {
             width: 100%;
@@ -147,6 +154,58 @@
             z-index: 3000;
             border-left: 4px solid var(--primary-red);
         }
+
+        /* --- Style du menu déroulant multi-sélection --- */
+        .multiselect {
+            position: relative;
+        }
+        .select-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-radius: 5px;
+            background-color: #333;
+            border: 2px solid #555;
+            cursor: pointer;
+        }
+        .select-box.open {
+            border-color: var(--primary-red);
+        }
+        .select-box .placeholder {
+            color: #9ca3af;
+        }
+        .select-box .selected-values {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        #checkboxes {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: #333;
+            border: 2px solid #555;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+            z-index: 10;
+        }
+        #checkboxes label {
+            display: block;
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        #checkboxes label:hover {
+            background-color: #444;
+        }
+        #checkboxes input {
+            margin-right: 0.5rem;
+        }
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -179,8 +238,21 @@
             </div>
 
             <div class="form-group">
-                <label for="gameRole">Rôle principal en jeu</label>
-                <input type="text" id="gameRole" placeholder="PvP, Farmeur, Constructeur..." required>
+                <label for="gameRoles">Quel type de joueur es-tu ?</label>
+                <div class="multiselect" id="gameRoles-multiselect">
+                    <div class="select-box" id="select-box">
+                        <span id="select-text" class="placeholder">Sélectionne un ou plusieurs rôles</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div id="checkboxes" class="hidden">
+                        <label><input type="checkbox" value="PvP"/> PvP</label>
+                        <label><input type="checkbox" value="Farmeur"/> Farmeur</label>
+                        <label><input type="checkbox" value="Constructeur"/> Constructeur</label>
+                        <label><input type="checkbox" value="Pilleur"/> Pilleur</label>
+                        <label><input type="checkbox" value="Décorateur"/> Décorateur</label>
+                        <label><input type="checkbox" value="Alchimiste"/> Alchimiste</label>
+                    </div>
+                </div>
             </div>
 
             <button type="submit" class="submit-btn">C'est parti !</button>
@@ -216,6 +288,19 @@
                         window.location.href = 'index.html';
                         return;
                     }
+
+                    // Pré-remplissage des champs
+                    if (user.providerData.length > 0) {
+                        const providerId = user.providerData[0].providerId;
+                        if (providerId === 'discord.com') {
+                            document.getElementById('discordTag').value = user.displayName || '';
+                            const usernameWithoutTag = user.displayName.split('#')[0];
+                            document.getElementById('username').value = usernameWithoutTag;
+                        } else if (providerId === 'google.com') {
+                            document.getElementById('username').value = user.displayName || '';
+                        }
+                    }
+
                     if (user.photoURL) {
                         document.getElementById('profile-picture-preview').src = user.photoURL;
                     }
@@ -223,6 +308,38 @@
                     window.location.href = 'login.html';
                 }
             });
+
+            // Logique pour le menu déroulant
+            const selectBox = document.getElementById('select-box');
+            const checkboxes = document.getElementById('checkboxes');
+            const selectText = document.getElementById('select-text');
+
+            selectBox.addEventListener('click', () => {
+                checkboxes.classList.toggle('hidden');
+                selectBox.classList.toggle('open');
+            });
+
+            checkboxes.addEventListener('change', () => {
+                const selected = [];
+                checkboxes.querySelectorAll('input:checked').forEach(input => {
+                    selected.push(input.value);
+                });
+                if (selected.length > 0) {
+                    selectText.textContent = selected.join(', ');
+                    selectText.classList.remove('placeholder');
+                } else {
+                    selectText.textContent = 'Sélectionne un ou plusieurs rôles';
+                    selectText.classList.add('placeholder');
+                }
+            });
+
+            window.addEventListener('click', (e) => {
+                if (!document.getElementById('gameRoles-multiselect').contains(e.target)) {
+                    checkboxes.classList.add('hidden');
+                    selectBox.classList.remove('open');
+                }
+            });
+
 
             document.getElementById('profile-picture-container').addEventListener('click', () => document.getElementById('profilePicture').click());
 
@@ -249,6 +366,19 @@
                 const profilePictureFile = document.getElementById('profilePicture').files[0];
                 let photoURL = document.getElementById('profile-picture-preview').src;
 
+                // Récupérer les rôles sélectionnés
+                const selectedRoles = [];
+                checkboxes.querySelectorAll('input:checked').forEach(input => {
+                    selectedRoles.push(input.value);
+                });
+
+                if (selectedRoles.length === 0) {
+                    showMessage("Veuillez sélectionner au moins un rôle en jeu.");
+                    button.disabled = false;
+                    button.innerHTML = "C'est parti !";
+                    return;
+                }
+
                 try {
                     if (profilePictureFile) {
                         const storageRef = ref(storage, `users/${currentUserId}/profilePicture.jpg`);
@@ -259,7 +389,7 @@
                     const userProfile = {
                         username: document.getElementById('username').value,
                         discordTag: document.getElementById('discordTag').value,
-                        gameRole: document.getElementById('gameRole').value, // Rôle en jeu
+                        gameRoles: selectedRoles, // Rôles en jeu (tableau)
                         role: 'Visiteur', // Rôle par défaut du système
                         photoURL: photoURL,
                         createdAt: new Date().toISOString()

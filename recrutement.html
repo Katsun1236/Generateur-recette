@@ -88,9 +88,11 @@
         .submit-btn:hover { background-color: var(--primary-red-dark); }
         .submit-btn:disabled { background-color: #555; cursor: not-allowed; }
 
-        /* --- Vue Candidat --- */
+        /* --- Vue Candidat & Membre --- */
         .status-box { background-color: var(--card-bg-color); padding: 3rem; border-radius: 10px; border: 1px solid #444; text-align: center; }
-        .status-box i { font-size: 4rem; color: var(--yellow); margin-bottom: 1rem; }
+        .status-box i { font-size: 4rem; margin-bottom: 1rem; }
+        .status-box .fa-clock { color: var(--yellow); }
+        .status-box .fa-check-circle { color: var(--green); }
         .status-box h2 { font-family: 'Anton', sans-serif; font-size: 2.5rem; color: var(--text-light); margin-bottom: 0.5rem; }
         
         /* --- Vue Recruteur --- */
@@ -208,7 +210,16 @@
             <div class="status-box">
                 <i class="fas fa-clock"></i>
                 <h2>Candidature envoyée !</h2>
-                <p>Merci pour ton intérêt ! Ta candidature a bien été enregistrée. Le staff de la R4TIO va l'étudier et te contactera bientôt si ton profil est retenu pour un entretien oral.</p>
+                <p>Merci pour ton intérêt ! Ta candidature a bien été enregistrée. Le staff de la R4TIO va l'étudier et te contactera bientôt si ton profil est retenu.</p>
+            </div>
+        </div>
+
+        <!-- Vue Membre Approuvé -->
+        <div id="member-view" class="hidden">
+            <div class="status-box">
+                <i class="fas fa-check-circle"></i>
+                <h2>Candidature Approuvée !</h2>
+                <p>Félicitations ! Ta candidature a été acceptée. Un entretien oral sera bientôt défini par message privé. Reste à l'affût !</p>
             </div>
         </div>
 
@@ -241,6 +252,7 @@
         const views = {
             visitor: document.getElementById('visitor-view'),
             candidate: document.getElementById('candidate-view'),
+            member: document.getElementById('member-view'),
             recruiter: document.getElementById('recruiter-view')
         };
         const profileLink = document.getElementById('profile-link');
@@ -265,9 +277,14 @@
                     const photo = currentUserData.photoURL || `https://corsproxy.io/?https://mc-heads.net/avatar/${currentUserData.username}/45`;
                     profilePic.src = photo;
                     
+                    Object.values(views).forEach(v => v.classList.add('hidden'));
+
                     switch (currentUserData.role) {
                         case 'Candidat':
                             views.candidate.classList.remove('hidden');
+                            break;
+                        case 'Membre':
+                            views.member.classList.remove('hidden');
                             break;
                         case 'Recruteur':
                             views.recruiter.classList.remove('hidden');
@@ -275,7 +292,9 @@
                             break;
                         default:
                             views.visitor.classList.remove('hidden');
-                            document.getElementById('pseudo').value = currentUserData.username || '';
+                            if(document.getElementById('pseudo')) {
+                                document.getElementById('pseudo').value = currentUserData.username || '';
+                            }
                     }
                 } else {
                     window.location.href = 'onboarding.html';
@@ -423,7 +442,6 @@
                 alert("Une erreur est survenue.");
             }
         }
-
     </script>
 </body>
 </html>

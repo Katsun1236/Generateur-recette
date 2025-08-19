@@ -817,56 +817,56 @@ export const marketItems = [
         category: "Nature"
     },
 
-    // Objets Spéciaux",
-        {
-            name: "Chest Finder",
-            buyPrice: 15000,
-            img: "../images/market-icon/histeria-icon/chest_finder.png",
-            category: "Objets Spéciaux"
-        },
-        {
-            name: "Fertilized Dirt",
-            buyPrice: 200000,
-            img: "../images/market-icon/histeria-icon/fertilized_dirt.png",
-            category: "Objets Spéciaux"
-        },
-        {
-            name: "Histerite Apple",
-            buyPrice: 200000,
-            img: "../images/market-icon/histeria-icon/histerite_apple.png",
-            category: "Objets Spéciaux"
-        },
-        {
-            name: "Obsidian Breaker",
-            buyPrice: 10000,
-            img: "../images/market-icon/histeria-icon/obsidian_breaker.png",
-            category: "Objets Spéciaux"
-        },
-        {
-            name: "Dynamite",
-            buyPrice: 600,
-            img: "../images/market-icon/histeria-icon/dynamite.png",
-            category: "Objets Spéciaux"
-        },
-        {
-            name: "Sponger",
-            buyPrice: 1000,
-            img: "../images/market-icon/histeria-icon/sponger.png",
-            category: "Objets Spéciaux"
-        },
-        {
-            name: "Chest Explorer",
-            buyPrice: 10000,
-            img: "../images/market-icon/histeria-icon/chest_explorer.png",
-            category: "Objets Spéciaux"
-        },
-        {
-            name: "Hang Glider",
-            buyPrice: 20000,
-            img: "../images/market-icon/histeria-icon/hang_glider.png",
-            category: "Objets Spéciaux"
-        },
-            // Objets Histeria
+    // Objets Spéciaux
+    {
+        name: "Chest Finder",
+        buyPrice: 15000,
+        img: "../images/market-icon/histeria-icon/chest_finder.png",
+        category: "Objets Spéciaux"
+    },
+    {
+        name: "Fertilized Dirt",
+        buyPrice: 200000,
+        img: "../images/market-icon/histeria-icon/fertilized_dirt.png",
+        category: "Objets Spéciaux"
+    },
+    {
+        name: "Histerite Apple",
+        buyPrice: 200000,
+        img: "../images/market-icon/histeria-icon/histerite_apple.png",
+        category: "Objets Spéciaux"
+    },
+    {
+        name: "Obsidian Breaker",
+        buyPrice: 10000,
+        img: "../images/market-icon/histeria-icon/obsidian_breaker.png",
+        category: "Objets Spéciaux"
+    },
+    {
+        name: "Dynamite",
+        buyPrice: 600,
+        img: "../images/market-icon/histeria-icon/dynamite.png",
+        category: "Objets Spéciaux"
+    },
+    {
+        name: "Sponger",
+        buyPrice: 1000,
+        img: "../images/market-icon/histeria-icon/sponger.png",
+        category: "Objets Spéciaux"
+    },
+    {
+        name: "Chest Explorer",
+        buyPrice: 10000,
+        img: "../images/market-icon/histeria-icon/chest_explorer.png",
+        category: "Objets Spéciaux"
+    },
+    {
+        name: "Hang Glider",
+        buyPrice: 20000,
+        img: "../images/market-icon/histeria-icon/hang_glider.png",
+        category: "Objets Spéciaux"
+    },
+    // Objets Histeria
     {
         name: "Altar",
         buyPrice: 0,
@@ -1472,15 +1472,15 @@ export const marketItems = [
         buyPrice: 0,
         img: "../images/market-icon/histeria-icon/vote-key.png",
         category: "Objets Histeria"
-    }
+    },
 
-    // Décoration"
-        {
-            name: "Terre cuite blanche",
-            buyPrice: 50,
-            img: "../images/market-icon/minecraft_white_terracotta.png",
-            category: "Décoration"
-        },
+    // Décoration
+    {
+        name: "Terre cuite blanche",
+        buyPrice: 50,
+        img: "../images/market-icon/minecraft_white_terracotta.png",
+        category: "Décoration"
+    },
         {
             name: "Terre cuite orange",
             buyPrice: 50,

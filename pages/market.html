@@ -240,6 +240,79 @@
         .buy-btn:hover {
             background-color: var(--primary-red-dark);
         }
+
+        /* Styles pour le panier et les modales */
+        .cart-button {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            background-color: var(--primary-red);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1001;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+            transition: transform 0.3s ease;
+        }
+        .cart-button:hover {
+            transform: scale(1.1);
+        }
+        .cart-button i {
+            font-size: 1.5rem;
+            color: white;
+        }
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: var(--discord-blue);
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.7);
+            backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background-color: var(--market-card-bg);
+            margin: 15% auto;
+            padding: 2rem;
+            border: 1px solid var(--market-border);
+            width: 90%;
+            max-width: 500px;
+            border-radius: 10px;
+            position: relative;
+        }
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-btn:hover, .close-btn:focus {
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -276,6 +349,36 @@
         </div>
     </div>
     
+    <div class="cart-button" id="cart-button">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-count" id="cart-count">0</span>
+    </div>
+
+    <!-- Modale de quantité -->
+    <div id="quantity-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-quantity-modal">&times;</span>
+            <h2 id="quantity-item-name"></h2>
+            <img id="quantity-item-img" src="" alt="" style="width: 100px; height: 100px; margin: 1rem auto; display: block; image-rendering: pixelated;">
+            <div class="form-group">
+                <label for="quantity-input">Quantité</label>
+                <input type="number" id="quantity-input" value="1" min="1" max="64">
+            </div>
+            <button id="add-to-cart-btn" class="buy-btn">Ajouter au panier</button>
+        </div>
+    </div>
+
+    <!-- Modale du panier -->
+    <div id="cart-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-cart-modal">&times;</span>
+            <h2>Votre Panier</h2>
+            <div id="cart-items"></div>
+            <h3 id="cart-total">Total: 0$</h3>
+            <button id="checkout-btn" class="buy-btn">Passer la commande</button>
+        </div>
+    </div>
+
     <div id="message-box"></div>
 
     <script type="module" src="../js/main.js"></script>
@@ -285,8 +388,14 @@
         const featuredGrid = document.getElementById('featured-grid');
         const marketGrid = document.getElementById('market-grid');
         const categoryList = document.getElementById('category-list');
-
-        const featuredItemNames = ["Histerite Apple", "Hang Glider", "Histerite Sword", "Vault Breacher"];
+        const cartButton = document.getElementById('cart-button');
+        const cartCount = document.getElementById('cart-count');
+        
+        const quantityModal = document.getElementById('quantity-modal');
+        const cartModal = document.getElementById('cart-modal');
+        
+        let cart = [];
+        let currentItem = null;
 
         function getRarity(price) {
             if (price >= 20000) return 'legendary';
@@ -314,6 +423,7 @@
                     <button class="buy-btn">Acheter</button>
                 </div>
             `;
+            card.querySelector('.buy-btn').addEventListener('click', () => openQuantityModal(item));
             return card;
         }
 
@@ -350,6 +460,7 @@
         }
 
         function setupFeatured() {
+            const featuredItemNames = ["Histerite Apple", "Hang Glider", "Histerite Sword", "Vault Breacher"];
             featuredItemNames.forEach(featuredName => {
                 const item = marketItems.find(i => i.name === featuredName);
                 if (item) {
@@ -357,17 +468,64 @@
                 }
             });
         }
-        
-        document.body.addEventListener('click', function(e) {
-            if (e.target && e.target.classList.contains('buy-btn')) {
-                alert("Fonctionnalité d'achat bientôt disponible !");
+
+        function openQuantityModal(item) {
+            currentItem = item;
+            document.getElementById('quantity-item-name').textContent = item.name;
+            document.getElementById('quantity-item-img').src = item.img;
+            document.getElementById('quantity-input').value = 1;
+            quantityModal.style.display = 'block';
+        }
+
+        document.getElementById('add-to-cart-btn').addEventListener('click', () => {
+            const quantity = parseInt(document.getElementById('quantity-input').value);
+            if (quantity > 0) {
+                const existingItem = cart.find(item => item.name === currentItem.name);
+                if (existingItem) {
+                    existingItem.quantity += quantity;
+                } else {
+                    cart.push({ ...currentItem, quantity });
+                }
+                updateCart();
+                quantityModal.style.display = 'none';
             }
+        });
+
+        function updateCart() {
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartCount.textContent = totalItems;
+            
+            const cartItemsContainer = document.getElementById('cart-items');
+            cartItemsContainer.innerHTML = '';
+            let total = 0;
+
+            cart.forEach(item => {
+                const itemElement = document.createElement('div');
+                itemElement.innerHTML = `<p>${item.name} x${item.quantity} - ${item.buyPrice * item.quantity}$</p>`;
+                cartItemsContainer.appendChild(itemElement);
+                total += item.buyPrice * item.quantity;
+            });
+
+            document.getElementById('cart-total').textContent = `Total: ${total}$`;
+        }
+
+        cartButton.addEventListener('click', () => {
+            cartModal.style.display = 'block';
+        });
+
+        document.getElementById('close-quantity-modal').addEventListener('click', () => quantityModal.style.display = 'none');
+        document.getElementById('close-cart-modal').addEventListener('click', () => cartModal.style.display = 'none');
+
+        document.getElementById('checkout-btn').addEventListener('click', () => {
+            alert('Commande passée ! (fonctionnalité à développer)');
+            cart = [];
+            updateCart();
+            cartModal.style.display = 'none';
         });
 
         setupFeatured();
         setupCategories();
         renderMarket('all');
-
     </script>
 </body>
 </html>

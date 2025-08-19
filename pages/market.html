@@ -240,8 +240,7 @@
         .buy-btn:hover {
             background-color: var(--primary-red-dark);
         }
-
-        /* Styles pour le panier et les modales */
+        
         .cart-button {
             position: fixed;
             bottom: 2rem;
@@ -292,10 +291,11 @@
             overflow: auto;
             background-color: rgba(0,0,0,0.7);
             backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
         }
         .modal-content {
             background-color: var(--market-card-bg);
-            margin: 15% auto;
             padding: 2rem;
             border: 1px solid var(--market-border);
             width: 90%;
@@ -305,13 +305,83 @@
         }
         .close-btn {
             color: #aaa;
-            float: right;
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
             font-size: 28px;
             font-weight: bold;
             cursor: pointer;
         }
         .close-btn:hover, .close-btn:focus {
             color: white;
+        }
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        .quantity-btn {
+            width: 40px;
+            height: 40px;
+            background-color: #333;
+            border: 1px solid #555;
+            color: white;
+            font-size: 1.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        #quantity-input {
+            width: 60px;
+            text-align: center;
+            font-size: 1.2rem;
+            background-color: #111;
+            border: 1px solid #555;
+            color: white;
+            border-radius: 5px;
+        }
+        #cart-items {
+            max-height: 40vh;
+            overflow-y: auto;
+            margin: 1.5rem 0;
+        }
+        .cart-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--market-border);
+        }
+        .cart-item img {
+            width: 50px;
+            height: 50px;
+            margin-right: 1rem;
+            image-rendering: pixelated;
+        }
+        .cart-item-details {
+            flex-grow: 1;
+        }
+        .cart-item-actions {
+            display: flex;
+            align-items: center;
+        }
+        .cart-item-actions button {
+            background: none;
+            border: 1px solid #555;
+            color: white;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .cart-item-actions input {
+            width: 40px;
+            text-align: center;
+            background-color: #333;
+            border: none;
+            color: white;
+            margin: 0 0.5rem;
         }
     </style>
 </head>
@@ -354,27 +424,26 @@
         <span class="cart-count" id="cart-count">0</span>
     </div>
 
-    <!-- Modale de quantité -->
     <div id="quantity-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn" id="close-quantity-modal">&times;</span>
             <h2 id="quantity-item-name"></h2>
             <img id="quantity-item-img" src="" alt="" style="width: 100px; height: 100px; margin: 1rem auto; display: block; image-rendering: pixelated;">
-            <div class="form-group">
-                <label for="quantity-input">Quantité</label>
+            <div class="quantity-selector">
+                <button class="quantity-btn" id="quantity-minus">-</button>
                 <input type="number" id="quantity-input" value="1" min="1" max="64">
+                <button class="quantity-btn" id="quantity-plus">+</button>
             </div>
             <button id="add-to-cart-btn" class="buy-btn">Ajouter au panier</button>
         </div>
     </div>
 
-    <!-- Modale du panier -->
     <div id="cart-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn" id="close-cart-modal">&times;</span>
             <h2>Votre Panier</h2>
             <div id="cart-items"></div>
-            <h3 id="cart-total">Total: 0$</h3>
+            <h3 id="cart-total" style="text-align: right; font-size: 1.5rem; margin-top: 1rem;">Total: 0$</h3>
             <button id="checkout-btn" class="buy-btn">Passer la commande</button>
         </div>
     </div>
@@ -474,7 +543,7 @@
             document.getElementById('quantity-item-name').textContent = item.name;
             document.getElementById('quantity-item-img').src = item.img;
             document.getElementById('quantity-input').value = 1;
-            quantityModal.style.display = 'block';
+            quantityModal.style.display = 'flex';
         }
 
         document.getElementById('add-to-cart-btn').addEventListener('click', () => {
@@ -499,9 +568,22 @@
             cartItemsContainer.innerHTML = '';
             let total = 0;
 
-            cart.forEach(item => {
+            cart.forEach((item, index) => {
                 const itemElement = document.createElement('div');
-                itemElement.innerHTML = `<p>${item.name} x${item.quantity} - ${item.buyPrice * item.quantity}$</p>`;
+                itemElement.className = 'cart-item';
+                itemElement.innerHTML = `
+                    <img src="${item.img}" alt="${item.name}">
+                    <div class="cart-item-details">
+                        <p>${item.name}</p>
+                        <p>${item.buyPrice * item.quantity}$</p>
+                    </div>
+                    <div class="cart-item-actions">
+                        <button data-index="${index}" class="quantity-minus">-</button>
+                        <input type="number" value="${item.quantity}" readonly>
+                        <button data-index="${index}" class="quantity-plus">+</button>
+                        <button data-index="${index}" class="delete-item"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
                 cartItemsContainer.appendChild(itemElement);
                 total += item.buyPrice * item.quantity;
             });
@@ -510,17 +592,42 @@
         }
 
         cartButton.addEventListener('click', () => {
-            cartModal.style.display = 'block';
+            cartModal.style.display = 'flex';
         });
 
         document.getElementById('close-quantity-modal').addEventListener('click', () => quantityModal.style.display = 'none');
         document.getElementById('close-cart-modal').addEventListener('click', () => cartModal.style.display = 'none');
 
         document.getElementById('checkout-btn').addEventListener('click', () => {
-            alert('Commande passée ! (fonctionnalité à développer)');
-            cart = [];
+            if(cart.length === 0) {
+                alert("Votre panier est vide !");
+                return;
+            }
+            const orderData = encodeURIComponent(JSON.stringify(cart));
+            window.location.href = `checkout.html?order=${orderData}`;
+        });
+
+        document.getElementById('cart-items').addEventListener('click', (e) => {
+            const index = e.target.closest('button').dataset.index;
+            if (e.target.closest('.quantity-plus')) {
+                cart[index].quantity++;
+            } else if (e.target.closest('.quantity-minus')) {
+                cart[index].quantity--;
+                if (cart[index].quantity === 0) {
+                    cart.splice(index, 1);
+                }
+            } else if (e.target.closest('.delete-item')) {
+                cart.splice(index, 1);
+            }
             updateCart();
-            cartModal.style.display = 'none';
+        });
+
+        const quantityInput = document.getElementById('quantity-input');
+        document.getElementById('quantity-minus').addEventListener('click', () => {
+            if (quantityInput.value > 1) quantityInput.value--;
+        });
+        document.getElementById('quantity-plus').addEventListener('click', () => {
+            if (quantityInput.value < 64) quantityInput.value++;
         });
 
         setupFeatured();

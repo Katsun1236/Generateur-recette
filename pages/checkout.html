@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commande - Faction R4TIO</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        body {
+            background-color: #111;
+        }
+        .checkout-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: #1c1c1c;
+            border-radius: 10px;
+            border: 1px solid #333;
+        }
+        h1 {
+            color: var(--primary-red);
+            font-family: 'Anton', sans-serif;
+        }
+        .order-summary, .user-info {
+            margin-bottom: 2rem;
+        }
+        .order-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #333;
+        }
+        .order-item img {
+            width: 50px;
+            height: 50px;
+            margin-right: 1rem;
+            image-rendering: pixelated;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="../index.html"><img src="../images/pictures/Logo.png" alt="Logo R4TIO" class="nav-logo"></a>
+        </div>
+        <div class="nav-center">
+            <a href="https://discord.gg/UFVCDc4mkU" target="_blank">Discord</a>
+            <a href="recrutement.html">Recrutement</a>
+            <a href="market.html">Marché</a>
+        </div>
+        <div class="nav-auth">
+            <a href="profile.html" id="profile-link" style="display: none;">
+                <img id="profile-pic" src="" alt="Photo de profil">
+            </a>
+            <div id="auth-buttons">
+                <a href="login.html">Connexion</a>
+                <a href="register.html" class="register-btn">Inscription</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="checkout-container">
+        <h1>Finaliser la Commande</h1>
+        
+        <div class="order-summary">
+            <h2>Résumé de la commande</h2>
+            <div id="order-items-summary"></div>
+            <h3 id="order-total"></h3>
+        </div>
+
+        <div class="user-info">
+            <h2>Vos informations</h2>
+            <p><strong>Utilisateur :</strong> <span id="user-name">Chargement...</span></p>
+            <p>Pour finaliser votre commande, veuillez contacter un vendeur sur notre Discord avec le résumé ci-dessus.</p>
+            <a href="https://discord.gg/UFVCDc4mkU" class="register-btn" target="_blank">Rejoindre le Discord</a>
+        </div>
+    </div>
+
+    <script type="module" src="../js/main.js"></script>
+    <script type="module">
+        import { auth, db } from '../js/firebase-config.js';
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const orderItemsContainer = document.getElementById('order-items-summary');
+        const orderTotalElement = document.getElementById('order-total');
+        const userNameElement = document.getElementById('user-name');
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const userDocRef = doc(db, 'users', user.uid);
+                const userDoc = await getDoc(userDocRef);
+                if (userDoc.exists()) {
+                    userNameElement.textContent = userDoc.data().username;
+                }
+            } else {
+                userNameElement.textContent = "Non connecté";
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const orderData = params.get('order');
+
+            if (orderData) {
+                try {
+                    const cart = JSON.parse(decodeURIComponent(orderData));
+                    let total = 0;
+                    
+                    cart.forEach(item => {
+                        const itemElement = document.createElement('div');
+                        itemElement.className = 'order-item';
+                        itemElement.innerHTML = `
+                            <img src="${item.img}" alt="${item.name}">
+                            <div>
+                                <p><strong>${item.name}</strong></p>
+                                <p>Quantité: ${item.quantity}</p>
+                                <p>Prix: ${item.quantity * item.buyPrice}$</p>
+                            </div>
+                        `;
+                        orderItemsContainer.appendChild(itemElement);
+                        total += item.quantity * item.buyPrice;
+                    });
+
+                    orderTotalElement.textContent = `Total de la commande : ${total}$`;
+
+                } catch (e) {
+                    orderItemsContainer.innerHTML = "<p>Erreur lors de la lecture de la commande.</p>";
+                }
+            } else {
+                orderItemsContainer.innerHTML = "<p>Aucune commande spécifiée.</p>";
+            }
+        });
+    </script>
+</body>
+</html>

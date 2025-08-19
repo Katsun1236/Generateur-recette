@@ -505,6 +505,8 @@
     <script type="module" src="../js/main.js"></script>
     <script type="module">
         import { marketItems } from '../js/market-config.js';
+        import { auth, db } from '../js/firebase-config.js';
+        import { collection, addDoc, serverTimestamp, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const featuredGrid = document.getElementById('featured-grid');
         const marketGrid = document.getElementById('market-grid');
@@ -516,7 +518,7 @@
         const quantityModal = document.getElementById('quantity-modal');
         const cartModal = document.getElementById('cart-modal');
         
-        let cart = [];
+        let cart = JSON.parse(localStorage.getItem('r4tioCart')) || [];
         let currentItem = null;
 
         function getRarity(price) {
@@ -566,7 +568,7 @@
         }
 
         function setupCategories() {
-            const categories = ['all', ...new Set(marketItems.map(item => item.category))];
+            const categories = ['all', 'Équipement Histeria', 'Ressources Histeria', 'Objets Spéciaux', 'Blocs de Construction', 'Minerais', 'Agriculture & Nature', 'Décoration', 'Utilitaires'];
             
             categories.forEach(category => {
                 const li = document.createElement('li');
@@ -624,6 +626,7 @@
         });
 
         function updateCart() {
+            localStorage.setItem('r4tioCart', JSON.stringify(cart));
             const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
             cartCount.textContent = totalItems;
             
@@ -661,13 +664,46 @@
         document.getElementById('close-quantity-modal').addEventListener('click', () => quantityModal.style.display = 'none');
         document.getElementById('close-cart-modal').addEventListener('click', () => cartModal.style.display = 'none');
 
-        document.getElementById('checkout-btn').addEventListener('click', () => {
+        document.getElementById('checkout-btn').addEventListener('click', async () => {
             if(cart.length === 0) {
                 alert("Votre panier est vide !");
                 return;
             }
-            const orderData = encodeURIComponent(JSON.stringify(cart));
-            window.location.href = `checkout.html?order=${orderData}`;
+            
+            const user = auth.currentUser;
+            if (!user) {
+                alert("Veuillez vous connecter pour passer une commande.");
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const userDocRef = doc(db, 'users', user.uid);
+            const userDoc = await getDoc(userDocRef);
+
+            if (!userDoc.exists()) {
+                alert("Erreur: profil utilisateur introuvable.");
+                return;
+            }
+
+            const order = {
+                clientId: user.uid,
+                clientUsername: userDoc.data().username,
+                items: cart,
+                totalPrice: cart.reduce((sum, item) => sum + item.buyPrice * item.quantity, 0),
+                status: 'En attente',
+                createdAt: serverTimestamp()
+            };
+
+            try {
+                const docRef = await addDoc(collection(db, "orders"), order);
+                cart = [];
+                updateCart();
+                cartModal.style.display = 'none';
+                window.location.href = `checkout.html?orderId=${docRef.id}`;
+            } catch (e) {
+                console.error("Erreur lors de l'ajout de la commande: ", e);
+                alert("Une erreur est survenue lors de la création de votre commande.");
+            }
         });
 
         document.getElementById('cart-items').addEventListener('click', (e) => {
@@ -701,6 +737,7 @@
         setupFeatured();
         setupCategories();
         renderMarket();
+        updateCart();
     </script>
 </body>
 </html>

@@ -343,27 +343,13 @@
         let auth, db;
 
         const initializeAppLogic = async () => {
-            try {
-                if (typeof __firebase_config === 'undefined' || !__firebase_config) {
-                    throw new Error("La configuration de Firebase n'est pas disponible.");
-                }
-                const firebaseConfig = JSON.parse(__firebase_config);
-                const app = initializeApp(firebaseConfig);
-                auth = getAuth(app);
-                db = getFirestore(app);
-
-                setupEventListeners();
-                setupUI();
-                
-                const user = await authUser();
-                if (user) {
-                    await checkUserRole(user);
-                    await checkUserOrders(user);
-                }
-            } catch (error) {
-                console.error("Erreur d'initialisation:", error);
-                document.body.innerHTML = `<h1>Erreur critique: ${error.message}</h1>`;
+            const user = await authUser();
+            if (user) {
+                await checkUserRole(user);
+                await checkUserOrders(user);
             }
+            setupUI();
+            setupEventListeners();
         };
 
         const authUser = () => new Promise((resolve) => {
@@ -380,7 +366,7 @@
                         }
                         resolve(auth.currentUser);
                     } catch (error) {
-                        console.error("Échec de l'authentification:", error);
+                        console.error("Authentication failed:", error);
                         resolve(null);
                     }
                 }
@@ -402,7 +388,7 @@
                     }
                 }
             } catch (error) {
-                console.error("Erreur lors de la récupération du rôle de l'utilisateur:", error);
+                console.error("Error fetching user role:", error);
             }
         };
 
@@ -421,7 +407,7 @@
                     viewOrderBtn.style.display = 'none';
                 }
             } catch (error) {
-                console.error("Erreur lors de la vérification des commandes de l'utilisateur:", error);
+                console.error("Error checking user orders:", error);
             }
         };
         
@@ -640,6 +626,7 @@
         };
 
         initializeAppLogic();
+    });
     </script>
 </body>
 </html>

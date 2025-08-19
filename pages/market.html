@@ -344,14 +344,13 @@
 
         const initializeAppLogic = async () => {
             try {
-                if (typeof __firebase_config !== 'undefined' && __firebase_config) {
-                    const firebaseConfig = JSON.parse(__firebase_config);
-                    const app = initializeApp(firebaseConfig);
-                    auth = getAuth(app);
-                    db = getFirestore(app);
-                } else {
+                if (typeof __firebase_config === 'undefined' || !__firebase_config) {
                     throw new Error("Firebase config is not available.");
                 }
+                const firebaseConfig = JSON.parse(__firebase_config);
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
 
                 setupEventListeners();
                 setupUI();
@@ -425,7 +424,7 @@
                 console.error("Error checking user orders:", error);
             }
         };
-
+        
         const getRarity = (price) => {
             if (price >= 20000) return 'legendary';
             if (price >= 5000) return 'epic';
@@ -582,6 +581,14 @@
         };
 
         const setupEventListeners = () => {
+            toggleViewBtn.addEventListener('click', () => {
+                isSellerViewActive = !isSellerViewActive;
+                clientView.style.display = isSellerViewActive ? 'none' : 'block';
+                sellerView.style.display = isSellerViewActive ? 'block' : 'none';
+                cartButton.style.display = isSellerViewActive ? 'none' : 'flex';
+                toggleViewBtn.textContent = isSellerViewActive ? 'Passer en mode Client' : 'Passer en mode Vendeur';
+            });
+
             searchBar.addEventListener('input', renderMarket);
             cartButton.addEventListener('click', () => cartModal.style.display = 'flex');
             document.getElementById('close-quantity-modal').addEventListener('click', () => quantityModal.style.display = 'none');
@@ -632,7 +639,7 @@
             renderMarket();
         };
 
-        initializeAppLogic();
+        document.addEventListener('DOMContentLoaded', initializeAppLogic);
     </script>
 </body>
 </html>

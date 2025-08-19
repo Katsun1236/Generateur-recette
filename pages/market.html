@@ -14,88 +14,102 @@
     <style>
         .market-container {
             width: 100%;
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 2rem auto;
             padding: 0 1rem;
             box-sizing: border-box;
         }
-        .market-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-        .market-header h1 {
-            font-family: 'Anton', sans-serif;
-            font-size: 3.5rem;
-            color: var(--primary-red);
-            text-transform: uppercase;
-            margin-bottom: 0.5rem;
-        }
-        .market-header p {
-            color: var(--text-medium);
-            font-size: 1.1rem;
-        }
-        
-        .market-controls {
-            background-color: var(--card-bg-color);
-            padding: 1rem;
-            border-radius: 10px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-        .search-bar {
-            flex-grow: 2;
-            background-color: #333;
-            border: 2px solid #555;
-            border-radius: 5px;
-            color: var(--text-light);
-            padding: 0.75rem;
-            font-size: 1rem;
-        }
-        .filter-select {
-            flex-grow: 1;
-            background-color: #333;
-            border: 2px solid #555;
-            border-radius: 5px;
-            color: var(--text-light);
-            padding: 0.75rem;
-            cursor: pointer;
-        }
-        .special-order-btn {
-            flex-grow: 1;
-            background-color: transparent;
-            border: 2px solid var(--primary-red);
-            color: var(--primary-red);
-            padding: 0.75rem;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .special-order-btn:hover {
-            background-color: var(--primary-red);
-            color: var(--text-light);
+
+        .featured-section {
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('../images/pictures/fond2.jpg');
+            background-size: cover;
+            background-position: center;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            border: 2px solid var(--card-bg-color);
         }
 
-        .category-section {
-            margin-bottom: 3rem;
-        }
-        .category-title {
+        .featured-title {
             font-family: 'Anton', sans-serif;
             font-size: 2.5rem;
             color: var(--text-light);
-            border-bottom: 3px solid var(--primary-red);
-            padding-bottom: 0.5rem;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
+            border-left: 5px solid var(--primary-red);
+            padding-left: 1rem;
+        }
+
+        .featured-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .shop-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .shop-layout {
+                flex-direction: row;
+            }
+        }
+
+        .category-nav {
+            flex: 0 0 200px;
+            background-color: var(--card-bg-color);
+            border-radius: 10px;
+            padding: 1rem;
+        }
+
+        .category-nav h3 {
+            font-family: 'Anton', sans-serif;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-medium);
+        }
+
+        .category-nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .category-nav li button {
+            width: 100%;
+            background: none;
+            border: none;
+            color: var(--text-light);
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .category-nav li button:hover {
+            background-color: #444;
+        }
+
+        .category-nav li button.active {
+            background-color: var(--primary-red);
+            color: white;
+            font-weight: bold;
+        }
+
+        .market-content {
+            flex-grow: 1;
         }
 
         .market-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
             gap: 1.5rem;
         }
+
         .item-card {
             background-color: var(--card-bg-color);
             border-radius: 10px;
@@ -106,16 +120,19 @@
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             text-align: center;
         }
+
         .item-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 8px 20px rgba(0,0,0,0.4);
         }
+
         .item-image-container {
             width: 100%;
             padding-top: 100%;
             position: relative;
             background-color: #333;
         }
+
         .item-card img {
             position: absolute;
             top: 0;
@@ -127,6 +144,7 @@
             box-sizing: border-box;
             image-rendering: pixelated;
         }
+
         .item-info {
             padding: 1rem;
             flex-grow: 1;
@@ -134,6 +152,7 @@
             flex-direction: column;
             justify-content: space-between;
         }
+
         .item-info h3 {
             font-size: 1.1rem;
             margin: 0 0 0.75rem 0;
@@ -141,6 +160,7 @@
             font-weight: normal;
             height: 40px;
         }
+
         .price-container {
             display: flex;
             flex-direction: column;
@@ -148,16 +168,19 @@
             justify-content: center;
             margin-bottom: 1rem;
         }
+
         .original-price {
             text-decoration: line-through;
             color: #777;
             font-size: 0.9rem;
         }
+
         .new-price {
             font-size: 1.5rem;
             font-weight: bold;
             color: var(--primary-red);
         }
+
         .buy-btn {
             width: 100%;
             background-color: var(--primary-red);
@@ -170,6 +193,7 @@
             text-transform: uppercase;
             transition: background-color 0.3s;
         }
+
         .buy-btn:hover {
             background-color: var(--primary-red-dark);
         }
@@ -186,10 +210,6 @@
             <a href="market.html">Marché</a>
         </div>
         <div class="nav-auth">
-            <div id="auth-buttons" style="display: none;">
-                <a href="login.html">Connexion</a>
-                <a href="register.html" class="register-btn">Inscription</a>
-            </div>
             <a href="profile.html" id="profile-link">
                 <img id="profile-pic" src="" alt="Photo de profil">
             </a>
@@ -197,27 +217,25 @@
     </nav>
 
     <div class="market-container">
-        <div class="market-header">
-            <h1>Marché de la Faction</h1>
-            <p>Achetez des objets directement auprès de la faction R4TIO à prix réduit.</p>
+        <div class="featured-section">
+            <h2 class="featured-title">À L'AFFICHE</h2>
+            <div class="featured-grid" id="featured-grid">
+                <!-- Objets à l'affiche générés ici -->
+            </div>
         </div>
 
-        <div class="market-controls">
-            <input type="search" id="search-bar" class="search-bar" placeholder="Rechercher un objet...">
-            <select id="category-filter" class="filter-select">
-                <option value="all">Toutes les catégories</option>
-            </select>
-            <select id="price-filter" class="filter-select">
-                <option value="all">Tous les prix</option>
-                <option value="0-100">0 - 100$</option>
-                <option value="101-1000">101 - 1000$</option>
-                <option value="1001-10000">1001 - 10000$</option>
-                <option value="10001+">10001$ et +</option>
-            </select>
-            <button id="special-order-btn" class="special-order-btn">Passer Commande</button>
-        </div>
-
-        <div id="market-sections">
+        <div class="shop-layout">
+            <aside class="category-nav">
+                <h3>Catégories</h3>
+                <ul id="category-list">
+                    <!-- Catégories générées ici -->
+                </ul>
+            </aside>
+            <main class="market-content">
+                <div class="market-grid" id="market-grid">
+                    <!-- Objets du marché générés ici -->
+                </div>
+            </main>
         </div>
     </div>
     
@@ -227,129 +245,84 @@
     <script type="module">
         import { marketItems } from '../js/market-config.js';
 
-        const marketSectionsContainer = document.getElementById('market-sections');
-        const categoryFilter = document.getElementById('category-filter');
-        const priceFilter = document.getElementById('price-filter');
-        const searchBar = document.getElementById('search-bar');
-        const specialOrderBtn = document.getElementById('special-order-btn');
+        const featuredGrid = document.getElementById('featured-grid');
+        const marketGrid = document.getElementById('market-grid');
+        const categoryList = document.getElementById('category-list');
 
-        function showMessage(message) {
-            const box = document.getElementById('message-box');
-            box.textContent = message;
-            box.style.display = 'block';
-            box.style.opacity = 1;
-            setTimeout(() => {
-                box.style.opacity = 0;
-                setTimeout(() => box.style.display = 'none', 500);
-            }, 3000);
+        const featuredItems = ["Minerai d'Histerite", "Histerite Apple", "Hang Glider", "Dynamite"];
+
+        function createItemCard(item) {
+            const card = document.createElement('div');
+            card.className = 'item-card';
+            const newPrice = item.buyPrice > 0 ? item.buyPrice - 1 : 0;
+            const originalPrice = item.buyPrice > 0 ? `${item.buyPrice}$` : '';
+
+            card.innerHTML = `
+                <div class="item-image-container">
+                    <img src="${item.img}" alt="${item.name}" onerror="this.src='https://placehold.co/128x128/2c2c2c/e74c3c?text=Image+N/A'; this.onerror=null;">
+                </div>
+                <div class="item-info">
+                    <h3>${item.name}</h3>
+                    <div class="price-container">
+                        <span class="original-price">${originalPrice}</span>
+                        <span class="new-price">${newPrice}$</span>
+                    </div>
+                    <button class="buy-btn">Acheter</button>
+                </div>
+            `;
+            return card;
         }
-        
-        function renderMarket() {
-            marketSectionsContainer.innerHTML = '';
-            const searchTerm = searchBar.value.toLowerCase();
-            const categoryF = categoryFilter.value;
-            const priceF = priceFilter.value;
 
-            const itemsByCategory = {};
-            marketItems.forEach(item => {
-                if (!itemsByCategory[item.category]) {
-                    itemsByCategory[item.category] = [];
-                }
-                itemsByCategory[item.category].push(item);
+        function renderMarket(selectedCategory) {
+            marketGrid.innerHTML = '';
+            const itemsToDisplay = selectedCategory === 'all' 
+                ? marketItems 
+                : marketItems.filter(item => item.category === selectedCategory);
+
+            itemsToDisplay.forEach(item => {
+                marketGrid.appendChild(createItemCard(item));
             });
-
-            for (const category in itemsByCategory) {
-                if (categoryF !== 'all' && category !== categoryF) {
-                    continue;
-                }
-
-                const filteredItems = itemsByCategory[category].filter(item => {
-                    const itemName = (item.name || "").toLowerCase();
-                    const newPrice = item.buyPrice - 1;
-
-                    const matchesSearch = itemName.includes(searchTerm);
-                    
-                    let matchesPrice = false;
-                    switch(priceF) {
-                        case '0-100': matchesPrice = newPrice <= 100; break;
-                        case '101-1000': matchesPrice = newPrice > 100 && newPrice <= 1000; break;
-                        case '1001-10000': matchesPrice = newPrice > 1000 && newPrice <= 10000; break;
-                        case '10001+': matchesPrice = newPrice > 10000; break;
-                        default: matchesPrice = true;
-                    }
-                    
-                    return matchesSearch && matchesPrice;
-                });
-
-                if (filteredItems.length === 0) {
-                    continue;
-                }
-
-                const section = document.createElement('div');
-                section.className = 'category-section';
-
-                const title = document.createElement('h2');
-                title.className = 'category-title';
-                title.textContent = category;
-                section.appendChild(title);
-
-                const grid = document.createElement('div');
-                grid.className = 'market-grid';
-                
-                filteredItems.forEach(item => {
-                    const card = document.createElement('div');
-                    card.className = 'item-card';
-
-                    const itemName = item.name;
-                    const newPrice = item.buyPrice - 1;
-
-                    card.innerHTML = `
-                        <div class="item-image-container">
-                            <img src="${item.img}" alt="${itemName}" onerror="this.src='https://placehold.co/128x128/2c2c2c/e74c3c?text=Image+N/A'; this.onerror=null;">
-                        </div>
-                        <div class="item-info">
-                            <h3>${itemName}</h3>
-                            <div class="price-container">
-                                <span class="original-price">${item.buyPrice}$</span>
-                                <span class="new-price">${newPrice}$</span>
-                            </div>
-                            <button class="buy-btn">Acheter</button>
-                        </div>
-                    `;
-                    grid.appendChild(card);
-                });
-
-                section.appendChild(grid);
-                marketSectionsContainer.appendChild(section);
-            }
         }
 
-        function populateCategories() {
-            const categories = [...new Set(marketItems.map(item => item.category))];
+        function setupCategories() {
+            const categories = ['all', ...new Set(marketItems.map(item => item.category))];
+            
             categories.forEach(category => {
-                const option = document.createElement('option');
-                option.value = category;
-                option.textContent = category;
-                categoryFilter.appendChild(option);
+                const li = document.createElement('li');
+                const button = document.createElement('button');
+                button.textContent = category === 'all' ? 'Tout voir' : category;
+                button.dataset.category = category;
+                if (category === 'all') {
+                    button.classList.add('active');
+                }
+                button.addEventListener('click', () => {
+                    document.querySelectorAll('.category-nav button').forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    renderMarket(category);
+                });
+                li.appendChild(button);
+                categoryList.appendChild(li);
             });
         }
 
-        searchBar.addEventListener('input', renderMarket);
-        categoryFilter.addEventListener('change', renderMarket);
-        priceFilter.addEventListener('change', renderMarket);
+        function setupFeatured() {
+            featuredItems.forEach(featuredName => {
+                const item = marketItems.find(i => i.name === featuredName);
+                if (item) {
+                    featuredGrid.appendChild(createItemCard(item));
+                }
+            });
+        }
         
         document.body.addEventListener('click', function(e) {
             if (e.target && e.target.classList.contains('buy-btn')) {
-                showMessage("Fonctionnalité d'achat bientôt disponible !");
+                alert("Fonctionnalité d'achat bientôt disponible !");
             }
         });
 
-        specialOrderBtn.addEventListener('click', () => {
-             showMessage("Contactez un membre du staff sur Discord pour les commandes spéciales.");
-        });
-
-        populateCategories();
-        renderMarket();
+        setupFeatured();
+        setupCategories();
+        renderMarket('all');
 
     </script>
 </body>

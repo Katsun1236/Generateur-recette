@@ -12,37 +12,55 @@
     <link rel="stylesheet" href="../css/style.css">
     
     <style>
+        :root {
+            --market-bg: #111;
+            --market-card-bg: #1c1c1c;
+            --market-border: #333;
+            --rarity-common: #b0b0b0;
+            --rarity-rare: #5bc0de;
+            --rarity-epic: #9d62d9;
+            --rarity-legendary: #f0ad4e;
+        }
+
+        body {
+            background-color: var(--market-bg);
+        }
+
         .market-container {
             width: 100%;
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 2rem auto;
-            padding: 0 1rem;
+            padding: 0 1.5rem;
             box-sizing: border-box;
         }
 
         .featured-section {
-            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('../images/pictures/fond2.jpg');
+            position: relative;
+            background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url('../images/pictures/Fond.png');
             background-size: cover;
             background-position: center;
+            background-attachment: fixed;
             border-radius: 15px;
-            padding: 2rem;
+            padding: 3rem 2rem;
             margin-bottom: 3rem;
-            border: 2px solid var(--card-bg-color);
+            border: 1px solid var(--market-border);
+            overflow: hidden;
         }
 
         .featured-title {
             font-family: 'Anton', sans-serif;
-            font-size: 2.5rem;
+            font-size: 3rem;
             color: var(--text-light);
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
             border-left: 5px solid var(--primary-red);
-            padding-left: 1rem;
+            padding-left: 1.5rem;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
         }
 
         .featured-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
         }
 
         .shop-layout {
@@ -51,24 +69,28 @@
             gap: 2rem;
         }
 
-        @media (min-width: 768px) {
+        @media (min-width: 992px) {
             .shop-layout {
                 flex-direction: row;
             }
         }
 
         .category-nav {
-            flex: 0 0 200px;
-            background-color: var(--card-bg-color);
+            flex: 0 0 240px;
+            background-color: var(--market-card-bg);
             border-radius: 10px;
-            padding: 1rem;
+            padding: 1.5rem;
+            border: 1px solid var(--market-border);
+            align-self: flex-start;
         }
 
         .category-nav h3 {
             font-family: 'Anton', sans-serif;
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
             color: var(--text-medium);
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--market-border);
         }
 
         .category-nav ul {
@@ -81,23 +103,27 @@
             width: 100%;
             background: none;
             border: none;
-            color: var(--text-light);
-            padding: 0.75rem 1rem;
+            color: var(--text-medium);
+            padding: 0.8rem 1rem;
             text-align: left;
             font-size: 1rem;
+            font-weight: 700;
             cursor: pointer;
             border-radius: 5px;
-            transition: background-color 0.3s, color 0.3s;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
         }
 
         .category-nav li button:hover {
-            background-color: #444;
+            background-color: #2a2a2a;
+            color: var(--text-light);
+            border-left-color: #555;
         }
 
         .category-nav li button.active {
-            background-color: var(--primary-red);
+            background-color: var(--primary-red-dark);
             color: white;
-            font-weight: bold;
+            border-left-color: var(--primary-red);
         }
 
         .market-content {
@@ -106,31 +132,46 @@
 
         .market-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 1.5rem;
         }
 
         .item-card {
-            background-color: var(--card-bg-color);
+            background: linear-gradient(145deg, #2e2e2e, #1a1a1a);
             border-radius: 10px;
-            border: 1px solid #444;
+            border: 1px solid var(--market-border);
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
         }
 
         .item-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.5);
         }
+
+        .item-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background-color: var(--rarity-common);
+            transition: background-color 0.3s ease;
+        }
+
+        .item-card.rare::before { background-color: var(--rarity-rare); }
+        .item-card.epic::before { background-color: var(--rarity-epic); }
+        .item-card.legendary::before { background-color: var(--rarity-legendary); }
 
         .item-image-container {
             width: 100%;
             padding-top: 100%;
             position: relative;
-            background-color: #333;
+            background-color: #111;
         }
 
         .item-card img {
@@ -140,9 +181,14 @@
             width: 100%;
             height: 100%;
             object-fit: contain;
-            padding: 1rem;
+            padding: 1.5rem;
             box-sizing: border-box;
             image-rendering: pixelated;
+            transition: transform 0.3s ease;
+        }
+        
+        .item-card:hover img {
+            transform: scale(1.1);
         }
 
         .item-info {
@@ -151,34 +197,31 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            text-align: center;
         }
 
         .item-info h3 {
-            font-size: 1.1rem;
-            margin: 0 0 0.75rem 0;
+            font-size: 1rem;
+            margin: 0 0 0.5rem 0;
             color: var(--text-light);
-            font-weight: normal;
+            font-weight: 700;
             height: 40px;
         }
 
         .price-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
             margin-bottom: 1rem;
         }
 
         .original-price {
             text-decoration: line-through;
             color: #777;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
         }
 
         .new-price {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: bold;
-            color: var(--primary-red);
+            color: var(--text-light);
         }
 
         .buy-btn {
@@ -186,7 +229,7 @@
             background-color: var(--primary-red);
             color: white;
             font-weight: bold;
-            padding: 0.6rem 1rem;
+            padding: 0.7rem 1rem;
             border: none;
             border-radius: 5px;
             cursor: pointer;
@@ -219,22 +262,16 @@
     <div class="market-container">
         <div class="featured-section">
             <h2 class="featured-title">À L'AFFICHE</h2>
-            <div class="featured-grid" id="featured-grid">
-                <!-- Objets à l'affiche générés ici -->
-            </div>
+            <div class="featured-grid" id="featured-grid"></div>
         </div>
 
         <div class="shop-layout">
             <aside class="category-nav">
                 <h3>Catégories</h3>
-                <ul id="category-list">
-                    <!-- Catégories générées ici -->
-                </ul>
+                <ul id="category-list"></ul>
             </aside>
             <main class="market-content">
-                <div class="market-grid" id="market-grid">
-                    <!-- Objets du marché générés ici -->
-                </div>
+                <div class="market-grid" id="market-grid"></div>
             </main>
         </div>
     </div>
@@ -249,17 +286,24 @@
         const marketGrid = document.getElementById('market-grid');
         const categoryList = document.getElementById('category-list');
 
-        const featuredItems = ["Minerai d'Histerite", "Histerite Apple", "Hang Glider", "Dynamite"];
+        const featuredItemNames = ["Histerite Apple", "Hang Glider", "Histerite Sword", "Vault Breacher"];
+
+        function getRarity(price) {
+            if (price >= 20000) return 'legendary';
+            if (price >= 5000) return 'epic';
+            if (price >= 1000) return 'rare';
+            return 'common';
+        }
 
         function createItemCard(item) {
             const card = document.createElement('div');
-            card.className = 'item-card';
+            card.className = `item-card ${getRarity(item.buyPrice)}`;
             const newPrice = item.buyPrice > 0 ? item.buyPrice - 1 : 0;
             const originalPrice = item.buyPrice > 0 ? `${item.buyPrice}$` : '';
 
             card.innerHTML = `
                 <div class="item-image-container">
-                    <img src="${item.img}" alt="${item.name}" onerror="this.src='https://placehold.co/128x128/2c2c2c/e74c3c?text=Image+N/A'; this.onerror=null;">
+                    <img src="${item.img}" alt="${item.name}" onerror="this.src='https://placehold.co/128x128/2c2c2c/e74c3c?text=N/A'; this.onerror=null;">
                 </div>
                 <div class="item-info">
                     <h3>${item.name}</h3>
@@ -306,7 +350,7 @@
         }
 
         function setupFeatured() {
-            featuredItems.forEach(featuredName => {
+            featuredItemNames.forEach(featuredName => {
                 const item = marketItems.find(i => i.name === featuredName);
                 if (item) {
                     featuredGrid.appendChild(createItemCard(item));

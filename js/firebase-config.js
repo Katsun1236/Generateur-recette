@@ -1,25 +1,25 @@
-// Importe les fonctions nécessaires du SDK Firebase
+// Importe les fonctions nécessaires depuis les SDK Firebase
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+import { getStorage } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
 
-// Votre configuration d'application web Firebase
+// Configuration de votre application web Firebase
+// Assurez-vous que ces informations sont correctes et correspondent à votre projet Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBZMnlHt0TzR33sRVaGJ9HZLLZVzEGnu-k",
   authDomain: "ratio-faction.firebaseapp.com",
   projectId: "ratio-faction",
-  storageBucket: "ratio-faction.appspot.com", // J'ai corrigé une petite erreur ici, c'est généralement .appspot.com
+  storageBucket: "ratio-faction.firebasestorage.app",
   messagingSenderId: "402552344518",
   appId: "1:402552344518:web:cad898ebb7f701770cecc7",
   measurementId: "G-20WL3ZM0XJ"
 };
 
-// Initialise l'application Firebase
+// Initialise Firebase
 const app = initializeApp(firebaseConfig);
 
-// Initialise les services Firestore et Auth
-const db = getFirestore(app);
-const auth = getAuth(app);
-
-// Exporte les services pour les utiliser dans d'autres fichiers
-export { db, auth };
+// Exporte les services Firebase pour les utiliser dans d'autres parties de votre application
+export const auth = getAuth(app);
+export const db = getFirestore(app);
+export const storage = getStorage(app); // Ajout de l'exportation du service de stockage

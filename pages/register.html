@@ -8,26 +8,15 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <link rel="stylesheet" href="../css/style.css">
+    
     <style>
-        :root {
-            --main-bg-color: #1a1a1a;
-            --primary-red: #e74c3c;
-            --primary-red-dark: #c0392b;
-            --text-light: #f5f5f5;
-            --text-medium: #cccccc;
-            --card-bg-color: #2c2c2c;
-            --discord-blue: #5865F2;
-        }
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: var(--main-bg-color);
-            background-image: url('https://www.transparenttextures.com/patterns/dark-denim-3.png');
-            color: var(--text-light);
-            min-height: 100vh;
+            padding-top: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 1rem;
         }
         .form-container {
             background-color: var(--card-bg-color);
@@ -45,6 +34,9 @@
             text-align: center;
             margin-bottom: 1.5rem;
             text-transform: uppercase;
+        }
+        .form-group {
+            margin-bottom: 1rem;
         }
         .form-group label {
             display: block;
@@ -162,33 +154,20 @@
         .login-link a:hover {
             text-decoration: underline;
         }
-        #message-box {
-            position: fixed;
-            bottom: 1rem;
-            right: 1rem;
-            background-color: var(--card-bg-color);
-            color: var(--text-light);
-            padding: 1rem;
-            border-radius: 5px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            display: none;
-            z-index: 3000;
-            border-left: 4px solid var(--primary-red);
-        }
     </style>
 </head>
-<body>
+<body class="bg-gray-900 text-white min-h-screen flex items-center justify-center p-4">
 
     <div class="form-container">
         <h2>Créer un compte</h2>
         
         <form id="signup-form">
-            <div class="form-group" style="margin-bottom: 1rem;">
+            <div class="form-group">
                 <label for="email">Adresse e-mail</label>
                 <input type="email" id="email" placeholder="ton.email@exemple.com" required>
             </div>
             
-            <div class="form-group" style="margin-bottom: 1rem;">
+            <div class="form-group">
                 <label for="password">Mot de passe</label>
                 <div class="password-container">
                     <input type="password" id="password" placeholder="6 caractères minimum" required>
@@ -196,7 +175,7 @@
                 </div>
             </div>
             
-            <div class="form-group" style="margin-bottom: 1.5rem;">
+            <div class="form-group">
                 <label for="confirm-password">Confirmer le mot de passe</label>
                 <div class="password-container">
                     <input type="password" id="confirm-password" placeholder="**********" required>
@@ -226,7 +205,7 @@
     <div id="message-box"></div>
 
     <script type="module">
-        import { auth } from './firebase-config.js';
+        import { auth } from '../js/firebase-config.js';
         import { createUserWithEmailAndPassword, onAuthStateChanged, GoogleAuthProvider, OAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
         
         function showMessage(message) {

@@ -815,9 +815,9 @@ export const marketItems = [
         buyPrice: 100,
         img: "../images/market-icon/minecraft_peony.png",
         category: "Nature"
-    }
-    ],
-    "Objets Spéciaux": [
+    },
+
+    // Objets Spéciaux"
         {
             name: "Chest Finder",
             buyPrice: 15000,
@@ -865,9 +865,9 @@ export const marketItems = [
             buyPrice: 20000,
             img: "../images/market-icon/histeria-icon/hang_glider.png",
             category: "Objets Spéciaux"
-        }
-    ],
-    "Décoration": [
+        },
+
+    // Décoration"
         {
             name: "Terre cuite blanche",
             buyPrice: 50,
@@ -1936,11 +1936,10 @@ export const marketItems = [
             img: "../images/market-icon/minecraft_lantern.png",
             category: "Décoration"
         },
-        {
-            name: "Lampe de Redstone",
-            buyPrice: 50,
-            img: "../images/market-icon/minecraft_redstone_lamp.png",
-            category: "Décoration"
-        }
-    ]
-};
+    {
+        name: "Lampe de Redstone",
+        buyPrice: 50,
+        img: "../images/market-icon/minecraft_redstone_lamp.png",
+        category: "Décoration"
+    }
+];

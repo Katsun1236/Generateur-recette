@@ -325,19 +325,6 @@
 
         let app, auth, db;
 
-        function initializeFirebase() {
-            try {
-                const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-                app = initializeApp(firebaseConfig);
-                auth = getAuth(app);
-                db = getFirestore(app);
-                return true;
-            } catch (error) {
-                console.error("Firebase initialization failed:", error);
-                return false;
-            }
-        }
-
         const clientView = document.getElementById('client-view');
         const sellerView = document.getElementById('seller-view');
         const toggleViewBtn = document.getElementById('toggle-view-btn');
@@ -356,9 +343,26 @@
         let isSellerViewActive = false;
         let currentUserData = null;
 
+        function initializeFirebase() {
+            try {
+                if (typeof __firebase_config !== 'undefined') {
+                    const firebaseConfig = JSON.parse(__firebase_config);
+                    app = initializeApp(firebaseConfig);
+                    auth = getAuth(app);
+                    db = getFirestore(app);
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                console.error("Firebase initialization failed:", error);
+                return false;
+            }
+        }
+
         async function authUser() {
             return new Promise((resolve) => {
-                onAuthStateChanged(auth, async (user) => {
+                const unsubscribe = onAuthStateChanged(auth, async (user) => {
+                    unsubscribe();
                     if (user) {
                         resolve(user);
                     } else {
@@ -388,7 +392,7 @@
                 const docSnap = await getDoc(userDocRef);
                 if (docSnap.exists()) {
                     currentUserData = docSnap.data();
-                    if (currentUserData.gameRoles && currentUserData.gameRoles.includes('Vendeur')) {
+                    if (currentUserData.marketRole === 'Vendeur') {
                         toggleViewBtn.style.display = 'block';
                     }
                 }
@@ -596,7 +600,10 @@
         }
         
         async function initializePage() {
-            if (!initializeFirebase()) return;
+            if (!initializeFirebase()) {
+                document.body.innerHTML = "<h1>Erreur de configuration Firebase.</h1>";
+                return;
+            };
             
             const user = await authUser();
             if (user) {

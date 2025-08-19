@@ -323,10 +323,20 @@
         import { getFirestore, doc, getDoc, addDoc, collection, serverTimestamp, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { marketItems } from '../js/market-config.js';
 
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        let app, auth, db;
+
+        function initializeFirebase() {
+            try {
+                const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                return true;
+            } catch (error) {
+                console.error("Firebase initialization failed:", error);
+                return false;
+            }
+        }
 
         const clientView = document.getElementById('client-view');
         const sellerView = document.getElementById('seller-view');
@@ -353,7 +363,7 @@
                         resolve(user);
                     } else {
                         try {
-                            if (typeof __initial_auth_token !== 'undefined') {
+                            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                                 await signInWithCustomToken(auth, __initial_auth_token);
                             } else {
                                 await signInAnonymously(auth);
@@ -369,7 +379,7 @@
         }
 
         async function checkUserRole(user) {
-            if (!user) {
+            if (!user || user.isAnonymous) {
                 toggleViewBtn.style.display = 'none';
                 return;
             }
@@ -388,7 +398,7 @@
         }
 
         async function checkUserOrders(user) {
-            if (!user) return;
+            if (!user || user.isAnonymous) return;
             const ordersRef = collection(db, "orders");
             const q = query(ordersRef, where("customerId", "==", user.uid), where("status", "==", "En attente"));
             
@@ -554,7 +564,7 @@
 
         async function createOrder() {
             const user = auth.currentUser;
-            if (!user) {
+            if (!user || user.isAnonymous) {
                 alert("Vous devez être connecté pour passer une commande.");
                 return;
             }
@@ -586,6 +596,8 @@
         }
         
         async function initializePage() {
+            if (!initializeFirebase()) return;
+            
             const user = await authUser();
             if (user) {
                 await checkUserRole(user);

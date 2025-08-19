@@ -817,7 +817,7 @@ export const marketItems = [
         category: "Nature"
     },
 
-    // Objets Spéciaux"
+    // Objets Spéciaux",
         {
             name: "Chest Finder",
             buyPrice: 15000,
@@ -866,6 +866,613 @@ export const marketItems = [
             img: "../images/market-icon/histeria-icon/hang_glider.png",
             category: "Objets Spéciaux"
         },
+            // Objets Histeria
+    {
+        name: "Altar",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/altar.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Armchair",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/armchair.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Backpack",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/backpack.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Banknote",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/banknote.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Big Pot",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/big-pot.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Black Tile",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/black-tile.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Blue Tile",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/blue-tile.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Book Pile",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/book-pile.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Boss Key",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/boss-key.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Bottled Experience",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/bottled-experience.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Bottled Lumen",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/bottled-lumen.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Bursting Torch",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/bursting-torch.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Caduceus",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/caduceus.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Catalyst",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/catalyst.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Cave Block",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/cave-block.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Chair",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/chair.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Chalice",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/chalice.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Cobble Breaker",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/cobble-breaker.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Compressed Cobblestone",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/compressed-cobblestone.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Couch",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/couch.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Crate",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/crate.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Demonic Seal",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/demonic-seal.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Detector",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/detector.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Drawer",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/drawer.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Drawer Upgrade",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/drawer-upgrade.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Dupe Spell",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/dupe-spell.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Duping TNT",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/duping-tnt.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Forge Note",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/forge-note.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Grapnel",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/grapnel.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Green Tile",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/green-tile.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Gutter",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/gutter.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Hammer",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/hammer.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Heal Stick",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/heal-stick.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Histerite Anvil",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/histerite-anvil.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Histerite Axe",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/histerite-axe.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Histerite Boots",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/histerite-boots.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Histerite Chest",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/histerite-chest.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Histerite Chestplate",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/histerite-chestplate.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Histerite Compress",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/histerite-compress.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Histerite Core",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/histerite-core.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Histerite Helmet",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/histerite-helmet.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Histerite Hoe",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/histerite-hoe.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Histerite Ingot",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/histerite-ingot.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Histerite Key",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/histerite-key.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Histerite Leggings",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/histerite-leggings.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Histerite Obsidian",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/histerite-obsidian.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Histerite Pickaxe",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/histerite-pickaxe.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Histerite Shovel",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/histerite-shovel.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Histerite Stick",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/histerite-stick.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Histerite Sword",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/histerite-sword.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Histerite TNT",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/histerite-tnt.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Histerite Totem",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/histerite-totem.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Hood Helmet",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/hood-helmet.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "IEM TNT",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/iem-tnt.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Instant Fertilizer",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/instant-fertilizer.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Itempack",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/itempack.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Jump Stick",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/jump-stick.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Kill Tag",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/kill-tag.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Lamp",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/lamp.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Levitation Obsidian",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/levitation-obsidian.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Lottery Ticket",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/lottery-ticket.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Love Potion",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/love-potion.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Lucky Block",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/lucky-block.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Lucky Lottery Ticket",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/lucky-lottery-ticket.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Magic Lyre",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/magic-lyre.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Mixed Sand",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/mixed-sand.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Neon",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/neon.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Nocturite Block",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/nocturite-block.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Nocturite Boots",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/nocturite-boots.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Nocturite Chest",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/nocturite-chest.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Nocturite Chestplate",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/nocturite-chestplate.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Nocturite Compress",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/nocturite-compress.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Nocturite Core",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/nocturite-core.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Nocturite Crystal",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/nocturite-crystal.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Nocturite Fruit",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/nocturite-fruit.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Nocturite Helmet",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/nocturite-helmet.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Nocturite Key",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/nocturite-key.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Nocturite Leggings",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/nocturite-leggings.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Nocturite Obsidian",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/nocturite-obsidian.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Nocturite Seed",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/nocturite-seed.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Nocturite TNT",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/nocturite-tnt.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Orange Tile",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/orange-tile.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Picrite Bricks",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/picrite-bricks.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Poisonous Obsidian",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/poisonous-obsidian.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Polished Gutter",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/polished-gutter.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Polished Picrite",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/polished-picrite.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Punching Ball",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/punching-ball.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Red Tile",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/red-tile.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Scoffed Bricks",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/scoffed-bricks.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Seed Planter",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/seed-planter.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Shelf",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/shelf.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Shuriken",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/shuriken.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Speed Stick",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/speed-stick.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Spike",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/spike.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Stools",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/stools.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Table",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/table.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Thunderbolt",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/thunderbolt.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Tinsel",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/tinsel.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Vault",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/vault.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Vault Breacher",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/vault-breacher.png",
+        category: "Objets Histeria"
+    },
+    {
+        name: "Vote Key",
+        buyPrice: 0,
+        img: "../images/market-icon/histeria-icon/vote-key.png",
+        category: "Objets Histeria"
+    }
 
     // Décoration"
         {

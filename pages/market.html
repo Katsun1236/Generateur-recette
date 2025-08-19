@@ -323,45 +323,45 @@
         import { getFirestore, doc, getDoc, addDoc, collection, serverTimestamp, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { marketItems } from '../js/market-config.js';
 
-        let app, auth, db;
+        document.addEventListener('DOMContentLoaded', () => {
+            let app, auth, db;
 
-        const clientView = document.getElementById('client-view');
-        const sellerView = document.getElementById('seller-view');
-        const toggleViewBtn = document.getElementById('toggle-view-btn');
-        const viewOrderBtn = document.getElementById('view-order-btn');
-        const featuredGrid = document.getElementById('featured-grid');
-        const marketGrid = document.getElementById('market-grid');
-        const categoryList = document.getElementById('category-list');
-        const searchBar = document.getElementById('search-bar');
-        const cartButton = document.getElementById('cart-button');
-        const cartCount = document.getElementById('cart-count');
-        const quantityModal = document.getElementById('quantity-modal');
-        const cartModal = document.getElementById('cart-modal');
-        
-        let cart = [];
-        let currentItem = null;
-        let isSellerViewActive = false;
-        let currentUserData = null;
+            const clientView = document.getElementById('client-view');
+            const sellerView = document.getElementById('seller-view');
+            const toggleViewBtn = document.getElementById('toggle-view-btn');
+            const viewOrderBtn = document.getElementById('view-order-btn');
+            const featuredGrid = document.getElementById('featured-grid');
+            const marketGrid = document.getElementById('market-grid');
+            const categoryList = document.getElementById('category-list');
+            const searchBar = document.getElementById('search-bar');
+            const cartButton = document.getElementById('cart-button');
+            const cartCount = document.getElementById('cart-count');
+            const quantityModal = document.getElementById('quantity-modal');
+            const cartModal = document.getElementById('cart-modal');
+            
+            let cart = [];
+            let currentItem = null;
+            let isSellerViewActive = false;
+            let currentUserData = null;
 
-        function initializeFirebase() {
-            try {
-                if (typeof __firebase_config !== 'undefined' && __firebase_config) {
-                    const firebaseConfig = JSON.parse(__firebase_config);
-                    app = initializeApp(firebaseConfig);
-                    auth = getAuth(app);
-                    db = getFirestore(app);
-                    return true;
+            const initializeFirebase = () => {
+                try {
+                    if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+                        const firebaseConfig = JSON.parse(__firebase_config);
+                        app = initializeApp(firebaseConfig);
+                        auth = getAuth(app);
+                        db = getFirestore(app);
+                        return true;
+                    }
+                    console.error("Firebase config is not available.");
+                    return false;
+                } catch (error) {
+                    console.error("Firebase initialization failed:", error);
+                    return false;
                 }
-                console.error("Firebase config is not available.");
-                return false;
-            } catch (error) {
-                console.error("Firebase initialization failed:", error);
-                return false;
-            }
-        }
+            };
 
-        async function authUser() {
-            return new Promise((resolve) => {
+            const authUser = () => new Promise((resolve) => {
                 const unsubscribe = onAuthStateChanged(auth, async (user) => {
                     unsubscribe();
                     if (user) {
@@ -381,250 +381,245 @@
                     }
                 });
             });
-        }
 
-        async function checkUserRole(user) {
-            if (!user || user.isAnonymous) {
-                toggleViewBtn.style.display = 'none';
-                return;
-            }
-            const userDocRef = doc(db, "users", user.uid);
-            try {
-                const docSnap = await getDoc(userDocRef);
-                if (docSnap.exists()) {
-                    currentUserData = docSnap.data();
-                    if (currentUserData.marketRole === 'Vendeur') {
-                        toggleViewBtn.style.display = 'block';
+            const checkUserRole = async (user) => {
+                if (!user || user.isAnonymous) {
+                    toggleViewBtn.style.display = 'none';
+                    return;
+                }
+                const userDocRef = doc(db, "users", user.uid);
+                try {
+                    const docSnap = await getDoc(userDocRef);
+                    if (docSnap.exists()) {
+                        currentUserData = docSnap.data();
+                        if (currentUserData.marketRole === 'Vendeur') {
+                            toggleViewBtn.style.display = 'block';
+                        }
                     }
+                } catch (error) {
+                    console.error("Error fetching user role:", error);
                 }
-            } catch (error) {
-                console.error("Error fetching user role:", error);
-            }
-        }
+            };
 
-        async function checkUserOrders(user) {
-            if (!user || user.isAnonymous) return;
-            const ordersRef = collection(db, "orders");
-            const q = query(ordersRef, where("customerId", "==", user.uid), where("status", "==", "En attente"));
-            
-            try {
-                const querySnapshot = await getDocs(q);
-                if (!querySnapshot.empty) {
-                    const orderId = querySnapshot.docs[0].id;
-                    viewOrderBtn.style.display = 'block';
-                    viewOrderBtn.onclick = () => {
-                        window.location.href = `order-detail.html?id=${orderId}`;
-                    };
-                } else {
-                    viewOrderBtn.style.display = 'none';
+            const checkUserOrders = async (user) => {
+                if (!user || user.isAnonymous) return;
+                const ordersRef = collection(db, "orders");
+                const q = query(ordersRef, where("customerId", "==", user.uid), where("status", "==", "En attente"));
+                
+                try {
+                    const querySnapshot = await getDocs(q);
+                    if (!querySnapshot.empty) {
+                        const orderId = querySnapshot.docs[0].id;
+                        viewOrderBtn.style.display = 'block';
+                        viewOrderBtn.onclick = () => { window.location.href = `order-detail.html?id=${orderId}`; };
+                    } else {
+                        viewOrderBtn.style.display = 'none';
+                    }
+                } catch (error) {
+                    console.error("Error checking user orders:", error);
                 }
-            } catch (error) {
-                console.error("Error checking user orders:", error);
-            }
-        }
+            };
 
-        toggleViewBtn.addEventListener('click', () => {
-            isSellerViewActive = !isSellerViewActive;
-            clientView.style.display = isSellerViewActive ? 'none' : 'block';
-            sellerView.style.display = isSellerViewActive ? 'block' : 'none';
-            cartButton.style.display = isSellerViewActive ? 'none' : 'flex';
-            toggleViewBtn.textContent = isSellerViewActive ? 'Passer en mode Client' : 'Passer en mode Vendeur';
-        });
+            toggleViewBtn.addEventListener('click', () => {
+                isSellerViewActive = !isSellerViewActive;
+                clientView.style.display = isSellerViewActive ? 'none' : 'block';
+                sellerView.style.display = isSellerViewActive ? 'block' : 'none';
+                cartButton.style.display = isSellerViewActive ? 'none' : 'flex';
+                toggleViewBtn.textContent = isSellerViewActive ? 'Passer en mode Client' : 'Passer en mode Vendeur';
+            });
 
-        function getRarity(price) {
-            if (price >= 20000) return 'legendary';
-            if (price >= 5000) return 'epic';
-            if (price >= 1000) return 'rare';
-            return 'common';
-        }
+            const getRarity = (price) => {
+                if (price >= 20000) return 'legendary';
+                if (price >= 5000) return 'epic';
+                if (price >= 1000) return 'rare';
+                return 'common';
+            };
 
-        function createItemCard(item) {
-            const card = document.createElement('div');
-            card.className = `item-card ${getRarity(item.buyPrice)}`;
-            const newPrice = item.buyPrice > 0 ? item.buyPrice - 1 : 0;
-            const originalPrice = item.buyPrice > 0 ? `${item.buyPrice}$` : '';
+            const createItemCard = (item) => {
+                const card = document.createElement('div');
+                card.className = `item-card ${getRarity(item.buyPrice)}`;
+                const newPrice = item.buyPrice > 0 ? item.buyPrice - 1 : 0;
+                const originalPrice = item.buyPrice > 0 ? `${item.buyPrice}$` : '';
 
-            card.innerHTML = `
-                <div class="item-image-container">
-                    <img src="${item.img}" alt="${item.name}" onerror="this.src='https://placehold.co/128x128/2c2c2c/e74c3c?text=N/A'; this.onerror=null;">
-                </div>
-                <div class="item-info">
-                    <h3>${item.name}</h3>
-                    <div class="price-container">
-                        <span class="original-price">${originalPrice}</span>
-                        <span class="new-price">${newPrice}$</span>
+                card.innerHTML = `
+                    <div class="item-image-container">
+                        <img src="${item.img}" alt="${item.name}" onerror="this.src='https://placehold.co/128x128/2c2c2c/e74c3c?text=N/A'; this.onerror=null;">
                     </div>
-                    <button class="buy-btn">Acheter</button>
-                </div>
-            `;
-            card.querySelector('.buy-btn').addEventListener('click', () => openQuantityModal(item));
-            return card;
-        }
-
-        function renderMarket() {
-            marketGrid.innerHTML = '';
-            const searchTerm = searchBar.value.toLowerCase();
-            const activeTab = document.querySelector('.category-tab.active');
-            const selectedCategory = activeTab ? activeTab.dataset.category : 'all';
-
-            const sortedItems = [...marketItems].sort((a, b) => {
-                const aIsHisteria = a.img.includes('histeria-icon');
-                const bIsHisteria = b.img.includes('histeria-icon');
-                return bIsHisteria - aIsHisteria;
-            });
-
-            const itemsToDisplay = sortedItems.filter(item => {
-                const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
-                const matchesSearch = item.name.toLowerCase().includes(searchTerm);
-                return matchesCategory && matchesSearch;
-            });
-
-            itemsToDisplay.forEach(item => {
-                marketGrid.appendChild(createItemCard(item));
-            });
-        }
-
-        function setupCategories() {
-            const categories = ['all', ...new Set(marketItems.map(item => item.category))];
-            categoryList.innerHTML = '';
-            
-            categories.forEach(category => {
-                const li = document.createElement('li');
-                li.className = 'category-tab';
-                if (category === 'all') li.classList.add('active');
-                li.dataset.category = category;
-                li.textContent = category === 'all' ? 'Tout voir' : category;
-                categoryList.appendChild(li);
-            });
-
-            categoryList.querySelectorAll('.category-tab').forEach(tab => {
-                tab.addEventListener('click', () => {
-                    categoryList.querySelector('.active').classList.remove('active');
-                    tab.classList.add('active');
-                    renderMarket();
-                });
-            });
-        }
-
-        function setupFeatured() {
-            const featuredItemNames = ["Histerite Apple", "Hang Glider", "Histerite Sword", "Vault Breacher"];
-            featuredItemNames.forEach(featuredName => {
-                const item = marketItems.find(i => i.name === featuredName);
-                if (item) featuredGrid.appendChild(createItemCard(item));
-            });
-        }
-
-        function openQuantityModal(item) {
-            currentItem = item;
-            document.getElementById('quantity-item-name').textContent = item.name;
-            document.getElementById('quantity-item-img').src = item.img;
-            document.getElementById('quantity-input').value = 1;
-            quantityModal.style.display = 'flex';
-        }
-
-        document.getElementById('add-to-cart-btn').addEventListener('click', () => {
-            const quantity = parseInt(document.getElementById('quantity-input').value);
-            if (quantity > 0) {
-                const existingItem = cart.find(item => item.name === currentItem.name);
-                if (existingItem) {
-                    existingItem.quantity += quantity;
-                } else {
-                    cart.push({ ...currentItem, quantity });
-                }
-                updateCart();
-                quantityModal.style.display = 'none';
-            }
-        });
-
-        function updateCart() {
-            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-            cartCount.textContent = totalItems;
-            
-            const cartItemsContainer = document.getElementById('cart-items');
-            cartItemsContainer.innerHTML = '';
-            let total = 0;
-
-            cart.forEach((item, index) => {
-                const itemElement = document.createElement('div');
-                itemElement.className = 'cart-item';
-                itemElement.innerHTML = `
-                    <img src="${item.img}" alt="${item.name}">
-                    <div class="cart-item-details">
-                        <p>${item.name}</p>
-                        <p>${item.buyPrice * item.quantity}$</p>
-                    </div>
-                    <div class="cart-item-actions">
-                        <button data-index="${index}" class="quantity-minus">-</button>
-                        <input type="number" value="${item.quantity}" readonly>
-                        <button data-index="${index}" class="quantity-plus">+</button>
-                        <button data-index="${index}" class="delete-item"><i class="fas fa-trash"></i></button>
+                    <div class="item-info">
+                        <h3>${item.name}</h3>
+                        <div class="price-container">
+                            <span class="original-price">${originalPrice}</span>
+                            <span class="new-price">${newPrice}$</span>
+                        </div>
+                        <button class="buy-btn">Acheter</button>
                     </div>
                 `;
-                cartItemsContainer.appendChild(itemElement);
-                total += item.buyPrice * item.quantity;
+                card.querySelector('.buy-btn').addEventListener('click', () => openQuantityModal(item));
+                return card;
+            };
+
+            const renderMarket = () => {
+                marketGrid.innerHTML = '';
+                const searchTerm = searchBar.value.toLowerCase();
+                const activeTab = document.querySelector('.category-tab.active');
+                const selectedCategory = activeTab ? activeTab.dataset.category : 'all';
+
+                const sortedItems = [...marketItems].sort((a, b) => {
+                    const aIsHisteria = a.img.includes('histeria-icon');
+                    const bIsHisteria = b.img.includes('histeria-icon');
+                    return bIsHisteria - aIsHisteria;
+                });
+
+                const itemsToDisplay = sortedItems.filter(item => {
+                    const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
+                    const matchesSearch = item.name.toLowerCase().includes(searchTerm);
+                    return matchesCategory && matchesSearch;
+                });
+
+                itemsToDisplay.forEach(item => {
+                    marketGrid.appendChild(createItemCard(item));
+                });
+            };
+
+            const setupCategories = () => {
+                const categories = ['all', ...new Set(marketItems.map(item => item.category))];
+                categoryList.innerHTML = '';
+                
+                categories.forEach(category => {
+                    const li = document.createElement('li');
+                    li.className = 'category-tab';
+                    if (category === 'all') li.classList.add('active');
+                    li.dataset.category = category;
+                    li.textContent = category === 'all' ? 'Tout voir' : category;
+                    categoryList.appendChild(li);
+                });
+
+                categoryList.querySelectorAll('.category-tab').forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        categoryList.querySelector('.active').classList.remove('active');
+                        tab.classList.add('active');
+                        renderMarket();
+                    });
+                });
+            };
+
+            const setupFeatured = () => {
+                const featuredItemNames = ["Histerite Apple", "Hang Glider", "Histerite Sword", "Vault Breacher"];
+                featuredItemNames.forEach(featuredName => {
+                    const item = marketItems.find(i => i.name === featuredName);
+                    if (item) featuredGrid.appendChild(createItemCard(item));
+                });
+            };
+
+            const openQuantityModal = (item) => {
+                currentItem = item;
+                document.getElementById('quantity-item-name').textContent = item.name;
+                document.getElementById('quantity-item-img').src = item.img;
+                document.getElementById('quantity-input').value = 1;
+                quantityModal.style.display = 'flex';
+            };
+
+            document.getElementById('add-to-cart-btn').addEventListener('click', () => {
+                const quantity = parseInt(document.getElementById('quantity-input').value);
+                if (quantity > 0) {
+                    const existingItem = cart.find(item => item.name === currentItem.name);
+                    if (existingItem) {
+                        existingItem.quantity += quantity;
+                    } else {
+                        cart.push({ ...currentItem, quantity });
+                    }
+                    updateCart();
+                    quantityModal.style.display = 'none';
+                }
             });
 
-            document.getElementById('cart-total').textContent = `Total: ${total}$`;
-        }
+            const updateCart = () => {
+                const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+                cartCount.textContent = totalItems;
+                
+                const cartItemsContainer = document.getElementById('cart-items');
+                cartItemsContainer.innerHTML = '';
+                let total = 0;
 
-        async function createOrder() {
-            const user = auth.currentUser;
-            if (!user || user.isAnonymous) {
-                alert("Vous devez être connecté pour passer une commande.");
-                return;
-            }
-            if (cart.length === 0) {
-                alert("Votre panier est vide !");
-                return;
-            }
-
-            const total = cart.reduce((sum, item) => sum + (item.buyPrice * item.quantity), 0);
-
-            try {
-                const docRef = await addDoc(collection(db, "orders"), {
-                    customerId: user.uid,
-                    customerName: currentUserData?.username || "Client Anonyme",
-                    items: cart,
-                    totalPrice: total,
-                    status: "En attente",
-                    createdAt: serverTimestamp()
+                cart.forEach((item, index) => {
+                    const itemElement = document.createElement('div');
+                    itemElement.className = 'cart-item';
+                    itemElement.innerHTML = `
+                        <img src="${item.img}" alt="${item.name}">
+                        <div class="cart-item-details">
+                            <p>${item.name}</p>
+                            <p>${item.buyPrice * item.quantity}$</p>
+                        </div>
+                        <div class="cart-item-actions">
+                            <button data-index="${index}" class="quantity-minus">-</button>
+                            <input type="number" value="${item.quantity}" readonly>
+                            <button data-index="${index}" class="quantity-plus">+</button>
+                            <button data-index="${index}" class="delete-item"><i class="fas fa-trash"></i></button>
+                        </div>
+                    `;
+                    cartItemsContainer.appendChild(itemElement);
+                    total += item.buyPrice * item.quantity;
                 });
-                alert("Commande passée avec succès !");
-                cart = [];
-                updateCart();
-                cartModal.style.display = 'none';
-                checkUserOrders(user);
-            } catch (e) {
-                console.error("Error adding document: ", e);
-                alert("Une erreur est survenue lors de la création de la commande.");
-            }
-        }
-        
-        async function initializePage() {
-            if (!initializeFirebase()) {
-                document.body.innerHTML = "<h1>Erreur de configuration Firebase.</h1>";
-                return;
+
+                document.getElementById('cart-total').textContent = `Total: ${total}$`;
+            };
+
+            const createOrder = async () => {
+                const user = auth.currentUser;
+                if (!user || user.isAnonymous) {
+                    alert("Vous devez être connecté pour passer une commande.");
+                    return;
+                }
+                if (cart.length === 0) {
+                    alert("Votre panier est vide !");
+                    return;
+                }
+
+                const total = cart.reduce((sum, item) => sum + (item.buyPrice * item.quantity), 0);
+
+                try {
+                    await addDoc(collection(db, "orders"), {
+                        customerId: user.uid,
+                        customerName: currentUserData?.username || "Client Anonyme",
+                        items: cart,
+                        totalPrice: total,
+                        status: "En attente",
+                        createdAt: serverTimestamp()
+                    });
+                    alert("Commande passée avec succès !");
+                    cart = [];
+                    updateCart();
+                    cartModal.style.display = 'none';
+                    checkUserOrders(user);
+                } catch (e) {
+                    console.error("Error adding document: ", e);
+                    alert("Une erreur est survenue lors de la création de la commande.");
+                }
             };
             
-            setupFeatured();
-            setupCategories();
-            renderMarket();
-            
-            const user = await authUser();
-            if (user) {
-                await checkUserRole(user);
-                await checkUserOrders(user);
-            }
-        }
+            const initializePage = async () => {
+                if (!initializeFirebase()) {
+                    document.body.innerHTML = "<h1>Erreur de configuration Firebase.</h1>";
+                    return;
+                }
+                
+                setupFeatured();
+                setupCategories();
+                renderMarket();
+                
+                const user = await authUser();
+                if (user) {
+                    await checkUserRole(user);
+                    await checkUserOrders(user);
+                }
+            };
 
-        document.addEventListener('DOMContentLoaded', () => {
             initializePage();
+            
             searchBar.addEventListener('input', renderMarket);
-
             cartButton.addEventListener('click', () => cartModal.style.display = 'flex');
             document.getElementById('close-quantity-modal').addEventListener('click', () => quantityModal.style.display = 'none');
             document.getElementById('close-cart-modal').addEventListener('click', () => cartModal.style.display = 'none');
-            
             document.getElementById('checkout-btn').addEventListener('click', createOrder);
 
             document.getElementById('cart-items').addEventListener('click', (e) => {

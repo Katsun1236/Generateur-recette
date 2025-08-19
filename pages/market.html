@@ -13,45 +13,17 @@
     
     <style>
         :root {
-            --market-bg: #1a1a1a;
-            --market-card-bg: #2c2c2c;
-            --market-border: #444;
+            --market-bg: #111;
+            --market-card-bg: #1c1c1c;
+            --market-border: #333;
             --rarity-common: #b0b0b0;
             --rarity-rare: #5bc0de;
             --rarity-epic: #9d62d9;
             --rarity-legendary: #f0ad4e;
-            --status-pending: #f0ad4e;
-            --status-completed: #5cb85c;
-            --status-cancelled: #d9534f;
         }
 
         body {
-            background: linear-gradient(to bottom, #111, #222);
-        }
-
-        .view-toggle-container {
-            text-align: center;
-            margin: 2rem 0;
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-        }
-
-        .view-toggle-container button {
-            background-color: var(--primary-red);
-            color: white;
-            border: none;
-            padding: 0.8rem 1.5rem;
-            font-family: 'Roboto', sans-serif;
-            font-weight: bold;
-            font-size: 1rem;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .view-toggle-container button:hover {
-            background-color: var(--primary-red-dark);
+            background-color: var(--market-bg);
         }
 
         .market-container {
@@ -135,104 +107,331 @@
             border-bottom: 1px solid var(--market-border);
         }
 
-        .category-tabs {
+        .category-nav ul {
             list-style: none;
             padding: 0;
             margin: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-        .category-tab {
-            background-color: #333;
-            color: var(--text-medium);
-            padding: 0.75rem 1rem;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s;
-            border-left: 4px solid transparent;
-        }
-        .category-tab:hover {
-            background-color: #444;
-            color: var(--text-light);
-        }
-        .category-tab.active {
-            background-color: var(--primary-red-dark);
-            color: white;
-            font-weight: bold;
-            border-left: 4px solid var(--primary-red);
         }
 
-        .market-content { flex-grow: 1; }
-        .market-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.5rem; }
-        .item-card { background: var(--market-card-bg); border-radius: 10px; border: 1px solid var(--market-border); overflow: hidden; display: flex; flex-direction: column; transition: all 0.3s ease; position: relative; }
-        .item-card:hover { transform: translateY(-8px); box-shadow: 0 12px 25px rgba(0,0,0,0.5); }
-        
-        .item-card.common:hover { box-shadow: 0 0 15px var(--rarity-common); }
-        .item-card.rare:hover { box-shadow: 0 0 15px var(--rarity-rare); }
-        .item-card.epic:hover { box-shadow: 0 0 15px var(--rarity-epic); }
-        .item-card.legendary:hover { box-shadow: 0 0 15px var(--rarity-legendary); }
+        .category-nav li {
+            margin-bottom: 0.5rem;
+        }
+
+        .category-nav .checkbox-label {
+            display: block;
+            position: relative;
+            padding-left: 35px;
+            cursor: pointer;
+            font-size: 1rem;
+            user-select: none;
+            color: var(--text-medium);
+        }
+
+        .category-nav input[type="checkbox"] {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+
+        .checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 25px;
+            width: 25px;
+            background-color: #333;
+            border: 1px solid #555;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .checkbox-label:hover input ~ .checkmark {
+            background-color: #444;
+        }
+
+        .checkbox-label input:checked ~ .checkmark {
+            background-color: var(--primary-red);
+        }
+
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+        }
+
+        .checkbox-label input:checked ~ .checkmark:after {
+            display: block;
+        }
+
+        .checkbox-label .checkmark:after {
+            left: 9px;
+            top: 5px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 3px 3px 0;
+            transform: rotate(45deg);
+        }
+
+        .market-content {
+            flex-grow: 1;
+        }
+
+        .market-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .item-card {
+            background: linear-gradient(145deg, #2e2e2e, #1a1a1a);
+            border-radius: 10px;
+            border: 1px solid var(--market-border);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .item-card:hover {
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.5);
+        }
+
+        .item-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background-color: var(--rarity-common);
+            transition: background-color 0.3s ease;
+        }
+
+        .item-card.rare::before { background-color: var(--rarity-rare); }
+        .item-card.epic::before { background-color: var(--rarity-epic); }
+        .item-card.legendary::before { background-color: var(--rarity-legendary); }
 
         .item-image-container {
             width: 100%;
             padding-top: 100%;
             position: relative;
             background-color: #111;
+        }
+
+        .item-card img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 1.5rem;
+            box-sizing: border-box;
+            image-rendering: pixelated;
+            transition: transform 0.3s ease;
+        }
+        
+        .item-card:hover img {
+            transform: scale(1.1);
+        }
+
+        .item-info {
+            padding: 1rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            text-align: center;
+        }
+
+        .item-info h3 {
+            font-size: 1rem;
+            margin: 0 0 0.5rem 0;
+            color: var(--text-light);
+            font-weight: 700;
+            height: 40px;
+        }
+
+        .price-container {
+            margin-bottom: 1rem;
+        }
+
+        .original-price {
+            text-decoration: line-through;
+            color: #777;
+            font-size: 0.8rem;
+        }
+
+        .new-price {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: var(--text-light);
+        }
+
+        .buy-btn {
+            width: 100%;
+            background-color: var(--primary-red);
+            color: white;
+            font-weight: bold;
+            padding: 0.7rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: background-color 0.3s;
+        }
+
+        .buy-btn:hover {
+            background-color: var(--primary-red-dark);
+        }
+        
+        .cart-button {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            background-color: var(--primary-red);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1001;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+            transition: transform 0.3s ease;
+        }
+        .cart-button:hover {
+            transform: scale(1.1);
+        }
+        .cart-button i {
+            font-size: 1.5rem;
+            color: white;
+        }
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: var(--discord-blue);
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.7);
+            backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background-color: var(--market-card-bg);
+            padding: 2rem;
+            border: 1px solid var(--market-border);
+            width: 90%;
+            max-width: 500px;
+            border-radius: 10px;
+            position: relative;
+        }
+        .close-btn {
+            color: #aaa;
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-btn:hover, .close-btn:focus {
+            color: white;
+        }
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        .quantity-btn {
+            width: 40px;
+            height: 40px;
+            background-color: #333;
+            border: 1px solid #555;
+            color: white;
+            font-size: 1.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        #quantity-input {
+            width: 60px;
+            text-align: center;
+            font-size: 1.2rem;
+            background-color: #111;
+            border: 1px solid #555;
+            color: white;
+            border-radius: 5px;
+        }
+        #cart-items {
+            max-height: 40vh;
+            overflow-y: auto;
+            margin: 1.5rem 0;
+        }
+        .cart-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
             border-bottom: 1px solid var(--market-border);
         }
-        .item-image-container::after {
-            content: '';
-            position: absolute;
-            inset: 10px;
-            border-radius: 5px;
-            border: 2px solid transparent;
-            transition: border-color 0.3s ease;
+        .cart-item img {
+            width: 50px;
+            height: 50px;
+            margin-right: 1rem;
+            image-rendering: pixelated;
         }
-        .item-card.rare .item-image-container::after { border-color: var(--rarity-rare); }
-        .item-card.epic .item-image-container::after { border-color: var(--rarity-epic); }
-        .item-card.legendary .item-image-container::after { border-color: var(--rarity-legendary); }
-
-        .item-card img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; padding: 1.5rem; box-sizing: border-box; image-rendering: pixelated; transition: transform 0.3s ease; }
-        .item-card:hover img { transform: scale(1.1); }
-        .item-info { padding: 1rem; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; text-align: center; }
-        .item-info h3 { font-size: 1rem; margin: 0 0 0.5rem 0; color: var(--text-light); font-weight: 700; height: 40px; }
-        .price-container { margin-bottom: 1rem; }
-        .original-price { text-decoration: line-through; color: #777; font-size: 0.8rem; }
-        .new-price { font-size: 1.4rem; font-weight: bold; color: var(--text-light); }
-        .buy-btn { width: 100%; background-color: var(--primary-red); color: white; font-weight: bold; padding: 0.7rem 1rem; border: none; border-radius: 5px; cursor: pointer; text-transform: uppercase; transition: background-color 0.3s; }
-        .buy-btn:hover { background-color: var(--primary-red-dark); }
-        
-        .orders-container { width: 100%; max-width: 1200px; margin: 2rem auto; padding: 0 1.5rem; box-sizing: border-box; }
-        .orders-title { font-family: 'Anton', sans-serif; font-size: 3rem; color: var(--text-light); margin-bottom: 2rem; border-left: 5px solid var(--primary-red); padding-left: 1.5rem; }
-        .order-list { display: flex; flex-direction: column; gap: 1rem; }
-        .order-card { background-color: var(--market-card-bg); border: 1px solid var(--market-border); border-radius: 10px; padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: background-color 0.3s, transform 0.3s; }
-        .order-card:hover { background-color: #252525; transform: translateY(-5px); }
-        .order-info { display: flex; flex-direction: column; gap: 0.5rem; }
-        .order-info .order-id { font-size: 1.2rem; font-weight: bold; color: var(--text-light); }
-        .order-info .customer-name { font-size: 1rem; color: var(--text-medium); }
-        .order-status { padding: 0.5rem 1rem; border-radius: 20px; font-weight: bold; color: white; text-align: center; min-width: 100px; }
-        .order-status.pending { background-color: var(--status-pending); }
-        .order-status.completed { background-color: var(--status-completed); }
-        .order-status.cancelled { background-color: var(--status-cancelled); }
-
-        .cart-button { position: fixed; bottom: 2rem; right: 2rem; width: 60px; height: 60px; background-color: var(--primary-red); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 1001; box-shadow: 0 5px 15px rgba(0,0,0,0.4); transition: transform 0.3s ease; }
-        .cart-button:hover { transform: scale(1.1); }
-        .cart-button i { font-size: 1.5rem; color: white; }
-        .cart-count { position: absolute; top: -5px; right: -5px; background-color: var(--discord-blue); color: white; border-radius: 50%; width: 24px; height: 24px; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; font-weight: bold; }
-        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.7); backdrop-filter: blur(5px); align-items: center; justify-content: center; }
-        .modal-content { background-color: var(--market-card-bg); padding: 2rem; border: 1px solid var(--market-border); width: 90%; max-width: 500px; border-radius: 10px; position: relative; }
-        .close-btn { color: #aaa; position: absolute; top: 1rem; right: 1rem; font-size: 28px; font-weight: bold; cursor: pointer; }
-        .close-btn:hover, .close-btn:focus { color: white; }
-        .quantity-selector { display: flex; align-items: center; justify-content: center; gap: 1rem; margin: 1rem 0; }
-        .quantity-btn { width: 40px; height: 40px; background-color: #333; border: 1px solid #555; color: white; font-size: 1.5rem; border-radius: 50%; cursor: pointer; }
-        #quantity-input { width: 60px; text-align: center; font-size: 1.2rem; background-color: #111; border: 1px solid #555; color: white; border-radius: 5px; }
-        #cart-items { max-height: 40vh; overflow-y: auto; margin: 1.5rem 0; }
-        .cart-item { display: flex; align-items: center; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--market-border); }
-        .cart-item img { width: 50px; height: 50px; margin-right: 1rem; image-rendering: pixelated; }
-        .cart-item-details { flex-grow: 1; }
-        .cart-item-actions { display: flex; align-items: center; }
-        .cart-item-actions button { background: none; border: 1px solid #555; color: white; width: 30px; height: 30px; cursor: pointer; border-radius: 5px; }
-        .cart-item-actions input { width: 40px; text-align: center; background-color: #333; border: none; color: white; margin: 0 0.5rem; }
+        .cart-item-details {
+            flex-grow: 1;
+        }
+        .cart-item-actions {
+            display: flex;
+            align-items: center;
+        }
+        .cart-item-actions button {
+            background: none;
+            border: 1px solid #555;
+            color: white;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .cart-item-actions input {
+            width: 40px;
+            text-align: center;
+            background-color: #333;
+            border: none;
+            color: white;
+            margin: 0 0.5rem;
+        }
     </style>
 </head>
 <body>
@@ -243,45 +442,32 @@
         <div class="nav-center">
             <a href="https://discord.gg/UFVCDc4mkU" target="_blank">Discord</a>
             <a href="recrutement.html">Recrutement</a>
-            <a href="market.html" class="active">Marché</a>
+            <a href="market.html">Marché</a>
         </div>
         <div class="nav-auth">
             <a href="profile.html" id="profile-link">
-                <img id="profile-pic" src="https://placehold.co/40x40/1c1c1c/ffffff?text=P" alt="Photo de profil">
+                <img id="profile-pic" src="" alt="Photo de profil">
             </a>
         </div>
     </nav>
 
-    <div class="view-toggle-container">
-        <button id="toggle-view-btn" style="display: none;">Passer en mode Vendeur</button>
-        <button id="view-order-btn" style="display: none;">Voir ma commande</button>
-    </div>
-
-    <div id="client-view">
-        <div class="market-container">
-            <div class="featured-section">
-                <h2 class="featured-title">À L'AFFICHE</h2>
-                <div class="featured-grid" id="featured-grid"></div>
-            </div>
-
-            <div class="shop-layout">
-                <aside class="category-nav">
-                    <div class="search-panel">
-                        <input type="text" id="search-bar" placeholder="Rechercher...">
-                    </div>
-                    <h3>Catégories</h3>
-                    <ul id="category-list" class="category-tabs"></ul>
-                </aside>
-                <main class="market-content">
-                    <div class="market-grid" id="market-grid"></div>
-                </main>
-            </div>
+    <div class="market-container">
+        <div class="featured-section">
+            <h2 class="featured-title">À L'AFFICHE</h2>
+            <div class="featured-grid" id="featured-grid"></div>
         </div>
-    </div>
 
-    <div id="seller-view" class="orders-container" style="display: none;">
-        <h1 class="orders-title">GESTION DES COMMANDES</h1>
-        <div class="order-list" id="order-list">
+        <div class="shop-layout">
+            <aside class="category-nav">
+                <div class="search-panel">
+                    <input type="text" id="search-bar" placeholder="Rechercher...">
+                </div>
+                <h3>Catégories</h3>
+                <ul id="category-list"></ul>
+            </aside>
+            <main class="market-content">
+                <div class="market-grid" id="market-grid"></div>
+            </main>
         </div>
     </div>
     
@@ -318,112 +504,29 @@
 
     <script type="module" src="../js/main.js"></script>
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, addDoc, collection, serverTimestamp, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { marketItems } from '../js/market-config.js';
 
-        const clientView = document.getElementById('client-view');
-        const sellerView = document.getElementById('seller-view');
-        const toggleViewBtn = document.getElementById('toggle-view-btn');
-        const viewOrderBtn = document.getElementById('view-order-btn');
         const featuredGrid = document.getElementById('featured-grid');
         const marketGrid = document.getElementById('market-grid');
         const categoryList = document.getElementById('category-list');
-        const searchBar = document.getElementById('search-bar');
         const cartButton = document.getElementById('cart-button');
         const cartCount = document.getElementById('cart-count');
+        const searchBar = document.getElementById('search-bar');
+        
         const quantityModal = document.getElementById('quantity-modal');
         const cartModal = document.getElementById('cart-modal');
         
         let cart = [];
         let currentItem = null;
-        let isSellerViewActive = false;
-        let currentUserData = null;
-        let auth, db;
 
-        const initializeAppLogic = async () => {
-            try {
-                const user = await authUser();
-                if (user) {
-                    await checkUserRole(user);
-                    await checkUserOrders(user);
-                }
-                setupUI();
-                setupEventListeners();
-            } catch (error) {
-                console.error("Erreur d'initialisation:", error);
-                document.body.innerHTML = `<h1>Erreur critique: ${error.message}</h1>`;
-            }
-        };
-
-        const authUser = () => new Promise((resolve) => {
-            const unsubscribe = onAuthStateChanged(auth, async (user) => {
-                unsubscribe();
-                if (user) {
-                    resolve(user);
-                } else {
-                    try {
-                        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                            await signInWithCustomToken(auth, __initial_auth_token);
-                        } else {
-                            await signInAnonymously(auth);
-                        }
-                        resolve(auth.currentUser);
-                    } catch (error) {
-                        console.error("Échec de l'authentification:", error);
-                        resolve(null);
-                    }
-                }
-            });
-        });
-
-        const checkUserRole = async (user) => {
-            if (!user || user.isAnonymous) {
-                toggleViewBtn.style.display = 'none';
-                return;
-            }
-            const userDocRef = doc(db, "users", user.uid);
-            try {
-                const docSnap = await getDoc(userDocRef);
-                if (docSnap.exists()) {
-                    currentUserData = docSnap.data();
-                    if (currentUserData.marketRole === 'Vendeur') {
-                        toggleViewBtn.style.display = 'block';
-                    }
-                }
-            } catch (error) {
-                console.error("Erreur lors de la récupération du rôle de l'utilisateur:", error);
-            }
-        };
-
-        const checkUserOrders = async (user) => {
-            if (!user || user.isAnonymous) return;
-            const ordersRef = collection(db, "orders");
-            const q = query(ordersRef, where("customerId", "==", user.uid), where("status", "==", "En attente"));
-            
-            try {
-                const querySnapshot = await getDocs(q);
-                if (!querySnapshot.empty) {
-                    const orderId = querySnapshot.docs[0].id;
-                    viewOrderBtn.style.display = 'block';
-                    viewOrderBtn.onclick = () => { window.location.href = `order-detail.html?id=${orderId}`; };
-                } else {
-                    viewOrderBtn.style.display = 'none';
-                }
-            } catch (error) {
-                console.error("Erreur lors de la vérification des commandes de l'utilisateur:", error);
-            }
-        };
-        
-        const getRarity = (price) => {
+        function getRarity(price) {
             if (price >= 20000) return 'legendary';
             if (price >= 5000) return 'epic';
             if (price >= 1000) return 'rare';
             return 'common';
-        };
+        }
 
-        const createItemCard = (item) => {
+        function createItemCard(item) {
             const card = document.createElement('div');
             card.className = `item-card ${getRarity(item.buyPrice)}`;
             const newPrice = item.buyPrice > 0 ? item.buyPrice - 1 : 0;
@@ -444,22 +547,15 @@
             `;
             card.querySelector('.buy-btn').addEventListener('click', () => openQuantityModal(item));
             return card;
-        };
+        }
 
-        const renderMarket = () => {
+        function renderMarket() {
             marketGrid.innerHTML = '';
             const searchTerm = searchBar.value.toLowerCase();
-            const activeTab = document.querySelector('.category-tab.active');
-            const selectedCategory = activeTab ? activeTab.dataset.category : 'all';
+            const selectedCategories = Array.from(document.querySelectorAll('#category-list input:checked')).map(cb => cb.value);
 
-            const sortedItems = [...marketItems].sort((a, b) => {
-                const aIsHisteria = a.img.includes('histeria-icon');
-                const bIsHisteria = b.img.includes('histeria-icon');
-                return bIsHisteria - aIsHisteria;
-            });
-
-            const itemsToDisplay = sortedItems.filter(item => {
-                const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
+            const itemsToDisplay = marketItems.filter(item => {
+                const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes('all') || selectedCategories.includes(item.category);
                 const matchesSearch = item.name.toLowerCase().includes(searchTerm);
                 return matchesCategory && matchesSearch;
             });
@@ -467,47 +563,67 @@
             itemsToDisplay.forEach(item => {
                 marketGrid.appendChild(createItemCard(item));
             });
-        };
+        }
 
-        const setupCategories = () => {
+        function setupCategories() {
             const categories = ['all', ...new Set(marketItems.map(item => item.category))];
-            categoryList.innerHTML = '';
             
             categories.forEach(category => {
                 const li = document.createElement('li');
-                li.className = 'category-tab';
-                if (category === 'all') li.classList.add('active');
-                li.dataset.category = category;
-                li.textContent = category === 'all' ? 'Tout voir' : category;
+                li.innerHTML = `
+                    <label class="checkbox-label">${category === 'all' ? 'Tout voir' : category}
+                        <input type="checkbox" value="${category}" ${category === 'all' ? 'checked' : ''}>
+                        <span class="checkmark"></span>
+                    </label>
+                `;
                 categoryList.appendChild(li);
             });
 
-            categoryList.querySelectorAll('.category-tab').forEach(tab => {
-                tab.addEventListener('click', () => {
-                    categoryList.querySelector('.active').classList.remove('active');
-                    tab.classList.add('active');
+            categoryList.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('change', () => {
+                    if (checkbox.value === 'all' && checkbox.checked) {
+                        categoryList.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
+                    } else if (checkbox.value !== 'all' && !checkbox.checked) {
+                        categoryList.querySelector('input[value="all"]').checked = false;
+                    }
                     renderMarket();
                 });
             });
-        };
+        }
 
-        const setupFeatured = () => {
+        function setupFeatured() {
             const featuredItemNames = ["Histerite Apple", "Hang Glider", "Histerite Sword", "Vault Breacher"];
             featuredItemNames.forEach(featuredName => {
                 const item = marketItems.find(i => i.name === featuredName);
-                if (item) featuredGrid.appendChild(createItemCard(item));
+                if (item) {
+                    featuredGrid.appendChild(createItemCard(item));
+                }
             });
-        };
+        }
 
-        const openQuantityModal = (item) => {
+        function openQuantityModal(item) {
             currentItem = item;
             document.getElementById('quantity-item-name').textContent = item.name;
             document.getElementById('quantity-item-img').src = item.img;
             document.getElementById('quantity-input').value = 1;
             quantityModal.style.display = 'flex';
-        };
+        }
 
-        const updateCart = () => {
+        document.getElementById('add-to-cart-btn').addEventListener('click', () => {
+            const quantity = parseInt(document.getElementById('quantity-input').value);
+            if (quantity > 0) {
+                const existingItem = cart.find(item => item.name === currentItem.name);
+                if (existingItem) {
+                    existingItem.quantity += quantity;
+                } else {
+                    cart.push({ ...currentItem, quantity });
+                }
+                updateCart();
+                quantityModal.style.display = 'none';
+            }
+        });
+
+        function updateCart() {
             const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
             cartCount.textContent = totalItems;
             
@@ -536,101 +652,55 @@
             });
 
             document.getElementById('cart-total').textContent = `Total: ${total}$`;
-        };
+        }
 
-        const createOrder = async () => {
-            const user = auth.currentUser;
-            if (!user || user.isAnonymous) {
-                alert("Vous devez être connecté pour passer une commande.");
-                return;
-            }
-            if (cart.length === 0) {
+        cartButton.addEventListener('click', () => {
+            cartModal.style.display = 'flex';
+        });
+
+        document.getElementById('close-quantity-modal').addEventListener('click', () => quantityModal.style.display = 'none');
+        document.getElementById('close-cart-modal').addEventListener('click', () => cartModal.style.display = 'none');
+
+        document.getElementById('checkout-btn').addEventListener('click', () => {
+            if(cart.length === 0) {
                 alert("Votre panier est vide !");
                 return;
             }
+            const orderData = encodeURIComponent(JSON.stringify(cart));
+            window.location.href = `checkout.html?order=${orderData}`;
+        });
 
-            const total = cart.reduce((sum, item) => sum + (item.buyPrice * item.quantity), 0);
+        document.getElementById('cart-items').addEventListener('click', (e) => {
+            const button = e.target.closest('button');
+            if (!button) return;
+            const index = button.dataset.index;
 
-            try {
-                await addDoc(collection(db, "orders"), {
-                    customerId: user.uid,
-                    customerName: currentUserData?.username || "Client Anonyme",
-                    items: cart,
-                    totalPrice: total,
-                    status: "En attente",
-                    createdAt: serverTimestamp()
-                });
-                alert("Commande passée avec succès !");
-                cart = [];
-                updateCart();
-                cartModal.style.display = 'none';
-                checkUserOrders(user);
-            } catch (e) {
-                console.error("Erreur lors de l'ajout du document: ", e);
-                alert("Une erreur est survenue lors de la création de la commande.");
-            }
-        };
-
-        const setupEventListeners = () => {
-            toggleViewBtn.addEventListener('click', () => {
-                isSellerViewActive = !isSellerViewActive;
-                clientView.style.display = isSellerViewActive ? 'none' : 'block';
-                sellerView.style.display = isSellerViewActive ? 'block' : 'none';
-                cartButton.style.display = isSellerViewActive ? 'none' : 'flex';
-                toggleViewBtn.textContent = isSellerViewActive ? 'Passer en mode Client' : 'Passer en mode Vendeur';
-            });
-
-            searchBar.addEventListener('input', renderMarket);
-            cartButton.addEventListener('click', () => cartModal.style.display = 'flex');
-            document.getElementById('close-quantity-modal').addEventListener('click', () => quantityModal.style.display = 'none');
-            document.getElementById('close-cart-modal').addEventListener('click', () => cartModal.style.display = 'none');
-            document.getElementById('checkout-btn').addEventListener('click', createOrder);
-
-            document.getElementById('add-to-cart-btn').addEventListener('click', () => {
-                const quantity = parseInt(document.getElementById('quantity-input').value);
-                if (quantity > 0) {
-                    const existingItem = cart.find(item => item.name === currentItem.name);
-                    if (existingItem) {
-                        existingItem.quantity += quantity;
-                    } else {
-                        cart.push({ ...currentItem, quantity });
-                    }
-                    updateCart();
-                    quantityModal.style.display = 'none';
-                }
-            });
-
-            document.getElementById('cart-items').addEventListener('click', (e) => {
-                const button = e.target.closest('button');
-                if (!button) return;
-                const index = button.dataset.index;
-
-                if (button.classList.contains('quantity-plus')) {
-                    cart[index].quantity++;
-                } else if (button.classList.contains('quantity-minus')) {
-                    if (cart[index].quantity > 1) cart[index].quantity--; else cart.splice(index, 1);
-                } else if (button.classList.contains('delete-item')) {
+            if (button.classList.contains('quantity-plus')) {
+                cart[index].quantity++;
+            } else if (button.classList.contains('quantity-minus')) {
+                cart[index].quantity--;
+                if (cart[index].quantity === 0) {
                     cart.splice(index, 1);
                 }
-                updateCart();
-            });
+            } else if (button.classList.contains('delete-item')) {
+                cart.splice(index, 1);
+            }
+            updateCart();
+        });
 
-            const quantityInput = document.getElementById('quantity-input');
-            document.getElementById('quantity-minus').addEventListener('click', () => {
-                if (quantityInput.value > 1) quantityInput.value--;
-            });
-            document.getElementById('quantity-plus').addEventListener('click', () => {
-                if (quantityInput.value < 64) quantityInput.value++;
-            });
-        };
+        const quantityInput = document.getElementById('quantity-input');
+        document.getElementById('quantity-minus').addEventListener('click', () => {
+            if (quantityInput.value > 1) quantityInput.value--;
+        });
+        document.getElementById('quantity-plus').addEventListener('click', () => {
+            if (quantityInput.value < 64) quantityInput.value++;
+        });
         
-        const setupUI = () => {
-            setupFeatured();
-            setupCategories();
-            renderMarket();
-        };
+        searchBar.addEventListener('input', renderMarket);
 
-        initializeAppLogic();
+        setupFeatured();
+        setupCategories();
+        renderMarket();
     </script>
 </body>
 </html>

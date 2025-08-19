@@ -28,26 +28,9 @@
             object-fit: cover;
             border: 4px solid var(--primary-red);
             margin-right: 2rem;
-            cursor: pointer;
-            position: relative;
         }
-        .profile-avatar-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        .profile-avatar-container:hover .profile-avatar-overlay {
-            opacity: 1;
+        .profile-info {
+            flex-grow: 1;
         }
         .profile-info h1 {
             margin: 0;
@@ -55,7 +38,7 @@
             font-family: 'Anton', sans-serif;
         }
         .profile-info p {
-            margin: 5px 0 0 0;
+            margin: 5px 0 15px 0;
             color: var(--text-medium);
         }
         .stats-grid {
@@ -82,6 +65,20 @@
             margin: 0;
             color: var(--text-medium);
         }
+        .logout-btn {
+            background-color: var(--primary-red);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: background-color 0.3s;
+        }
+        .logout-btn:hover {
+            background-color: var(--primary-red-dark);
+        }
     </style>
 </head>
 <body>
@@ -107,16 +104,11 @@
 
     <div class="profile-container">
         <div class="profile-header">
-            <div class="profile-avatar-container">
-                <img src="../images/pictures/Logo.png" alt="Avatar" class="profile-avatar" id="avatar-img">
-                <div class="profile-avatar-overlay">
-                    <i class="fas fa-camera"></i>
-                </div>
-                <input type="file" id="avatar-upload" accept="image/*" style="display: none;">
-            </div>
+            <img src="../images/pictures/Logo.png" alt="Avatar" class="profile-avatar" id="avatar-img">
             <div class="profile-info">
                 <h1 id="username">CHARGEMENT...</h1>
                 <p id="user-role">Membre</p>
+                <button id="logout-btn" class="logout-btn">Déconnexion</button>
             </div>
         </div>
 
@@ -141,23 +133,18 @@
 
     <script type="module" src="../js/main.js"></script>
     <script type="module">
-        import { auth, db, storage } from '../js/firebase-config.js';
-        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
+        import { auth, db } from '../js/firebase-config.js';
+        import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const usernameEl = document.getElementById('username');
         const userRoleEl = document.getElementById('user-role');
         const discordTagEl = document.getElementById('discord-tag');
         const avatarImg = document.getElementById('avatar-img');
-        const avatarUpload = document.getElementById('avatar-upload');
-        const avatarContainer = document.querySelector('.profile-avatar-container');
-
-        let currentUser = null;
+        const logoutBtn = document.getElementById('logout-btn');
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                currentUser = user;
                 const userDocRef = doc(db, 'users', user.uid);
                 const userDoc = await getDoc(userDocRef);
 
@@ -166,44 +153,35 @@
                     usernameEl.textContent = userData.username;
                     userRoleEl.textContent = userData.role || 'Membre';
                     discordTagEl.textContent = userData.discordTag || 'N/A';
-                    if (userData.avatar) {
+                    
+                    // Logique pour la photo de profil
+                    if (user.photoURL) {
+                        // Utilise la photo de profil du fournisseur (Google, Discord)
+                        avatarImg.src = user.photoURL;
+                    } else if (userData.avatar) {
+                        // Fallback sur l'avatar enregistré si existant (ancienne méthode)
                         avatarImg.src = userData.avatar;
+                    } else {
+                        // Affiche une tête de skin Minecraft aléatoire basée sur l'UID
+                        avatarImg.src = `https://cravatar.eu/avatar/${user.uid}/120.png`;
                     }
                 } else {
+                    // Si l'utilisateur est authentifié mais n'a pas de profil, on le redirige
                     window.location.href = 'onboarding.html';
                 }
             } else {
+                // Si non connecté, redirection vers la page de connexion
                 window.location.href = 'login.html';
             }
         });
 
-        avatarContainer.addEventListener('click', () => {
-            avatarUpload.click();
-        });
-
-        avatarUpload.addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            const storageRef = ref(storage, `avatars/${currentUser.uid}/${file.name}`);
-            
-            try {
-                await uploadBytes(storageRef, file);
-                const downloadURL = await getDownloadURL(storageRef);
-                
-                const userDocRef = doc(db, 'users', currentUser.uid);
-                await updateDoc(userDocRef, {
-                    avatar: downloadURL
-                });
-
-                avatarImg.src = downloadURL;
-                // Mettre à jour aussi l'avatar dans la barre de navigation
-                document.getElementById('profile-pic').src = downloadURL;
-
-            } catch (error) {
-                console.error("Erreur lors du téléversement de l'avatar:", error);
-                alert("Une erreur est survenue lors du changement de votre avatar.");
-            }
+        logoutBtn.addEventListener('click', () => {
+            signOut(auth).then(() => {
+                // Redirection après déconnexion réussie
+                window.location.href = 'login.html';
+            }).catch((error) => {
+                console.error("Erreur de déconnexion:", error);
+            });
         });
 
     </script>

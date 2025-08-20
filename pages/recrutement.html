@@ -64,13 +64,14 @@
         .details-divider { border-color: #444; margin: 1rem 0;}
         .application-actions { display: flex; gap: 1rem; margin-top: 1.5rem; border-top: 1px solid #444; padding-top: 1.5rem; }
         .action-btn { flex-grow: 1; color: white; font-weight: bold; padding: 0.7rem 1rem; border: none; border-radius: 5px; cursor: pointer; text-transform: uppercase; transition: opacity 0.3s; }
-        .action-btn:hover { opacity: 0.8; }
+        .action-btn:hover:not(:disabled) { opacity: 0.8; }
         .approve-btn { background-color: var(--green); }
         .deny-btn { background-color: var(--primary-red); }
     </style>
 </head>
 <body>
     <nav class="navbar">
+        <!-- Le contenu de la barre de navigation est géré par main.js -->
         <div class="nav-left">
             <a href="../index.html"><img src="../images/pictures/Logo.png" alt="Logo R4TIO" class="nav-logo"></a>
         </div>
@@ -91,19 +92,37 @@
     </nav>
 
     <div class="page-container">
-        <!-- View for users who can apply -->
+        <!-- Vue pour les utilisateurs qui peuvent postuler -->
         <div id="applicant-view" class="d-none">
             <div class="page-header">
                 <h1>Devenir un membre R4TIO</h1>
                 <p>Prouve-nous que tu as ce qu'il faut pour rejoindre l'élite. Remplis ce formulaire avec soin.</p>
             </div>
             <form id="recruitment-form" class="form-container">
-                <!-- Form sections -->
+                <div class="form-section">
+                    <h2>Informations personnelles</h2>
+                    <div class="form-group"><label for="age">Âge</label><input type="number" id="age" required></div>
+                    <div class="form-group"><label for="qualities">3 Qualités</label><input type="text" id="qualities" placeholder="Ex: Stratège, Calme, Organisé" required></div>
+                    <div class="form-group"><label for="defects">3 Défauts</label><input type="text" id="defects" placeholder="Ex: Bavard, Impatient, Têtu" required></div>
+                </div>
+                <div class="form-section">
+                    <h2>Informations en jeu</h2>
+                    <div class="form-group"><label for="pseudo">Pseudo</label><input type="text" id="pseudo" required></div>
+                    <div class="form-group"><label for="version">Depuis quelle version jouez-vous ?</label><input type="text" id="version" placeholder="Ex: V6, V7..." required></div>
+                    <div class="form-group"><label for="knowledge">Connaissez-vous bien le serveur ?</label><textarea id="knowledge" required></textarea></div>
+                    <div class="form-group"><label for="speciality">Quelle est votre spécialité ?</label><input type="text" id="speciality" placeholder="Ex: PvP, Build, Farm..." required></div>
+                </div>
+                <div class="form-section">
+                    <h2>Informations de Faction</h2>
+                    <div class="form-group"><label for="why-you">Pourquoi vous et pas un autre ?</label><textarea id="why-you" required></textarea></div>
+                    <div class="form-group"><label for="why-us">Pourquoi notre faction ?</label><textarea id="why-us" required></textarea></div>
+                    <div class="form-group"><label for="past-factions">Avez-vous déjà été dans d’autres factions ? Si oui, lesquelles ?</label><textarea id="past-factions" required></textarea></div>
+                </div>
                 <button type="submit" class="submit-btn" id="submit-application-btn">Soumettre ma candidature</button>
             </form>
         </div>
 
-        <!-- View for users who have already applied -->
+        <!-- Vue pour les utilisateurs qui ont déjà postulé -->
         <div id="pending-view" class="d-none">
             <div class="status-box">
                 <i class="fas fa-clock"></i>
@@ -112,7 +131,7 @@
             </div>
         </div>
 
-        <!-- View for users whose application was approved -->
+        <!-- Vue pour les candidatures approuvées -->
         <div id="approved-view" class="d-none">
             <div class="status-box">
                 <i class="fas fa-check-circle"></i>
@@ -121,7 +140,7 @@
             </div>
         </div>
         
-        <!-- View for users whose application was denied -->
+        <!-- Vue pour les candidatures refusées -->
         <div id="denied-view" class="d-none">
             <div class="status-box">
                 <i class="fas fa-times-circle"></i>
@@ -130,7 +149,7 @@
             </div>
         </div>
 
-        <!-- View for recruiters -->
+        <!-- Vue pour les recruteurs -->
         <div id="recruiter-view" class="d-none">
             <div class="page-header">
                 <h1>Gestion des Candidatures</h1>
@@ -157,40 +176,16 @@
     <script type="module">
         import { auth, db } from '../js/firebase-config.js';
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { doc, getDoc, setDoc, updateDoc, collection, getDocs, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { doc, getDoc, setDoc, updateDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // --- Constants ---
-        const ROLES = {
-            RECRUITER: 'Recruteur',
-            LEADER: 'Leader',
-            MEMBER: 'Membre',
-            CANDIDATE: 'Candidat',
-            VISITOR: 'Visiteur'
-        };
-        const APP_STATUS = {
-            PENDING: 'en attente',
-            APPROVED: 'approuvée',
-            DENIED: 'refusée'
-        };
+        const ROLES = { RECRUITER: 'Recruteur', LEADER: 'Leader', MEMBER: 'Membre', CANDIDATE: 'Candidat', VISITOR: 'Visiteur' };
+        const APP_STATUS = { PENDING: 'en attente', APPROVED: 'approuvée', DENIED: 'refusée' };
 
         // --- DOM Elements ---
-        const views = {
-            applicant: document.getElementById('applicant-view'),
-            pending: document.getElementById('pending-view'),
-            approved: document.getElementById('approved-view'),
-            denied: document.getElementById('denied-view'),
-            recruiter: document.getElementById('recruiter-view')
-        };
-        const lists = {
-            pending: document.getElementById('pending-list'),
-            approved: document.getElementById('approved-list'),
-            denied: document.getElementById('denied-list')
-        };
-        const counts = {
-            pending: document.getElementById('pending-count'),
-            approved: document.getElementById('approved-count'),
-            denied: document.getElementById('denied-count')
-        };
+        const views = { applicant: document.getElementById('applicant-view'), pending: document.getElementById('pending-view'), approved: document.getElementById('approved-view'), denied: document.getElementById('denied-view'), recruiter: document.getElementById('recruiter-view') };
+        const lists = { pending: document.getElementById('pending-list'), approved: document.getElementById('approved-list'), denied: document.getElementById('denied-list') };
+        const counts = { pending: document.getElementById('pending-count'), approved: document.getElementById('approved-count'), denied: document.getElementById('denied-count') };
         const recruitmentForm = document.getElementById('recruitment-form');
         
         let currentUserData = null;
@@ -198,17 +193,20 @@
         // --- Main Logic ---
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                const userDocRef = doc(db, 'users', user.uid);
-                const docSnap = await getDoc(userDocRef);
+                try {
+                    const userDocRef = doc(db, 'users', user.uid);
+                    const docSnap = await getDoc(userDocRef);
 
-                if (docSnap.exists() && docSnap.data().onboardingComplete) {
-                    currentUserData = { id: user.uid, ...docSnap.data() };
-                    showCorrectView();
-                } else {
-                    window.location.href = 'onboarding.html';
+                    if (docSnap.exists() && docSnap.data().onboardingComplete) {
+                        currentUserData = { id: user.uid, ...docSnap.data() };
+                        await showCorrectView();
+                    } else {
+                        window.location.href = 'onboarding.html';
+                    }
+                } catch (error) {
+                    console.error("Erreur de chargement des données utilisateur:", error);
                 }
             } else {
-                // Not logged in, show form but disable submission
                 showView('applicant');
                 const submitBtn = document.getElementById('submit-application-btn');
                 submitBtn.disabled = true;
@@ -220,9 +218,7 @@
 
         function showView(viewName) {
             Object.values(views).forEach(v => v.classList.add('d-none'));
-            if (views[viewName]) {
-                views[viewName].classList.remove('d-none');
-            }
+            if (views[viewName]) views[viewName].classList.remove('d-none');
         }
 
         async function showCorrectView() {
@@ -231,7 +227,7 @@
 
             if (isRecruiter) {
                 showView('recruiter');
-                loadAllApplications();
+                await loadAllApplications();
                 return;
             }
 
@@ -245,26 +241,153 @@
                 else showView('pending');
             } else {
                 showView('applicant');
-                // Pre-fill username from user's profile
-                recruitmentForm.querySelector('#pseudo').value = currentUserData.minecraftUsername || '';
+                if(recruitmentForm) {
+                    recruitmentForm.querySelector('#pseudo').value = currentUserData.minecraftUsername || '';
+                }
             }
         }
         
         // --- Form Submission ---
-        // Add form fields inside recruitmentForm in the HTML to make this work
-        // ...
+        if(recruitmentForm) {
+            recruitmentForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const submitBtn = e.target.querySelector('button[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Envoi...`;
+
+                const applicationData = {
+                    userId: currentUserData.id,
+                    applicantUsername: currentUserData.minecraftUsername,
+                    applicantAvatar: currentUserData.avatar,
+                    age: recruitmentForm.querySelector('#age').value,
+                    qualities: recruitmentForm.querySelector('#qualities').value,
+                    defects: recruitmentForm.querySelector('#defects').value,
+                    pseudo: recruitmentForm.querySelector('#pseudo').value,
+                    version: recruitmentForm.querySelector('#version').value,
+                    knowledge: recruitmentForm.querySelector('#knowledge').value,
+                    speciality: recruitmentForm.querySelector('#speciality').value,
+                    whyYou: recruitmentForm.querySelector('#why-you').value,
+                    whyUs: recruitmentForm.querySelector('#why-us').value,
+                    pastFactions: recruitmentForm.querySelector('#past-factions').value,
+                    status: APP_STATUS.PENDING,
+                    submittedAt: new Date().toISOString()
+                };
+
+                try {
+                    const appRef = doc(db, 'candidatures', currentUserData.id);
+                    await setDoc(appRef, applicationData);
+                    
+                    const userRef = doc(db, 'users', currentUserData.id);
+                    await updateDoc(userRef, { role: ROLES.CANDIDATE });
+                    
+                    showView('pending');
+                } catch (error) {
+                    console.error("Erreur lors de la soumission :", error);
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Soumettre ma candidature';
+                }
+            });
+        }
 
         // --- Recruiter Functions ---
         async function loadAllApplications() {
-            // ... (Implementation for loading applications)
+            Object.values(lists).forEach(list => list.innerHTML = '');
+            
+            let pendingCount = 0, approvedCount = 0, deniedCount = 0;
+
+            try {
+                const querySnapshot = await getDocs(collection(db, "candidatures"));
+                
+                if (querySnapshot.empty) {
+                    lists.pending.innerHTML = '<p>Aucune nouvelle candidature.</p>';
+                } else {
+                    querySnapshot.docs.forEach(appDoc => {
+                        const appData = appDoc.data();
+                        const card = createApplicationCard(appData);
+                        
+                        if (appData.status === APP_STATUS.APPROVED) {
+                            lists.approved.appendChild(card);
+                            approvedCount++;
+                        } else if (appData.status === APP_STATUS.DENIED) {
+                            lists.denied.appendChild(card);
+                            deniedCount++;
+                        } else {
+                            lists.pending.appendChild(card);
+                            pendingCount++;
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error("Erreur de chargement des candidatures:", error);
+                lists.pending.innerHTML = '<p>Erreur de chargement.</p>';
+            }
+            
+            counts.pending.textContent = pendingCount;
+            counts.approved.textContent = approvedCount;
+            counts.denied.textContent = deniedCount;
         }
 
-        function createApplicationCard(appData) {
-            // ... (Implementation for creating card HTML)
+        function createApplicationCard(app) {
+            const card = document.createElement('div');
+            card.className = 'application-card';
+            if(app.status === APP_STATUS.APPROVED) card.classList.add('approved');
+            if(app.status === APP_STATUS.DENIED) card.classList.add('denied');
+
+            const avatar = app.applicantAvatar || `https://corsproxy.io/?https://mc-heads.net/avatar/${app.applicantUsername || 'Steve'}/40`;
+            const submittedDate = new Date(app.submittedAt).toLocaleDateString('fr-FR');
+
+            card.innerHTML = `
+                <div class="application-header">
+                    <img src="${avatar}" alt="avatar" class="applicant-avatar" onerror="this.src='https://corsproxy.io/?https://mc-heads.net/avatar/Steve/40'">
+                    <div class="applicant-info">
+                        <h3>${app.applicantUsername || 'N/A'}</h3>
+                        <span>Candidature du ${submittedDate}</span>
+                    </div>
+                    <i class="fas fa-chevron-down expand-icon"></i>
+                </div>
+                <div class="application-body">
+                    <p><strong>Âge :</strong> ${app.age || 'N/A'}</p>
+                    <p><strong>Qualités :</strong> ${app.qualities || 'N/A'}</p>
+                    <p><strong>Défauts :</strong> ${app.defects || 'N/A'}</p>
+                    <hr class="details-divider">
+                    <p><strong>Spécialité(s) :</strong> ${app.speciality || 'N/A'}</p>
+                    <p><strong>Anciennes factions :</strong> ${app.pastFactions || 'N/A'}</p>
+                    <hr class="details-divider">
+                    <p><strong>Pourquoi lui ?</strong> ${app.whyYou || 'N/A'}</p>
+                    <p><strong>Pourquoi nous ?</strong> ${app.whyUs || 'N/A'}</p>
+                    <div class="application-actions">
+                        <button class="action-btn approve-btn">Approuver</button>
+                        <button class="action-btn deny-btn">Refuser</button>
+                    </div>
+                </div>`;
+            
+            card.querySelector('.application-header').addEventListener('click', () => card.classList.toggle('open'));
+            card.querySelector('.approve-btn').addEventListener('click', (e) => handleDecision(e, app.userId, APP_STATUS.APPROVED, ROLES.MEMBER));
+            card.querySelector('.deny-btn').addEventListener('click', (e) => handleDecision(e, app.userId, APP_STATUS.DENIED, ROLES.VISITOR));
+            
+            return card;
         }
 
-        async function handleDecision(appId, applicantId, newStatus) {
-            // ... (Implementation for approving/denying)
+        async function handleDecision(event, applicantId, newStatus, newRole) {
+            event.stopPropagation();
+            const button = event.target;
+            button.disabled = true;
+            button.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
+            const originalText = button.textContent;
+
+            try {
+                const appRef = doc(db, 'candidatures', applicantId);
+                await updateDoc(appRef, { status: newStatus });
+                
+                const userRef = doc(db, 'users', applicantId);
+                await updateDoc(userRef, { role: newRole });
+                
+                await loadAllApplications();
+            } catch (error) {
+                console.error("Erreur lors de la décision :", error);
+                button.disabled = false;
+                button.textContent = originalText;
+            }
         }
     </script>
 </body>

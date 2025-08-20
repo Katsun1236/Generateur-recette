@@ -8,11 +8,10 @@ import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-
 // ==========================================================================
 // DOM Elements
 // ==========================================================================
-// It's a good practice to get all your elements once and store them in constants.
 const profileLink = document.getElementById('profile-link');
 const profilePic = document.getElementById('profile-pic');
 const authButtons = document.getElementById('auth-buttons');
-const logoutButton = document.getElementById('logout-btn'); // Assuming you have a logout button
+const logoutButton = document.getElementById('logout-btn');
 
 // ==========================================================================
 // UI Update Functions
@@ -25,14 +24,12 @@ const logoutButton = document.getElementById('logout-btn'); // Assuming you have
  */
 const updateUIForUser = (user, userData = {}) => {
     if (profileLink && profilePic && authButtons) {
-        // Determine the avatar URL with a clear fallback chain
-        const avatarFromProvider = user.photoURL;
-        const avatarFromDb = userData.avatar;
-        const avatarFallback = `https://cravatar.eu/avatar/${user.uid}/64.png`; // Increased size for better quality
-
-        profilePic.src = avatarFromProvider || avatarFromDb || avatarFallback;
+        // Use the avatar from the database as the primary source of truth
+        const avatarUrl = userData.avatar || user.photoURL || `https://corsproxy.io/?https://mc-heads.net/avatar/${userData.minecraftUsername || 'Steve'}/64`;
         
-        // Show profile picture and hide login/register buttons
+        profilePic.src = avatarUrl;
+        profilePic.onerror = () => { profilePic.src = `https://corsproxy.io/?https://mc-heads.net/avatar/Steve/64`; };
+
         profileLink.style.display = 'block';
         authButtons.style.display = 'none';
     }
@@ -42,12 +39,8 @@ const updateUIForUser = (user, userData = {}) => {
  * Updates the UI when no user is logged in (guest state).
  */
 const updateUIForGuest = () => {
-    if (profileLink && profilePic && authButtons) {
-        // Use a default avatar for guests
-        profilePic.src = `https://cravatar.eu/avatar/default/64.png`;
-        
-        // Hide the profile link and show login/register buttons
-        profileLink.style.display = 'none'; // <-- LOGIC FIX: Hide this when logged out
+    if (profileLink && authButtons) {
+        profileLink.style.display = 'none';
         authButtons.style.display = 'flex';
     }
 };
@@ -57,28 +50,45 @@ const updateUIForGuest = () => {
 // ==========================================================================
 
 /**
+ * Determines the correct relative path for redirection.
+ * @param {string} targetPage - The page to redirect to (e.g., 'onboarding.html').
+ * @returns {string} The correct path.
+ */
+function getRedirectPath(targetPage) {
+    // If the current URL is inside the '/pages/' directory, the path is direct.
+    if (window.location.pathname.includes('/pages/')) {
+        return targetPage;
+    }
+    // Otherwise (from index.html), we need to go into the 'pages' directory.
+    return `pages/${targetPage}`;
+}
+
+
+/**
  * Initializes the authentication listener and updates the UI accordingly.
  */
 const initializeAuth = () => {
-    // Check if essential elements are on the page before proceeding
-    if (!profileLink || !authButtons) {
-        console.warn("Auth UI elements not found on this page. Skipping auth listener setup.");
-        return;
-    }
-
     onAuthStateChanged(auth, async (user) => {
         try {
             if (user) {
                 // User is signed in
                 const userDocRef = doc(db, 'users', user.uid);
-                const userDocSnap = await getDoc(userDocRef);
+                const docSnap = await getDoc(userDocRef);
 
-                if (userDocSnap.exists()) {
-                    updateUIForUser(user, userDocSnap.data());
+                // **BUG FIX IS HERE**
+                // We now check if the user has completed the onboarding process.
+                if (docSnap.exists() && docSnap.data().onboardingComplete) {
+                    // If onboarding is complete, display the UI normally.
+                    updateUIForUser(user, docSnap.data());
                 } else {
-                    // Handle case where user is authenticated but has no Firestore document yet
-                    console.log("User document not found, using basic auth info.");
-                    updateUIForUser(user); 
+                    // If onboarding is NOT complete, redirect the user.
+                    const currentPage = window.location.pathname.split('/').pop();
+                    const isSafePage = ['onboarding.html', 'login.html', 'register.html'].includes(currentPage);
+                    
+                    // Only redirect if they are not already on a safe page, to prevent loops.
+                    if (!isSafePage) {
+                        window.location.href = getRedirectPath('onboarding.html');
+                    }
                 }
             } else {
                 // User is signed out
@@ -86,7 +96,7 @@ const initializeAuth = () => {
             }
         } catch (error) {
             console.error("Error during authentication state change:", error);
-            // Optionally, show an error message to the user
+            updateUIForGuest(); // Fallback to guest view on error
         }
     });
 };
@@ -95,6 +105,7 @@ const initializeAuth = () => {
 // Event Listeners
 // ==========================================================================
 const setupEventListeners = () => {
+    // The logout button is on the profile page, so we check if it exists.
     if (logoutButton) {
         logoutButton.addEventListener('click', () => {
             signOut(auth).catch(error => console.error("Error signing out:", error));
@@ -102,18 +113,14 @@ const setupEventListeners = () => {
     }
 };
 
-
 // ==========================================================================
 // App Initialization
 // ==========================================================================
-
-// Run the setup code once the DOM is fully loaded.
 document.addEventListener("DOMContentLoaded", () => {
     try {
         initializeAuth();
         setupEventListeners();
     } catch (error) {
         console.error("Critical error during app initialization:", error);
-        document.body.innerHTML = `<h1>Erreur critique: ${error.message}</h1><p>Veuillez vérifier votre configuration et recharger la page.</p>`;
     }
 });

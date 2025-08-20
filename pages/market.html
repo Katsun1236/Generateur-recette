@@ -4,41 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Marché - Faction R4TIO</title>
-    
-    <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
-    <!-- Stylesheets -->
     <link rel="stylesheet" href="../css/style.css">
-    
     <style>
-        :root {
-            --market-bg: #111;
-            --market-card-bg: #1c1c1c;
-            --market-border: #333;
-            --rarity-common: #b0b0b0;
-            --rarity-rare: #5bc0de;
-            --rarity-epic: #9d62d9;
-            --rarity-legendary: #f0ad4e;
-        }
+        :root { --market-bg: #111; --market-card-bg: #1c1c1c; --market-border: #333; --rarity-common: #b0b0b0; --rarity-rare: #5bc0de; --rarity-epic: #9d62d9; --rarity-legendary: #f0ad4e; }
         body { background-color: var(--market-bg); }
         .market-container { max-width: 1600px; margin: 2rem auto; padding: 0 1.5rem; }
-
-        .featured-section {
-            position: relative;
-            background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url('../images/pictures/Fond.png');
-            background-size: cover; background-position: center; background-attachment: fixed;
-            border-radius: 15px; padding: 3rem 2rem; margin-bottom: 3rem; border: 1px solid var(--market-border);
-        }
+        .featured-section { position: relative; background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url('../images/pictures/Fond.png'); background-size: cover; background-position: center; background-attachment: fixed; border-radius: 15px; padding: 3rem 2rem; margin-bottom: 3rem; border: 1px solid var(--market-border); }
         .featured-title { font-family: 'Anton', sans-serif; font-size: 3rem; color: var(--text-light); margin-bottom: 2rem; border-left: 5px solid var(--primary-red); padding-left: 1.5rem; text-shadow: 2px 2px 8px rgba(0,0,0,0.7); }
         .featured-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; }
-
         .shop-layout { display: flex; flex-direction: column; gap: 2rem; }
         @media (min-width: 992px) { .shop-layout { flex-direction: row; } }
-
         .category-nav { flex: 0 0 240px; background-color: var(--market-card-bg); border-radius: 10px; padding: 1.5rem; border: 1px solid var(--market-border); align-self: flex-start; }
         .search-panel { margin-bottom: 1.5rem; }
         .search-panel input { width: 100%; background-color: #333; border: 1px solid var(--market-border); border-radius: 5px; padding: 0.75rem; color: var(--text-light); box-sizing: border-box; }
@@ -52,7 +31,6 @@
         .checkbox-label input:checked ~ .checkmark { background-color: var(--primary-red); }
         .checkmark:after { content: ""; position: absolute; display: none; left: 9px; top: 5px; width: 5px; height: 10px; border: solid white; border-width: 0 3px 3px 0; transform: rotate(45deg); }
         .checkbox-label input:checked ~ .checkmark:after { display: block; }
-
         .market-content { flex-grow: 1; }
         .market-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.5rem; }
         .item-card { background: linear-gradient(145deg, #2e2e2e, #1a1a1a); border-radius: 10px; border: 1px solid var(--market-border); overflow: hidden; display: flex; flex-direction: column; transition: all 0.3s ease; position: relative; }
@@ -71,12 +49,10 @@
         .item-price { font-size: 1.4rem; font-weight: bold; color: var(--text-light); }
         .buy-btn { width: 100%; background-color: var(--primary-red); color: white; font-weight: bold; padding: 0.7rem 1rem; border: none; border-radius: 5px; cursor: pointer; text-transform: uppercase; transition: background-color 0.3s; }
         .buy-btn:hover { background-color: var(--primary-red-dark); }
-        
         .cart-button { position: fixed; bottom: 2rem; right: 2rem; width: 60px; height: 60px; background-color: var(--primary-red); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 1001; box-shadow: 0 5px 15px rgba(0,0,0,0.4); transition: transform 0.3s ease; }
         .cart-button:hover { transform: scale(1.1); }
         .cart-button i { font-size: 1.5rem; color: white; }
         .cart-count { position: absolute; top: -5px; right: -5px; background-color: var(--discord-blue); color: white; border-radius: 50%; width: 24px; height: 24px; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; font-weight: bold; }
-
         .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); backdrop-filter: blur(5px); align-items: center; justify-content: center; }
         .modal.show { display: flex; }
         .modal-content { background-color: var(--market-card-bg); padding: 2rem; border: 1px solid var(--market-border); width: 90%; max-width: 500px; border-radius: 10px; position: relative; }
@@ -100,6 +76,9 @@
             <a href="https://discord.gg/UFVCDc4mkU" target="_blank" rel="noopener noreferrer">Discord</a>
             <a href="recrutement.html">Recrutement</a>
             <a href="market.html">Marché</a>
+            <a href="orders.html" id="my-orders-link" style="display: none;">Mes Commandes</a>
+            <a href="orders.html" id="orders-link" style="display: none; color: var(--yellow);">Commandes Staff</a>
+            <a href="admin.html" id="admin-link" style="display: none; color: var(--yellow);">Administration</a>
         </div>
         <div class="nav-auth">
              <div id="auth-buttons" style="display: none;">
@@ -111,18 +90,14 @@
             </a>
         </div>
     </nav>
-
     <div class="market-container">
         <div class="featured-section">
             <h2 class="featured-title">À L'AFFICHE</h2>
             <div class="featured-grid" id="featured-grid"></div>
         </div>
-
         <div class="shop-layout">
             <aside class="category-nav">
-                <div class="search-panel">
-                    <input type="text" id="search-bar" placeholder="Rechercher un objet...">
-                </div>
+                <div class="search-panel"><input type="text" id="search-bar" placeholder="Rechercher un objet..."></div>
                 <h3>Catégories</h3>
                 <ul id="category-list"></ul>
             </aside>
@@ -131,12 +106,10 @@
             </main>
         </div>
     </div>
-    
     <div class="cart-button" id="cart-button">
         <i class="fas fa-shopping-cart"></i>
         <span class="cart-count" id="cart-count">0</span>
     </div>
-
     <div id="cart-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn" id="close-cart-modal">&times;</span>
@@ -146,51 +119,30 @@
             <button id="checkout-btn" class="buy-btn">Passer la commande</button>
         </div>
     </div>
-
     <div id="message-box"></div>
-
     <script type="module" src="../js/main.js"></script>
     <script type="module">
         import { marketItems } from '../js/market-config.js';
         import { auth, db } from '../js/firebase-config.js';
         import { collection, addDoc, serverTimestamp, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        const elements = {
-            featuredGrid: document.getElementById('featured-grid'),
-            marketGrid: document.getElementById('market-grid'),
-            categoryList: document.getElementById('category-list'),
-            searchBar: document.getElementById('search-bar'),
-            cartButton: document.getElementById('cart-button'),
-            cartCount: document.getElementById('cart-count'),
-            cartModal: document.getElementById('cart-modal'),
-            closeCartModal: document.getElementById('close-cart-modal'),
-            cartItemsContainer: document.getElementById('cart-items'),
-            cartTotal: document.getElementById('cart-total'),
-            checkoutBtn: document.getElementById('checkout-btn'),
-            messageBox: document.getElementById('message-box')
-        };
-        
+        const elements = { featuredGrid: document.getElementById('featured-grid'), marketGrid: document.getElementById('market-grid'), categoryList: document.getElementById('category-list'), searchBar: document.getElementById('search-bar'), cartButton: document.getElementById('cart-button'), cartCount: document.getElementById('cart-count'), cartModal: document.getElementById('cart-modal'), closeCartModal: document.getElementById('close-cart-modal'), cartItemsContainer: document.getElementById('cart-items'), cartTotal: document.getElementById('cart-total'), checkoutBtn: document.getElementById('checkout-btn'), messageBox: document.getElementById('message-box') };
         let cart = [];
-
         function showMessage(message, isError = false) {
             elements.messageBox.textContent = message;
             elements.messageBox.style.borderColor = isError ? 'var(--primary-red)' : 'var(--green)';
             elements.messageBox.classList.add('show');
             setTimeout(() => elements.messageBox.classList.remove('show'), 4000);
         }
-
         function getRarity(price) {
             if (price >= 20000) return 'legendary';
             if (price >= 5000) return 'epic';
             if (price >= 1000) return 'rare';
             return 'common';
         }
-
         function createItemCard(item) {
             const card = document.createElement('div');
             card.className = `item-card ${getRarity(item.buyPrice)}`;
             const originalPrice = Math.floor(item.buyPrice * 1.15);
-
             card.innerHTML = `
                 <div class="item-image-container">
                     <img src="${item.img}" alt="${item.name}" onerror="this.src='https://placehold.co/128x128/1c1c1c/e74c3c?text=N/A'; this.onerror=null;">
@@ -206,44 +158,27 @@
             card.querySelector('.buy-btn').addEventListener('click', () => addToCart(item));
             return card;
         }
-
         function renderMarket() {
             elements.marketGrid.innerHTML = '';
             const searchTerm = elements.searchBar.value.toLowerCase();
             const selectedCategories = Array.from(document.querySelectorAll('#category-list input:checked')).map(cb => cb.value);
-
-            const itemsToDisplay = marketItems.filter(item => {
-                const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(item.category);
-                const matchesSearch = item.name.toLowerCase().includes(searchTerm);
-                return matchesCategory && matchesSearch;
-            });
-
+            const itemsToDisplay = marketItems.filter(item => (selectedCategories.length === 0 || selectedCategories.includes(item.category)) && item.name.toLowerCase().includes(searchTerm));
             if (itemsToDisplay.length === 0) {
                 elements.marketGrid.innerHTML = `<p style="color: var(--text-medium); grid-column: 1 / -1; text-align: center;">Aucun objet trouvé.</p>`;
             } else {
                 itemsToDisplay.forEach(item => elements.marketGrid.appendChild(createItemCard(item)));
             }
         }
-
         function setupDynamicCategories() {
             const categories = [...new Set(marketItems.map(item => item.category))];
             elements.categoryList.innerHTML = '';
-            
             categories.forEach(category => {
                 const li = document.createElement('li');
-                li.innerHTML = `
-                    <label class="checkbox-label">${category}
-                        <input type="checkbox" value="${category}">
-                        <span class="checkmark"></span>
-                    </label>`;
+                li.innerHTML = `<label class="checkbox-label">${category}<input type="checkbox" value="${category}"><span class="checkmark"></span></label>`;
                 elements.categoryList.appendChild(li);
             });
-
-            elements.categoryList.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-                checkbox.addEventListener('change', renderMarket);
-            });
+            elements.categoryList.querySelectorAll('input[type="checkbox"]').forEach(checkbox => checkbox.addEventListener('change', renderMarket));
         }
-
         function setupFeatured() {
             const featuredItemNames = ["Histerite Apple", "Hang Glider", "Histerite Sword", "Vault Breacher"];
             featuredItemNames.forEach(name => {
@@ -251,26 +186,19 @@
                 if (item) elements.featuredGrid.appendChild(createItemCard(item));
             });
         }
-
         function addToCart(itemToAdd) {
             const existingItem = cart.find(item => item.name === itemToAdd.name);
-            if (existingItem) {
-                existingItem.quantity++;
-            } else {
-                cart.push({ ...itemToAdd, quantity: 1 });
-            }
+            if (existingItem) { existingItem.quantity++; }
+            else { cart.push({ ...itemToAdd, quantity: 1 }); }
             showMessage(`${itemToAdd.name} a été ajouté au panier !`);
             updateCart();
         }
-
         function updateCart() {
             localStorage.setItem('r4tioCart', JSON.stringify(cart));
             const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
             elements.cartCount.textContent = totalItems;
-            
             elements.cartItemsContainer.innerHTML = '';
             let total = 0;
-
             if (cart.length === 0) {
                 elements.cartItemsContainer.innerHTML = `<p>Votre panier est vide.</p>`;
             } else {
@@ -279,10 +207,7 @@
                     itemElement.className = 'cart-item';
                     itemElement.innerHTML = `
                         <img src="${item.img}" alt="${item.name}">
-                        <div class="cart-item-details">
-                            <p>${item.name}</p>
-                            <p>${(item.buyPrice * item.quantity).toLocaleString('fr-FR')}$</p>
-                        </div>
+                        <div class="cart-item-details"><p>${item.name}</p><p>${(item.buyPrice * item.quantity).toLocaleString('fr-FR')}$</p></div>
                         <div class="cart-item-actions">
                             <button data-index="${index}" class="quantity-minus">-</button>
                             <input type="number" value="${item.quantity}" readonly>
@@ -295,35 +220,25 @@
             }
             elements.cartTotal.textContent = `Total: ${total.toLocaleString('fr-FR')}$`;
         }
-
         async function handleCheckout() {
-            if (cart.length === 0) {
-                showMessage("Votre panier est vide !", true);
-                return;
-            }
-            
+            if (cart.length === 0) { showMessage("Votre panier est vide !", true); return; }
             const user = auth.currentUser;
             if (!user) {
                 showMessage("Veuillez vous connecter pour passer une commande.", true);
                 setTimeout(() => window.location.href = 'login.html', 1500);
                 return;
             }
-
             elements.checkoutBtn.disabled = true;
             elements.checkoutBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
-
             try {
                 const userDocRef = doc(db, 'users', user.uid);
                 const userDoc = await getDoc(userDocRef);
-
                 if (!userDoc.exists() || !userDoc.data().onboardingComplete) {
                     showMessage("Veuillez compléter votre profil avant de commander.", true);
                     setTimeout(() => window.location.href = 'onboarding.html', 1500);
                     return;
                 }
-                
                 const clientUsername = userDoc.data().minecraftUsername;
-
                 const order = {
                     clientId: user.uid,
                     clientUsername: clientUsername,
@@ -332,14 +247,12 @@
                     status: 'En attente',
                     createdAt: serverTimestamp()
                 };
-
                 const docRef = await addDoc(collection(db, "orders"), order);
                 cart = [];
                 updateCart();
                 elements.cartModal.classList.remove('show');
                 showMessage("Commande passée avec succès !", false);
                 window.location.href = `checkout.html?orderId=${docRef.id}`;
-
             } catch (e) {
                 console.error("Erreur lors de la commande: ", e);
                 showMessage("Une erreur est survenue lors de la création de votre commande.", true);
@@ -348,27 +261,21 @@
                 elements.checkoutBtn.textContent = "Passer la commande";
             }
         }
-
         function init() {
             cart = JSON.parse(localStorage.getItem('r4tioCart')) || [];
-            
             setupDynamicCategories();
             setupFeatured();
             renderMarket();
             updateCart();
-
             elements.searchBar.addEventListener('input', renderMarket);
             elements.cartButton.addEventListener('click', () => elements.cartModal.classList.add('show'));
             elements.closeCartModal.addEventListener('click', () => elements.cartModal.classList.remove('show'));
             elements.checkoutBtn.addEventListener('click', handleCheckout);
-
             elements.cartItemsContainer.addEventListener('click', (e) => {
                 const button = e.target.closest('button');
                 if (!button) return;
-                
                 const index = parseInt(button.dataset.index);
                 if (isNaN(index) || !cart[index]) return;
-
                 if (button.classList.contains('quantity-plus')) cart[index].quantity++;
                 else if (button.classList.contains('quantity-minus')) {
                     cart[index].quantity--;
@@ -379,7 +286,6 @@
                 updateCart();
             });
         }
-
         init();
     </script>
 </body>

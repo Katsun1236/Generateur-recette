@@ -4,11 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Suivi de Commande - Faction R4TIO</title>
+    
+    <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="../css/style.css">
+    
     <style>
         body { background-color: #111; }
         .checkout-container { max-width: 800px; margin: 2rem auto; padding: 2rem; background-color: var(--card-bg-color); border-radius: 10px; border: 1px solid #333; }
@@ -23,6 +28,8 @@
         .order-item-details { flex-grow: 1; }
         .order-item-details strong { color: var(--text-light); }
         .order-total { text-align: right; font-size: 1.8rem; font-weight: bold; margin-top: 1rem; }
+        
+        /* Chat styles */
         .chat-box { max-height: 300px; overflow-y: auto; border: 1px solid #333; border-radius: 5px; padding: 1rem; margin-bottom: 1rem; background-color: #111; }
         .chat-message { margin-bottom: 1rem; }
         .chat-message p { margin: 0; word-break: break-word; }
@@ -34,30 +41,38 @@
         .chat-form input { flex-grow: 1; background-color: #333; border: 1px solid #555; border-radius: 5px; padding: 0.75rem; color: var(--text-light); }
         .chat-form button { background-color: var(--primary-red); color: white; border: none; border-radius: 5px; padding: 0.75rem 1rem; cursor: pointer; font-weight: bold; }
         .chat-form button:hover { background-color: var(--primary-red-dark); }
+        
+        /* Admin styles */
+        #admin-actions label { font-weight: bold; color: var(--text-medium); margin-bottom: 0.5rem; display: block; }
+        #status-select { width: 100%; background-color: #333; color: var(--text-light); border: 1px solid #555; border-radius: 5px; padding: 0.75rem; font-size: 1rem; }
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-left"><a href="../index.html"><img src="../images/pictures/Logo.png" alt="Logo R4TIO" class="nav-logo"></a></div>
-        <div class="nav-center">
-            <a href="https://discord.gg/UFVCDc4mkU" target="_blank" rel="noopener noreferrer">Discord</a>
-            <a href="recrutement.html">Recrutement</a>
-            <a href="market.html">Marché</a>
-            <a href="admin.html" id="admin-link" style="display: none; color: var(--yellow);">Administration</a>
-        </div>
-        <div class="nav-auth">
-             <div id="auth-buttons" style="display: none;"><a href="login.html">Connexion</a><a href="register.html" class="register-btn">Inscription</a></div>
-            <a href="profile.html" id="profile-link"><img id="profile-pic" src="" alt="Photo de profil"></a>
-        </div>
-    </nav>
+    <nav class="navbar"><!-- ... --></nav>
+
     <div class="checkout-container" id="checkout-container">
         <h1>Suivi de Commande</h1>
         <p class="subtitle" id="order-id-display"></p>
+        
         <div class="order-section">
             <h2>Résumé de la commande</h2>
             <div id="order-items-summary"><p>Chargement...</p></div>
             <div class="order-total" id="order-total"></div>
         </div>
+
+        <!-- Section de gestion pour le staff -->
+        <div class="order-section" id="admin-actions" style="display: none;">
+            <h2>Gestion de la commande</h2>
+            <div>
+                <label for="status-select">Changer le statut :</label>
+                <select id="status-select">
+                    <option value="En attente">En attente</option>
+                    <option value="En cours">En cours</option>
+                    <option value="Terminée">Terminée</option>
+                </select>
+            </div>
+        </div>
+
         <div class="order-section">
             <h2>Messages</h2>
             <div class="chat-box" id="chat-box"></div>
@@ -67,12 +82,15 @@
             </form>
         </div>
     </div>
+
     <div id="message-box"></div>
+
     <script type="module" src="../js/main.js"></script>
     <script type="module">
         import { auth, db } from '../js/firebase-config.js';
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { doc, getDoc, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { doc, getDoc, updateDoc, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
         const container = document.getElementById('checkout-container');
         const orderIdDisplay = document.getElementById('order-id-display');
         const orderItemsContainer = document.getElementById('order-items-summary');
@@ -80,7 +98,11 @@
         const chatBox = document.getElementById('chat-box');
         const chatForm = document.getElementById('chat-form');
         const chatInput = document.getElementById('chat-input');
+        const adminActions = document.getElementById('admin-actions');
+        const statusSelect = document.getElementById('status-select');
+        
         let currentUser = null;
+
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
@@ -89,26 +111,31 @@
                 window.location.href = 'login.html';
             }
         });
+
         async function loadOrderDetails() {
             const params = new URLSearchParams(window.location.search);
             const orderId = params.get('orderId');
             if (!orderId) { container.innerHTML = "<h1>Erreur</h1><p>Aucun ID de commande fourni.</p>"; return; }
             orderIdDisplay.textContent = `ID de la commande : ${orderId}`;
+
             try {
                 const orderDocRef = doc(db, 'orders', orderId);
                 const orderDocSnap = await getDoc(orderDocRef);
                 if (!orderDocSnap.exists()) { container.innerHTML = "<h1>Erreur</h1><p>Commande introuvable.</p>"; return; }
                 const orderData = orderDocSnap.data();
+
                 const userDocRef = doc(db, 'users', currentUser.uid);
                 const userDocSnap = await getDoc(userDocRef);
                 const userRole = userDocSnap.exists() ? userDocSnap.data().role : null;
                 const isOwner = orderData.clientId === currentUser.uid;
-                // **CORRECTION ICI** : On vérifie si l'utilisateur a un des rôles du marché
                 const isMarketStaff = ['Admin', 'Leader', 'Officier', 'Vendeur'].includes(userRole);
+
                 if (!isOwner && !isMarketStaff) {
                     container.innerHTML = "<h1>Accès non autorisé</h1><p>Vous n'avez pas la permission de voir cette commande.</p>";
                     return;
                 }
+
+                // Populate summary
                 orderItemsContainer.innerHTML = '';
                 orderData.items.forEach(item => {
                     const itemElement = document.createElement('div');
@@ -120,12 +147,31 @@
                     orderItemsContainer.appendChild(itemElement);
                 });
                 orderTotalElement.textContent = `Total : ${orderData.totalPrice.toLocaleString('fr-FR')}$`;
+
+                // Setup admin actions if user is staff
+                if (isMarketStaff) {
+                    adminActions.style.display = 'block';
+                    statusSelect.value = orderData.status;
+                    statusSelect.addEventListener('change', async (e) => {
+                        const newStatus = e.target.value;
+                        try {
+                            await updateDoc(orderDocRef, { status: newStatus });
+                            alert('Statut de la commande mis à jour !');
+                        } catch (err) {
+                            console.error("Erreur de mise à jour du statut:", err);
+                            alert('Erreur lors de la mise à jour.');
+                        }
+                    });
+                }
+
                 setupChat(orderId);
+
             } catch (error) {
                 console.error("Error fetching order:", error);
                 container.innerHTML = "<h1>Erreur</h1><p>Impossible de charger les détails de la commande.</p>";
             }
         }
+
         function setupChat(orderId) {
             const messagesRef = collection(db, 'orders', orderId, 'messages');
             const q = query(messagesRef, orderBy('timestamp'));
@@ -138,9 +184,7 @@
                     messageEl.className = 'chat-message';
                     if (message.senderId === currentUser.uid) { messageEl.classList.add('is-yours'); }
                     const sentAt = message.timestamp?.toDate().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) || '';
-                    messageEl.innerHTML = `
-                        <div class="meta"><strong>${message.senderUsername}</strong> - ${sentAt}</div>
-                        <p>${message.text}</p>`;
+                    messageEl.innerHTML = `<div class="meta"><strong>${message.senderUsername}</strong> - ${sentAt}</div><p>${message.text}</p>`;
                     chatBox.appendChild(messageEl);
                 });
                 chatBox.scrollTop = chatBox.scrollHeight;
@@ -153,9 +197,7 @@
                     const username = userDoc.data()?.minecraftUsername || 'Utilisateur';
                     chatInput.disabled = true;
                     try {
-                        await addDoc(messagesRef, {
-                            text: text, senderId: currentUser.uid, senderUsername: username, timestamp: serverTimestamp()
-                        });
+                        await addDoc(messagesRef, { text: text, senderId: currentUser.uid, senderUsername: username, timestamp: serverTimestamp() });
                         chatInput.value = '';
                     } catch (error) { console.error("Error sending message:", error); }
                     finally { chatInput.disabled = false; chatInput.focus(); }

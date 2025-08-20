@@ -4,16 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestion des Commandes - Faction R4TIO</title>
-    
-    <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-    <!-- Stylesheets -->
     <link rel="stylesheet" href="../css/style.css">
-    
     <style>
         .orders-container { max-width: 1200px; margin: 2rem auto; padding: 2rem; background-color: var(--card-bg-color); border-radius: 10px; }
         .orders-table { width: 100%; border-collapse: collapse; margin-top: 2rem; }
@@ -21,34 +16,27 @@
         .orders-table th { font-family: 'Anton', sans-serif; color: var(--primary-red); font-size: 1.2rem; }
         .orders-table td { color: var(--text-medium); }
         .orders-table tr:hover { background-color: #252525; cursor: pointer; }
-        .status { padding: 0.25rem 0.5rem; border-radius: 5px; font-weight: bold; font-size: 0.9rem; }
+        .status { padding: 0.25rem 0.75rem; border-radius: 15px; font-weight: bold; font-size: 0.8rem; text-transform: uppercase; }
         .status.pending { background-color: var(--yellow); color: #111; }
+        .status.in-progress { background-color: var(--discord-blue); color: white; }
         .status.completed { background-color: var(--green); color: #111; }
     </style>
 </head>
 <body>
     <nav class="navbar">
-        <div class="nav-left">
-            <a href="../index.html"><img src="../images/pictures/Logo.png" alt="Logo R4TIO" class="nav-logo"></a>
-        </div>
+        <div class="nav-left"><a href="../index.html"><img src="../images/pictures/Logo.png" alt="Logo R4TIO" class="nav-logo"></a></div>
         <div class="nav-center">
             <a href="https://discord.gg/UFVCDc4mkU" target="_blank" rel="noopener noreferrer">Discord</a>
             <a href="recrutement.html">Recrutement</a>
             <a href="market.html">Marché</a>
             <a href="orders.html" id="orders-link" style="display: none; color: var(--yellow);">Commandes</a>
-            <a href="admin.html" id="admin-link" style="display: none; color: var(--yellow);">Admin</a>
+            <a href="admin.html" id="admin-link" style="display: none; color: var(--yellow);">Administration</a>
         </div>
         <div class="nav-auth">
-             <div id="auth-buttons" style="display: none;">
-                <a href="login.html">Connexion</a>
-                <a href="register.html" class="register-btn">Inscription</a>
-            </div>
-            <a href="profile.html" id="profile-link">
-                <img id="profile-pic" src="" alt="Photo de profil">
-            </a>
+             <div id="auth-buttons" style="display: none;"><a href="login.html">Connexion</a><a href="register.html" class="register-btn">Inscription</a></div>
+            <a href="profile.html" id="profile-link"><img id="profile-pic" src="" alt="Photo de profil"></a>
         </div>
     </nav>
-
     <div class="orders-container">
         <div class="page-header">
             <h1>Gestion des Commandes</h1>
@@ -63,28 +51,21 @@
                     <th>Statut</th>
                 </tr>
             </thead>
-            <tbody id="orders-list-body">
-                <!-- Les commandes seront chargées ici -->
-            </tbody>
+            <tbody id="orders-list-body"></tbody>
         </table>
     </div>
-
     <div id="message-box"></div>
-
     <script type="module" src="../js/main.js"></script>
     <script type="module">
         import { auth, db } from '../js/firebase-config.js';
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { doc, getDoc, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
         const ordersListBody = document.getElementById('orders-list-body');
         const marketStaffRoles = ['Admin', 'Leader', 'Officier', 'Vendeur'];
-
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 const userDocRef = doc(db, 'users', user.uid);
                 const docSnap = await getDoc(userDocRef);
-
                 if (docSnap.exists() && marketStaffRoles.includes(docSnap.data().role)) {
                     loadOrders();
                 } else {
@@ -94,25 +75,24 @@
                 window.location.href = 'login.html';
             }
         });
-
         async function loadOrders() {
             ordersListBody.innerHTML = '<tr><td colspan="4">Chargement des commandes...</td></tr>';
             try {
                 const q = query(collection(db, 'orders'), orderBy('createdAt', 'desc'));
                 const querySnapshot = await getDocs(q);
                 ordersListBody.innerHTML = '';
-
                 if (querySnapshot.empty) {
                     ordersListBody.innerHTML = '<tr><td colspan="4">Aucune commande pour le moment.</td></tr>';
                     return;
                 }
-
                 querySnapshot.forEach(orderDoc => {
                     const orderData = { id: orderDoc.id, ...orderDoc.data() };
                     const orderRow = document.createElement('tr');
-                    
                     const orderDate = orderData.createdAt?.toDate().toLocaleDateString('fr-FR') || 'N/A';
-                    const statusClass = orderData.status === 'En attente' ? 'pending' : 'completed';
+                    
+                    let statusClass = 'pending';
+                    if (orderData.status === 'En cours') statusClass = 'in-progress';
+                    else if (orderData.status === 'Terminée') statusClass = 'completed';
 
                     orderRow.innerHTML = `
                         <td>${orderData.clientUsername}</td>
@@ -120,11 +100,9 @@
                         <td>${orderData.totalPrice.toLocaleString('fr-FR')}$</td>
                         <td><span class="status ${statusClass}">${orderData.status}</span></td>
                     `;
-
                     orderRow.addEventListener('click', () => {
                         window.location.href = `checkout.html?orderId=${orderData.id}`;
                     });
-                    
                     ordersListBody.appendChild(orderRow);
                 });
             } catch (error) {

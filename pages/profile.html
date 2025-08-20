@@ -29,9 +29,10 @@
         .stat-card i { font-size: 2rem; color: var(--primary-red); margin-bottom: 1rem; }
         .stat-card h3 { margin: 0 0 0.5rem 0; font-size: 1.5rem; word-break: break-all; }
         .stat-card p { margin: 0; color: var(--text-medium); font-size: 0.9rem; }
-        .loading #username, .loading #user-role { background-color: #444; color: transparent; border-radius: 4px; min-height: 1em; }
+        .loading #username, .loading #user-role { background-color: #444; color: transparent; border-radius: 4px; min-height: 1em; animation: pulse-bg 1s infinite; }
         .discord-link-btn { background-color: var(--discord-blue); color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; display: inline-block; margin-top: 1rem; }
         .discord-linked { color: var(--green); font-weight: bold; }
+        @keyframes pulse-bg { 50% { background-color: #555; } }
     </style>
 </head>
 <body>
@@ -65,7 +66,6 @@
         <div class="stats-grid">
             <div class="stat-card" id="discord-card">
                 <i class="fa-brands fa-discord"></i>
-                <!-- CORRECTION ICI: On utilise un conteneur générique -->
                 <div id="discord-content">
                     <!-- Le statut Discord sera injecté ici -->
                 </div>
@@ -91,68 +91,72 @@
         import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-functions.js";
 
-        const profileContainer = document.getElementById('profile-container');
-        const usernameEl = document.getElementById('username');
-        const userRoleEl = document.getElementById('user-role');
-        // CORRECTION ICI: On cible le nouveau conteneur
-        const discordContentEl = document.getElementById('discord-content');
-        const avatarImg = document.getElementById('avatar-img');
-        const logoutBtn = document.getElementById('logout-btn');
-        const editProfileBtn = document.getElementById('edit-profile-btn');
-        const functions = getFunctions("europe-west1");
+        // On attend que le DOM soit complètement chargé pour éviter les erreurs
+        document.addEventListener('DOMContentLoaded', () => {
+            const profileContainer = document.getElementById('profile-container');
+            const usernameEl = document.getElementById('username');
+            const userRoleEl = document.getElementById('user-role');
+            const discordContentEl = document.getElementById('discord-content');
+            const avatarImg = document.getElementById('avatar-img');
+            const logoutBtn = document.getElementById('logout-btn');
+            const editProfileBtn = document.getElementById('edit-profile-btn');
+            
+            // Si on n'est pas sur la page de profil, on ne fait rien
+            if (!profileContainer) return;
 
-        const discordClientId = "1407045715485786144";
-        const redirectUri = "https://ratio-faction.netlify.app/pages/profile.html";
-        const discordAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${discordClientId}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&scope=identify`;
+            const functions = getFunctions("europe-west1");
+            const discordClientId = "1407045715485786144";
+            const redirectUri = "https://ratio-faction.netlify.app/pages/profile.html";
+            const discordAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${discordClientId}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&scope=identify`;
 
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                const params = new URLSearchParams(window.location.search);
-                const discordCode = params.get('code');
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    const params = new URLSearchParams(window.location.search);
+                    const discordCode = params.get('code');
 
-                if (discordCode) {
-                    document.body.innerHTML = '<h1>Liaison de votre compte Discord en cours...</h1>';
-                    const linkDiscordAccount = httpsCallable(functions, 'linkDiscordAccount');
-                    try {
-                        await linkDiscordAccount({ code: discordCode, redirectUri: redirectUri });
-                        window.location.href = 'profile.html';
-                    } catch (error) {
-                        console.error("Erreur de liaison Discord:", error);
-                        document.body.innerHTML = `<h1>Erreur</h1><p>Impossible de lier votre compte Discord. Veuillez réessayer.</p><a href="profile.html">Retour au profil</a>`;
+                    if (discordCode) {
+                        document.body.innerHTML = '<h1>Liaison de votre compte Discord en cours...</h1>';
+                        const linkDiscordAccount = httpsCallable(functions, 'linkDiscordAccount');
+                        try {
+                            await linkDiscordAccount({ code: discordCode, redirectUri: redirectUri });
+                            window.location.href = 'profile.html'; // Recharger la page proprement
+                        } catch (error) {
+                            console.error("Erreur de liaison Discord:", error);
+                            document.body.innerHTML = `<h1>Erreur</h1><p>Impossible de lier votre compte Discord. Veuillez réessayer.</p><a href="profile.html">Retour au profil</a>`;
+                        }
+                        return;
                     }
-                    return;
-                }
 
-                const userDocRef = doc(db, 'users', user.uid);
-                const docSnap = await getDoc(userDocRef);
-                if (docSnap.exists()) {
-                    const userData = docSnap.data();
-                    usernameEl.textContent = userData.minecraftUsername || "Utilisateur";
-                    userRoleEl.textContent = userData.role || 'Membre';
-                    avatarImg.src = userData.avatar || `https://mc-heads.net/avatar/${userData.minecraftUsername}/120`;
-                    
-                    // CORRECTION ICI: On utilise le bon élément et on ajoute un <p> pour la mise en forme
-                    if (userData.discordId) {
-                        discordContentEl.innerHTML = `<h3 class="discord-linked">Lié</h3><p style="margin:0;">${userData.discordUsername}</p>`;
+                    const userDocRef = doc(db, 'users', user.uid);
+                    const docSnap = await getDoc(userDocRef);
+                    if (docSnap.exists() && docSnap.data().onboardingComplete) {
+                        const userData = docSnap.data();
+                        usernameEl.textContent = userData.minecraftUsername || "Utilisateur";
+                        userRoleEl.textContent = userData.role || 'Membre';
+                        avatarImg.src = userData.avatar || `https://mc-heads.net/avatar/${userData.minecraftUsername}/120`;
+                        
+                        if (userData.discordId) {
+                            discordContentEl.innerHTML = `<h3 class="discord-linked">Lié</h3><p style="margin:0;">${userData.discordUsername}</p>`;
+                        } else {
+                            discordContentEl.innerHTML = `<h3>Non lié</h3><a href="${discordAuthUrl}" class="discord-link-btn">Lier mon compte</a>`;
+                        }
+                        
+                        profileContainer.classList.remove('loading');
                     } else {
-                        discordContentEl.innerHTML = `<h3>Non lié</h3><a href="${discordAuthUrl}" class="discord-link-btn">Lier mon compte</a>`;
+                        window.location.href = 'onboarding.html';
                     }
-                    
-                    profileContainer.classList.remove('loading');
                 } else {
-                    window.location.href = 'onboarding.html';
+                    window.location.href = 'login.html';
                 }
-            } else {
-                window.location.href = 'login.html';
-            }
-        });
+            });
 
-        logoutBtn.addEventListener('click', () => {
-            auth.signOut();
-        });
+            logoutBtn.addEventListener('click', () => {
+                auth.signOut();
+            });
 
-        editProfileBtn.addEventListener('click', () => {
-            alert("La fonctionnalité d'édition du profil sera bientôt disponible !");
+            editProfileBtn.addEventListener('click', () => {
+                alert("La fonctionnalité d'édition du profil sera bientôt disponible !");
+            });
         });
     </script>
 </body>

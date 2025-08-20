@@ -27,7 +27,6 @@
         body { background-color: var(--market-bg); }
         .market-container { max-width: 1600px; margin: 2rem auto; padding: 0 1.5rem; }
 
-        /* Featured Section */
         .featured-section {
             position: relative;
             background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url('../images/pictures/Fond.png');
@@ -37,11 +36,9 @@
         .featured-title { font-family: 'Anton', sans-serif; font-size: 3rem; color: var(--text-light); margin-bottom: 2rem; border-left: 5px solid var(--primary-red); padding-left: 1.5rem; text-shadow: 2px 2px 8px rgba(0,0,0,0.7); }
         .featured-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; }
 
-        /* Main Layout */
         .shop-layout { display: flex; flex-direction: column; gap: 2rem; }
         @media (min-width: 992px) { .shop-layout { flex-direction: row; } }
 
-        /* Sidebar Navigation */
         .category-nav { flex: 0 0 240px; background-color: var(--market-card-bg); border-radius: 10px; padding: 1.5rem; border: 1px solid var(--market-border); align-self: flex-start; }
         .search-panel { margin-bottom: 1.5rem; }
         .search-panel input { width: 100%; background-color: #333; border: 1px solid var(--market-border); border-radius: 5px; padding: 0.75rem; color: var(--text-light); box-sizing: border-box; }
@@ -56,7 +53,6 @@
         .checkmark:after { content: ""; position: absolute; display: none; left: 9px; top: 5px; width: 5px; height: 10px; border: solid white; border-width: 0 3px 3px 0; transform: rotate(45deg); }
         .checkbox-label input:checked ~ .checkmark:after { display: block; }
 
-        /* Market Grid & Cards */
         .market-content { flex-grow: 1; }
         .market-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.5rem; }
         .item-card { background: linear-gradient(145deg, #2e2e2e, #1a1a1a); border-radius: 10px; border: 1px solid var(--market-border); overflow: hidden; display: flex; flex-direction: column; transition: all 0.3s ease; position: relative; }
@@ -69,19 +65,18 @@
         .item-card img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; padding: 1.5rem; box-sizing: border-box; image-rendering: pixelated; transition: transform 0.3s ease; }
         .item-card:hover img { transform: scale(1.1); }
         .item-info { padding: 1rem; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; text-align: center; }
-        .item-info h3 { font-size: 1rem; margin: 0 0 0.5rem 0; color: var(--text-light); font-weight: 700; height: 40px; } /* Fixed height for alignment */
+        .item-info h3 { font-size: 1rem; margin: 0 0 0.5rem 0; color: var(--text-light); font-weight: 700; height: 40px; }
         .price-container { margin-bottom: 1rem; }
+        .original-price { text-decoration: line-through; color: #777; font-size: 0.9rem; margin-right: 0.5rem; }
         .item-price { font-size: 1.4rem; font-weight: bold; color: var(--text-light); }
         .buy-btn { width: 100%; background-color: var(--primary-red); color: white; font-weight: bold; padding: 0.7rem 1rem; border: none; border-radius: 5px; cursor: pointer; text-transform: uppercase; transition: background-color 0.3s; }
         .buy-btn:hover { background-color: var(--primary-red-dark); }
         
-        /* Floating Cart Button */
         .cart-button { position: fixed; bottom: 2rem; right: 2rem; width: 60px; height: 60px; background-color: var(--primary-red); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 1001; box-shadow: 0 5px 15px rgba(0,0,0,0.4); transition: transform 0.3s ease; }
         .cart-button:hover { transform: scale(1.1); }
         .cart-button i { font-size: 1.5rem; color: white; }
         .cart-count { position: absolute; top: -5px; right: -5px; background-color: var(--discord-blue); color: white; border-radius: 50%; width: 24px; height: 24px; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; font-weight: bold; }
 
-        /* Modals */
         .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); backdrop-filter: blur(5px); align-items: center; justify-content: center; }
         .modal.show { display: flex; }
         .modal-content { background-color: var(--market-card-bg); padding: 2rem; border: 1px solid var(--market-border); width: 90%; max-width: 500px; border-radius: 10px; position: relative; }
@@ -98,7 +93,23 @@
 </head>
 <body>
     <nav class="navbar">
-        <!-- Navbar content -->
+        <div class="nav-left">
+            <a href="../index.html"><img src="../images/pictures/Logo.png" alt="Logo R4TIO" class="nav-logo"></a>
+        </div>
+        <div class="nav-center">
+            <a href="https://discord.gg/UFVCDc4mkU" target="_blank" rel="noopener noreferrer">Discord</a>
+            <a href="recrutement.html">Recrutement</a>
+            <a href="market.html">Marché</a>
+        </div>
+        <div class="nav-auth">
+             <div id="auth-buttons" style="display: none;">
+                <a href="login.html">Connexion</a>
+                <a href="register.html" class="register-btn">Inscription</a>
+            </div>
+            <a href="profile.html" id="profile-link">
+                <img id="profile-pic" src="" alt="Photo de profil">
+            </a>
+        </div>
     </nav>
 
     <div class="market-container">
@@ -126,7 +137,6 @@
         <span class="cart-count" id="cart-count">0</span>
     </div>
 
-    <!-- Modals -->
     <div id="cart-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn" id="close-cart-modal">&times;</span>
@@ -145,7 +155,6 @@
         import { auth, db } from '../js/firebase-config.js';
         import { collection, addDoc, serverTimestamp, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // --- DOM Elements ---
         const elements = {
             featuredGrid: document.getElementById('featured-grid'),
             marketGrid: document.getElementById('market-grid'),
@@ -163,7 +172,6 @@
         
         let cart = [];
 
-        // --- UI Functions ---
         function showMessage(message, isError = false) {
             elements.messageBox.textContent = message;
             elements.messageBox.style.borderColor = isError ? 'var(--primary-red)' : 'var(--green)';
@@ -181,6 +189,8 @@
         function createItemCard(item) {
             const card = document.createElement('div');
             card.className = `item-card ${getRarity(item.buyPrice)}`;
+            const originalPrice = Math.floor(item.buyPrice * 1.15);
+
             card.innerHTML = `
                 <div class="item-image-container">
                     <img src="${item.img}" alt="${item.name}" onerror="this.src='https://placehold.co/128x128/1c1c1c/e74c3c?text=N/A'; this.onerror=null;">
@@ -188,6 +198,7 @@
                 <div class="item-info">
                     <h3>${item.name}</h3>
                     <div class="price-container">
+                        <span class="original-price">${originalPrice.toLocaleString('fr-FR')}$</span>
                         <span class="item-price">${item.buyPrice.toLocaleString('fr-FR')}$</span>
                     </div>
                     <button class="buy-btn">Ajouter</button>
@@ -196,7 +207,6 @@
             return card;
         }
 
-        // --- Market & Filter Logic ---
         function renderMarket() {
             elements.marketGrid.innerHTML = '';
             const searchTerm = elements.searchBar.value.toLowerCase();
@@ -209,7 +219,7 @@
             });
 
             if (itemsToDisplay.length === 0) {
-                elements.marketGrid.innerHTML = `<p>Aucun objet trouvé.</p>`;
+                elements.marketGrid.innerHTML = `<p style="color: var(--text-medium); grid-column: 1 / -1; text-align: center;">Aucun objet trouvé.</p>`;
             } else {
                 itemsToDisplay.forEach(item => elements.marketGrid.appendChild(createItemCard(item)));
             }
@@ -217,7 +227,7 @@
 
         function setupDynamicCategories() {
             const categories = [...new Set(marketItems.map(item => item.category))];
-            elements.categoryList.innerHTML = ''; // Clear existing
+            elements.categoryList.innerHTML = '';
             
             categories.forEach(category => {
                 const li = document.createElement('li');
@@ -242,7 +252,6 @@
             });
         }
 
-        // --- Cart Logic ---
         function addToCart(itemToAdd) {
             const existingItem = cart.find(item => item.name === itemToAdd.name);
             if (existingItem) {
@@ -287,7 +296,6 @@
             elements.cartTotal.textContent = `Total: ${total.toLocaleString('fr-FR')}$`;
         }
 
-        // --- Checkout Logic ---
         async function handleCheckout() {
             if (cart.length === 0) {
                 showMessage("Votre panier est vide !", true);
@@ -314,7 +322,6 @@
                     return;
                 }
                 
-                // BUG FIX: Use 'minecraftUsername' instead of 'username'
                 const clientUsername = userDoc.data().minecraftUsername;
 
                 const order = {
@@ -331,8 +338,7 @@
                 updateCart();
                 elements.cartModal.classList.remove('show');
                 showMessage("Commande passée avec succès !", false);
-                // Redirect to a confirmation page (optional)
-                // window.location.href = `checkout.html?orderId=${docRef.id}`;
+                window.location.href = `checkout.html?orderId=${docRef.id}`;
 
             } catch (e) {
                 console.error("Erreur lors de la commande: ", e);
@@ -343,7 +349,6 @@
             }
         }
 
-        // --- Initial Load & Event Listeners ---
         function init() {
             cart = JSON.parse(localStorage.getItem('r4tioCart')) || [];
             

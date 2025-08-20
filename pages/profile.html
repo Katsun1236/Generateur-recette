@@ -4,8 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profil - Faction R4TIO</title>
-    <link rel="stylesheet" href="../css/style.css">
+    
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../css/style.css">
+    
     <style>
         .profile-container { max-width: 800px; margin: 2rem auto; padding: 2rem; background-color: var(--card-bg-color); border-radius: 10px; }
         .profile-header { display: flex; align-items: center; margin-bottom: 2rem; border-bottom: 1px solid #444; padding-bottom: 2rem; gap: 2rem; }
@@ -49,6 +57,7 @@
                 <h1 id="username">CHARGEMENT</h1>
                 <p id="user-role">...</p>
                 <div class="profile-actions">
+                    <button id="edit-profile-btn"><i class="fas fa-pencil-alt"></i> Éditer</button>
                     <button id="logout-btn" class="logout-btn">Déconnexion</button>
                 </div>
             </div>
@@ -56,8 +65,20 @@
         <div class="stats-grid">
             <div class="stat-card" id="discord-card">
                 <i class="fa-brands fa-discord"></i>
-                <div id="discord-status"></div>
+                <div id="discord-status">
+                    <!-- Le statut Discord sera injecté ici -->
+                </div>
                 <p>Statut Discord</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-skull-crossbones"></i>
+                <h3 id="user-kills">0</h3>
+                <p>Kills (à venir)</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-cross"></i>
+                <h3 id="user-deaths">0</h3>
+                <p>Morts (à venir)</p>
             </div>
         </div>
     </div>
@@ -75,6 +96,7 @@
         const discordStatusEl = document.getElementById('discord-status');
         const avatarImg = document.getElementById('avatar-img');
         const logoutBtn = document.getElementById('logout-btn');
+        const editProfileBtn = document.getElementById('edit-profile-btn');
         const functions = getFunctions("europe-west1");
 
         const discordClientId = "1407045715485786144";
@@ -124,6 +146,10 @@
 
         logoutBtn.addEventListener('click', () => {
             auth.signOut();
+        });
+
+        editProfileBtn.addEventListener('click', () => {
+            alert("La fonctionnalité d'édition du profil sera bientôt disponible !");
         });
     </script>
 </body>

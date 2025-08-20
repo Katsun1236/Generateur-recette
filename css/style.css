@@ -1,9 +1,5 @@
-/* ==========================================================================
-   Variables & Global Styles
-   ========================================================================== */
 
 :root {
-    /* -- Colors -- */
     --main-bg-color: #1a1a1a;
     --primary-red: #e74c3c;
     --primary-red-dark: #c0392b;
@@ -13,20 +9,14 @@
     --discord-blue: #5865F2;
     --green: #2ecc71;
     --yellow: #f1c40f;
-
-    /* -- Typography -- */
     --font-primary: 'Roboto', sans-serif;
     --font-display: 'Anton', sans-serif;
-
-    /* -- Spacing -- */
     --navbar-height: 80px;
 }
-
-/* -- Reset & Base -- */
 *,
 *::before,
 *::after {
-    box-sizing: border-box; /* Makes layout math easier */
+    box-sizing: border-box;
 }
 
 body {

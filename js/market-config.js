@@ -1,33 +1,12 @@
-// ==========================================================================
-// Market Configuration File
-// ==========================================================================
-// INSTRUCTIONS:
-// 1. To add a new item, find its category below and add a new object to the array.
-// 2. To add a new category, copy the structure of an existing category.
-// 3. The 'sellPrice' is automatically calculated if not provided.
-// 4. The image path is automatically constructed from the base paths.
-// ==========================================================================
-
-/**
- * Global settings for the market.
- */
 const MARKET_SETTINGS = {
-    // The default percentage of the buy price to set the sell price at.
-    // For example, 0.75 means the sell price will be 75% of the buy price.
     defaultSellPriceModifier: 0.75,
 };
 
-/**
- * Base paths for item images to avoid repetition.
- */
 const IMAGE_BASE_PATHS = {
     histeria: "../images/market-icon/histeria-icon/",
     minecraft: "../images/market-icon/"
 };
 
-/**
- * Raw data for all market items, grouped by category for easy editing.
- */
 const marketDataByCategory = {
     "Équipement Histeria": [
         { name: "Histerite Sword", buyPrice: 50000, img: "histerite-sword.png" },
@@ -117,17 +96,10 @@ const marketDataByCategory = {
     ]
 };
 
-/**
- * Processes the raw data and exports a single, ready-to-use array of market items.
- * This function constructs the full image paths and calculates sell prices.
- */
 export const marketItems = Object.entries(marketDataByCategory).flatMap(([category, items]) => {
     return items.map(item => {
-        // Determine which base path to use. Default to 'histeria'.
         const basePathKey = item.pathKey || 'histeria';
         const basePath = IMAGE_BASE_PATHS[basePathKey];
-
-        // Calculate sell price if not provided
         const sellPrice = item.sellPrice || Math.floor(item.buyPrice * MARKET_SETTINGS.defaultSellPriceModifier);
 
         return {

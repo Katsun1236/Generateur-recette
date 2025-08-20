@@ -8,30 +8,33 @@ const initializeAuth = () => {
             throw new Error("Firebase Auth n'est pas initialisé.");
         }
 
-        onAuthStateChanged(auth, async (user) => {
-            const profileLink = document.getElementById('profile-link');
-            const profilePic = document.getElementById('profile-pic');
-            const authButtons = document.getElementById('auth-buttons');
+        const profileLink = document.getElementById('profile-link');
+        const profilePic = document.getElementById('profile-pic');
+        const authButtons = document.getElementById('auth-buttons');
 
+        onAuthStateChanged(auth, async (user) => {
             if (user) {
-                if (!db) {
-                    console.error("Firebase Firestore n'est pas initialisé.");
-                    return;
-                }
+                // Utilisateur connecté
                 const userDocRef = doc(db, 'users', user.uid);
                 const userDoc = await getDoc(userDocRef);
                 
                 if (userDoc.exists()) {
                     const userData = userDoc.data();
-                    if (profilePic) {
-                        profilePic.src = userData.avatar || '../images/pictures/Logo.png';
-                    }
-                    if (profileLink) profileLink.style.display = 'block';
-                    if (authButtons) authButtons.style.display = 'none';
+                    // Utilise l'avatar de Google/Discord ou celui de la base de données, sinon un skin Minecraft
+                    profilePic.src = user.photoURL || userData.avatar || `https://cravatar.eu/avatar/${user.uid}/32.png`;
+                } else {
+                    // Fallback si le document n'existe pas encore
+                    profilePic.src = user.photoURL || `https://cravatar.eu/avatar/${user.uid}/32.png`;
                 }
+                
+                profileLink.style.display = 'block';
+                authButtons.style.display = 'none';
+
             } else {
-                if (profileLink) profileLink.style.display = 'none';
-                if (authButtons) authButtons.style.display = 'flex';
+                // Utilisateur déconnecté
+                profilePic.src = `https://cravatar.eu/avatar/default/32.png`; // Affiche une tête de Steve par défaut
+                profileLink.style.display = 'block'; // Assure que l'icône est toujours visible
+                authButtons.style.display = 'flex';
             }
         });
 

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration - Faction R4TIO</title>
+    
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../css/style.css">
+    
+    <style>
+        .admin-container { max-width: 1000px; margin: 2rem auto; padding: 2rem; background-color: var(--card-bg-color); border-radius: 10px; }
+        .user-list-table { width: 100%; border-collapse: collapse; margin-top: 2rem; }
+        .user-list-table th, .user-list-table td { padding: 1rem; text-align: left; border-bottom: 1px solid #444; }
+        .user-list-table th { font-family: 'Anton', sans-serif; color: var(--primary-red); font-size: 1.2rem; }
+        .user-list-table td { color: var(--text-medium); }
+        .user-list-table img { width: 40px; height: 40px; border-radius: 50%; vertical-align: middle; margin-right: 1rem; }
+        .role-select { background-color: #333; color: var(--text-light); border: 1px solid #555; border-radius: 5px; padding: 0.5rem; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="../index.html"><img src="../images/pictures/Logo.png" alt="Logo R4TIO" class="nav-logo"></a>
+        </div>
+        <div class="nav-center">
+            <a href="https://discord.gg/UFVCDc4mkU" target="_blank" rel="noopener noreferrer">Discord</a>
+            <a href="recrutement.html">Recrutement</a>
+            <a href="market.html">Marché</a>
+            <a href="admin.html" id="admin-link" style="display: none; color: var(--yellow);">Admin</a>
+        </div>
+        <div class="nav-auth">
+             <div id="auth-buttons" style="display: none;">
+                <a href="login.html">Connexion</a>
+                <a href="register.html" class="register-btn">Inscription</a>
+            </div>
+            <a href="profile.html" id="profile-link">
+                <img id="profile-pic" src="" alt="Photo de profil">
+            </a>
+        </div>
+    </nav>
+
+    <div class="admin-container">
+        <div class="page-header">
+            <h1>Administration</h1>
+            <p>Gérez les rôles des utilisateurs du site.</p>
+        </div>
+        <table class="user-list-table">
+            <thead>
+                <tr>
+                    <th>Utilisateur</th>
+                    <th>Email</th>
+                    <th>Rôle</th>
+                </tr>
+            </thead>
+            <tbody id="user-list-body">
+                <!-- Les utilisateurs seront chargés ici par le script -->
+            </tbody>
+        </table>
+    </div>
+
+    <div id="message-box"></div>
+
+    <script type="module" src="../js/main.js"></script>
+    <script type="module">
+        import { auth, db } from '../js/firebase-config.js';
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { doc, getDoc, collection, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const userListBody = document.getElementById('user-list-body');
+        const messageBox = document.getElementById('message-box');
+        const availableRoles = ['Admin', 'Leader', 'Recruteur', 'Vendeur', 'Membre', 'Candidat', 'Visiteur'];
+
+        function showMessage(message, isError = false) {
+            messageBox.textContent = message;
+            messageBox.style.borderColor = isError ? 'var(--primary-red)' : 'var(--green)';
+            messageBox.classList.add('show');
+            setTimeout(() => messageBox.classList.remove('show'), 3000);
+        }
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const userDocRef = doc(db, 'users', user.uid);
+                const docSnap = await getDoc(userDocRef);
+
+                if (docSnap.exists() && docSnap.data().role === 'Admin') {
+                    loadUsers();
+                } else {
+                    // Si l'utilisateur n'est pas admin, on le renvoie à l'accueil
+                    window.location.href = '../index.html';
+                }
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
+
+        async function loadUsers() {
+            userListBody.innerHTML = '<tr><td colspan="3">Chargement des utilisateurs...</td></tr>';
+            const usersSnapshot = await getDocs(collection(db, 'users'));
+            userListBody.innerHTML = ''; // Clear loading message
+
+            usersSnapshot.forEach(userDoc => {
+                const userData = { id: userDoc.id, ...userDoc.data() };
+                const userRow = document.createElement('tr');
+
+                const roleOptions = availableRoles.map(role => 
+                    `<option value="${role}" ${userData.role === role ? 'selected' : ''}>${role}</option>`
+                ).join('');
+
+                userRow.innerHTML = `
+                    <td>
+                        <img src="${userData.avatar || 'https://placehold.co/40x40/2c2c2c/e74c3c?text=N/A'}" alt="avatar">
+                        ${userData.minecraftUsername || 'N/A'}
+                    </td>
+                    <td>${userData.email || 'N/A'}</td>
+                    <td>
+                        <select class="role-select" data-userid="${userData.id}">
+                            ${roleOptions}
+                        </select>
+                    </td>
+                `;
+                userListBody.appendChild(userRow);
+            });
+
+            // Add event listeners to all select dropdowns
+            document.querySelectorAll('.role-select').forEach(select => {
+                select.addEventListener('change', async (e) => {
+                    const newRole = e.target.value;
+                    const userId = e.target.dataset.userid;
+                    try {
+                        const userToUpdateRef = doc(db, 'users', userId);
+                        await updateDoc(userToUpdateRef, { role: newRole });
+                        showMessage(`Rôle de l'utilisateur mis à jour en "${newRole}".`);
+                    } catch (error) {
+                        console.error("Erreur de mise à jour du rôle:", error);
+                        showMessage("Erreur lors de la mise à jour.", true);
+                    }
+                });
+            });
+        }
+    </script>
+</body>
+</html>

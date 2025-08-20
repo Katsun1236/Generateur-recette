@@ -3,387 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premiers pas - Faction R4TIO</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
+    <title>Onboarding - Faction R4TIO</title>
     <link rel="stylesheet" href="../css/style.css">
-    
     <style>
-        body {
-            padding-top: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .form-container {
-            background-color: var(--card-bg-color);
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            width: 100%;
-            max-width: 600px;
-            border: 1px solid #444;
-        }
-        .form-container h2 {
-            font-family: 'Anton', sans-serif;
-            font-size: 2.5rem;
-            color: var(--primary-red);
-            text-align: center;
-            margin-bottom: 0.5rem;
-            text-transform: uppercase;
-        }
-        .form-container p {
-            text-align: center;
-            color: var(--text-medium);
-            margin-bottom: 2rem;
-        }
-        .form-group {
-            margin-bottom: 1rem;
-        }
-        .form-group label {
-            display: block;
-            color: var(--text-medium);
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-        }
-        .form-group input {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border-radius: 5px;
-            background-color: #333;
-            color: var(--text-light);
-            border: 2px solid #555;
-            box-sizing: border-box;
-            transition: border-color 0.3s;
-        }
-        .form-group input:focus {
-            outline: none;
-            border-color: var(--primary-red);
-        }
-        .profile-picture-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-        #profile-picture-container {
-            position: relative;
-            width: 100px;
-            height: 100px;
-            margin-top: 0.5rem;
-            border-radius: 50%;
-            border: 4px solid var(--primary-red);
-            overflow: hidden;
-            cursor: pointer;
-            transition: border-color 0.3s;
-        }
-        #profile-picture-container:hover {
-            border-color: var(--primary-red-dark);
-        }
-        #profile-picture-preview {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        #profile-picture-container .overlay {
-            position: absolute;
-            inset: 0;
-            background-color: rgba(0,0,0,0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        #profile-picture-container:hover .overlay {
-            opacity: 1;
-        }
-        .grid-inputs {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1rem;
-        }
-        @media (min-width: 640px) {
-            .grid-inputs {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-        .submit-btn {
-            width: 100%;
-            background-color: var(--primary-red);
-            color: white;
-            font-weight: bold;
-            padding: 0.8rem 1rem;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-transform: uppercase;
-            transition: background-color 0.3s;
-            margin-top: 1.5rem;
-        }
-        .submit-btn:hover {
-            background-color: var(--primary-red-dark);
-        }
-        .submit-btn:disabled {
-            background-color: #555;
-            cursor: not-allowed;
-        }
-        .multiselect {
-            position: relative;
-        }
-        .select-box {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.75rem 1rem;
-            border-radius: 5px;
-            background-color: #333;
-            border: 2px solid #555;
-            cursor: pointer;
-        }
-        .select-box.open {
-            border-color: var(--primary-red);
-        }
-        .select-box .placeholder {
-            color: #9ca3af;
-        }
-        .select-box .selected-values {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        #checkboxes {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background-color: #333;
-            border: 2px solid #555;
-            border-top: none;
-            border-radius: 0 0 5px 5px;
-            z-index: 10;
-        }
-        #checkboxes label {
-            display: block;
-            padding: 0.75rem 1rem;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        #checkboxes label:hover {
-            background-color: #444;
-        }
-        #checkboxes input {
-            margin-right: 0.5rem;
-        }
+        body { background-color: #111; color: var(--text-light); font-family: 'Roboto', sans-serif; padding-top: 80px; }
+        .onboarding-container { max-width: 600px; margin: 2rem auto; padding: 2rem; background-color: #1c1c1c; border-radius: 10px; border: 1px solid #333; text-align: center; }
+        h1 { color: var(--primary-red); font-family: 'Anton', sans-serif; }
+        button { padding: 10px 20px; font-size: 1rem; margin-top: 1rem; border: none; border-radius: 5px; cursor: pointer; background-color: var(--primary-red); color: white; transition: 0.3s; }
+        button:hover { background-color: var(--primary-red-dark); }
+        .hidden { display: none; }
+        input { padding: 8px; width: 80%; margin: 0.5rem 0; border-radius: 5px; border: 1px solid #555; background-color: #222; color: white; }
     </style>
 </head>
 <body>
-
-    <div class="form-container">
-        <h2>Bienvenue !</h2>
-        <p>Pour commencer, dis-nous en un peu plus sur toi.</p>
-        
-        <form id="onboarding-form">
-            <div class="profile-picture-section" id="profile-picture-section">
-                <label class="font-bold text-gray-300">Photo de profil</label>
-                <div id="profile-picture-container">
-                    <img id="profile-picture-preview" src="" alt="Aperçu">
-                    <div class="overlay">
-                        <i class="fas fa-camera text-white text-2xl"></i>
-                    </div>
-                </div>
-                <input type="file" id="profilePicture" name="profilePicture" accept="image/*" class="hidden">
-            </div>
-
-            <div class="grid-inputs">
-                <div class="form-group">
-                    <label for="username">Pseudo Minecraft</label>
-                    <input type="text" id="username" placeholder="Ton pseudo" required>
-                </div>
-                <div class="form-group">
-                    <label for="discordTag">Tag Discord</label>
-                    <input type="text" id="discordTag" placeholder="pseudo#0000" required>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="gameRoles">Quel type de joueur es-tu ?</label>
-                <div class="multiselect" id="gameRoles-multiselect">
-                    <div class="select-box" id="select-box">
-                        <span id="select-text" class="placeholder">Sélectionne un ou plusieurs rôles</span>
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                    <div id="checkboxes" class="hidden">
-                        <label><input type="checkbox" value="PvP"/> PvP</label>
-                        <label><input type="checkbox" value="Farmeur"/> Farmeur</label>
-                        <label><input type="checkbox" value="Pilleur"/> Pilleur</label>
-                        <label><input type="checkbox" value="Buildeur"/> Buildeur</label>
-                        <label><input type="checkbox" value="Mineur"/> Mineur</label>
-                    </div>
-                </div>
-            </div>
-
-            <button type="submit" class="submit-btn">C'est parti !</button>
-        </form>
+    <div class="onboarding-container">
+        <h1>Bienvenue sur R4TIO</h1>
+        <p>Pour bien commencer, remplissez ces informations :</p>
+        <div id="step-1">
+            <button id="start-btn">C'est parti !</button>
+        </div>
+        <div id="step-2" class="hidden">
+            <input type="text" id="username" placeholder="Nom d'utilisateur">
+            <input type="email" id="email" placeholder="Email">
+            <input type="text" id="discord" placeholder="Pseudo Discord">
+            <button id="save-btn">Enregistrer</button>
+        </div>
+        <div id="step-3" class="hidden">
+            <h2>Merci !</h2>
+            <p>Vos informations ont été enregistrées avec succès.</p>
+            <a href="../index.html"><button>Retour à l'accueil</button></a>
+        </div>
     </div>
 
-    <div id="message-box"></div>
-
     <script type="module">
-        import { auth, db, storage } from '../js/firebase-config.js';
-        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
-        import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
-        import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-storage.js";
+        import { auth, db } from '../js/firebase-config.js';
+        import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+        import { collection, doc, setDoc } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
 
-        let currentUserId;
+        const startBtn = document.getElementById('start-btn');
+        const step1 = document.getElementById('step-1');
+        const step2 = document.getElementById('step-2');
+        const step3 = document.getElementById('step-3');
 
-        function showMessage(message) {
-            const box = document.getElementById('message-box');
-            box.textContent = message;
-            box.style.display = 'block';
-            setTimeout(() => box.style.display = 'none', 3000);
-        }
-        
-        document.getElementById('profile-picture-preview').src = `https://corsproxy.io/?https://mc-heads.net/avatar/Steve/100`;
+        const usernameInput = document.getElementById('username');
+        const emailInput = document.getElementById('email');
+        const discordInput = document.getElementById('discord');
+        const saveBtn = document.getElementById('save-btn');
 
-        document.addEventListener('DOMContentLoaded', () => {
+        // Passer à l'étape 2
+        startBtn.addEventListener('click', () => {
+            step1.classList.add('hidden');
+            step2.classList.remove('hidden');
+        });
+
+        // Enregistrement des données
+        saveBtn.addEventListener('click', async () => {
+            const username = usernameInput.value.trim();
+            const email = emailInput.value.trim();
+            const discord = discordInput.value.trim();
+
+            if (!username || !email || !discord) {
+                alert('Veuillez remplir tous les champs.');
+                return;
+            }
+
             onAuthStateChanged(auth, async (user) => {
-                if (user && !user.isAnonymous) {
-                    currentUserId = user.uid;
-                    const userRefCheck = doc(db, 'users', user.uid);
-                    const docSnap = await getDoc(userRefCheck);
-                    if (docSnap.exists() && docSnap.data().username) {
-                        window.location.href = '../index.html';
-                        return;
-                    }
+                if (user) {
+                    try {
+                        const userRef = doc(db, 'users', user.uid); // Document spécifique pour chaque utilisateur
+                        await setDoc(userRef, {
+                            username,
+                            email,
+                            discord,
+                            createdAt: new Date()
+                        });
 
-                    const profilePictureSection = document.getElementById('profile-picture-section');
-                    if (user.providerData.length > 0) {
-                        const providerId = user.providerData[0].providerId;
-                        if (providerId === 'password') {
-                            profilePictureSection.style.display = 'none';
-                        } else {
-                            if (providerId === 'oidc.discord') {
-                                document.getElementById('discordTag').value = user.displayName || '';
-                                const usernameWithoutTag = user.displayName.split('#')[0];
-                                document.getElementById('username').value = usernameWithoutTag;
-                            } else if (providerId === 'google.com') {
-                                document.getElementById('username').value = user.displayName || '';
-                            }
-                        }
-                    }
-
-                    if (user.photoURL) {
-                        document.getElementById('profile-picture-preview').src = user.photoURL;
+                        step2.classList.add('hidden');
+                        step3.classList.remove('hidden');
+                    } catch (e) {
+                        console.error('Erreur lors de l\'enregistrement:', e);
+                        alert('Une erreur est survenue.');
                     }
                 } else {
+                    alert('Vous devez être connecté pour enregistrer vos informations.');
                     window.location.href = 'login.html';
-                }
-            });
-
-            const selectBox = document.getElementById('select-box');
-            const checkboxes = document.getElementById('checkboxes');
-            const selectText = document.getElementById('select-text');
-
-            selectBox.addEventListener('click', () => {
-                checkboxes.classList.toggle('hidden');
-                selectBox.classList.toggle('open');
-            });
-
-            checkboxes.addEventListener('change', () => {
-                const selected = [];
-                checkboxes.querySelectorAll('input:checked').forEach(input => {
-                    selected.push(input.value);
-                });
-                if (selected.length > 0) {
-                    selectText.textContent = selected.join(', ');
-                    selectText.classList.remove('placeholder');
-                } else {
-                    selectText.textContent = 'Sélectionne un ou plusieurs rôles';
-                    selectText.classList.add('placeholder');
-                }
-            });
-
-            window.addEventListener('click', (e) => {
-                if (!document.getElementById('gameRoles-multiselect').contains(e.target)) {
-                    checkboxes.classList.add('hidden');
-                    selectBox.classList.remove('open');
-                }
-            });
-
-
-            document.getElementById('profile-picture-container').addEventListener('click', () => document.getElementById('profilePicture').click());
-
-            document.getElementById('profilePicture').addEventListener('change', function(event) {
-                const file = event.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (e) => document.getElementById('profile-picture-preview').src = e.target.result;
-                    reader.readAsDataURL(file);
-                }
-            });
-
-            document.getElementById('onboarding-form').addEventListener('submit', async function(event) {
-                event.preventDefault();
-                if (!currentUserId) {
-                    showMessage("Erreur d'authentification.");
-                    return;
-                }
-
-                const button = this.querySelector('button[type="submit"]');
-                button.disabled = true;
-                button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enregistrement...';
-
-                let photoURL = null;
-                const providerId = auth.currentUser.providerData[0].providerId;
-                const profilePictureFile = document.getElementById('profilePicture').files[0];
-
-                if (providerId !== 'password') {
-                    photoURL = auth.currentUser.photoURL;
-                    if (profilePictureFile) {
-                        const storageRef = ref(storage, `users/${currentUserId}/profilePicture.jpg`);
-                        const snapshot = await uploadBytes(storageRef, profilePictureFile);
-                        photoURL = await getDownloadURL(snapshot.ref);
-                    }
-                }
-
-                const selectedRoles = [];
-                checkboxes.querySelectorAll('input:checked').forEach(input => {
-                    selectedRoles.push(input.value);
-                });
-
-                if (selectedRoles.length === 0) {
-                    showMessage("Veuillez sélectionner au moins un rôle en jeu.");
-                    button.disabled = false;
-                    button.innerHTML = "C'est parti !";
-                    return;
-                }
-
-                try {
-                    const userProfile = {
-                        username: document.getElementById('username').value,
-                        discordTag: document.getElementById('discordTag').value,
-                        gameRoles: selectedRoles,
-                        role: 'Visiteur',
-                        photoURL: photoURL,
-                        createdAt: new Date().toISOString()
-                    };
-                    
-                    const userRef = doc(db, 'users', currentUserId);
-                    await setDoc(userRef, userProfile, { merge: true });
-
-                    showMessage("Profil créé avec succès !");
-                    window.location.href = '../index.html';
-
-                } catch (error) {
-                    console.error("Erreur lors de l'enregistrement:", error);
-                    showMessage("Erreur lors de l'enregistrement. Veuillez réessayer.");
-                } finally {
-                    button.disabled = false;
-                    button.innerHTML = "C'est parti !";
                 }
             });
         });

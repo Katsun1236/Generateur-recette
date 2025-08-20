@@ -6,89 +6,106 @@
     <title>Onboarding - Faction R4TIO</title>
     <link rel="stylesheet" href="../css/style.css">
     <style>
-        body { background-color: #111; color: var(--text-light); font-family: 'Roboto', sans-serif; padding-top: 80px; }
-        .onboarding-container { max-width: 600px; margin: 2rem auto; padding: 2rem; background-color: #1c1c1c; border-radius: 10px; border: 1px solid #333; text-align: center; }
-        h1 { color: var(--primary-red); font-family: 'Anton', sans-serif; }
-        button { padding: 10px 20px; font-size: 1rem; margin-top: 1rem; border: none; border-radius: 5px; cursor: pointer; background-color: var(--primary-red); color: white; transition: 0.3s; }
+        .onboarding-container {
+            max-width: 700px;
+            margin: 3rem auto;
+            background-color: var(--card-bg-color);
+            padding: 2rem;
+            border-radius: 10px;
+            border: 1px solid #333;
+        }
+        h1, h2 {
+            color: var(--primary-red);
+            text-align: center;
+            font-family: 'Anton', sans-serif;
+        }
+        .step { display: none; }
+        .step.active { display: block; }
+        input { width: 100%; padding: 0.75rem; margin: 0.5rem 0; border-radius: 5px; border: 1px solid #555; background-color: #222; color: var(--text-light); }
+        button { background-color: var(--primary-red); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 5px; cursor: pointer; font-weight: bold; text-transform: uppercase; }
         button:hover { background-color: var(--primary-red-dark); }
-        .hidden { display: none; }
-        input { padding: 8px; width: 80%; margin: 0.5rem 0; border-radius: 5px; border: 1px solid #555; background-color: #222; color: white; }
+        #message-box { bottom: 2rem; right: 2rem; }
     </style>
 </head>
 <body>
     <div class="onboarding-container">
-        <h1>Bienvenue sur R4TIO</h1>
-        <p>Pour bien commencer, remplissez ces informations :</p>
-        <div id="step-1">
+        <div id="step-1" class="step active">
+            <h1>Bienvenue sur R4TIO</h1>
+            <p>Prêt à rejoindre notre faction ?</p>
             <button id="start-btn">C'est parti !</button>
         </div>
-        <div id="step-2" class="hidden">
+
+        <div id="step-2" class="step">
+            <h2>Informations personnelles</h2>
             <input type="text" id="username" placeholder="Nom d'utilisateur">
-            <input type="email" id="email" placeholder="Email">
-            <input type="text" id="discord" placeholder="Pseudo Discord">
-            <button id="save-btn">Enregistrer</button>
+            <input type="text" id="discord" placeholder="Discord #0000">
+            <button id="save-info-btn">Enregistrer</button>
         </div>
-        <div id="step-3" class="hidden">
-            <h2>Merci !</h2>
-            <p>Vos informations ont été enregistrées avec succès.</p>
+
+        <div id="step-3" class="step">
+            <h2>Confirmation</h2>
+            <p>Merci ! Vos informations ont été enregistrées.</p>
             <a href="../index.html"><button>Retour à l'accueil</button></a>
         </div>
     </div>
 
+    <div id="message-box"></div>
+
     <script type="module">
         import { auth, db } from '../js/firebase-config.js';
-        import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
-        import { collection, doc, setDoc } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+        import { doc, setDoc } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
 
-        const startBtn = document.getElementById('start-btn');
         const step1 = document.getElementById('step-1');
         const step2 = document.getElementById('step-2');
         const step3 = document.getElementById('step-3');
 
-        const usernameInput = document.getElementById('username');
-        const emailInput = document.getElementById('email');
-        const discordInput = document.getElementById('discord');
-        const saveBtn = document.getElementById('save-btn');
+        const startBtn = document.getElementById('start-btn');
+        const saveInfoBtn = document.getElementById('save-info-btn');
 
-        // Passer à l'étape 2
+        const usernameInput = document.getElementById('username');
+        const discordInput = document.getElementById('discord');
+
+        const messageBox = document.getElementById('message-box');
+
+        function showMessage(msg) {
+            messageBox.textContent = msg;
+            messageBox.style.display = 'block';
+            messageBox.style.opacity = '1';
+            setTimeout(() => { messageBox.style.opacity = '0'; setTimeout(() => { messageBox.style.display = 'none'; }, 500); }, 3000);
+        }
+
         startBtn.addEventListener('click', () => {
-            step1.classList.add('hidden');
-            step2.classList.remove('hidden');
+            step1.classList.remove('active');
+            step2.classList.add('active');
         });
 
-        // Enregistrement des données
-        saveBtn.addEventListener('click', async () => {
+        saveInfoBtn.addEventListener('click', async () => {
             const username = usernameInput.value.trim();
-            const email = emailInput.value.trim();
             const discord = discordInput.value.trim();
 
-            if (!username || !email || !discord) {
-                alert('Veuillez remplir tous les champs.');
+            if (!username || !discord) {
+                showMessage('Veuillez remplir tous les champs.');
                 return;
             }
 
-            onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    try {
-                        const userRef = doc(db, 'users', user.uid); // Document spécifique pour chaque utilisateur
-                        await setDoc(userRef, {
-                            username,
-                            email,
-                            discord,
-                            createdAt: new Date()
-                        });
+            const user = auth.currentUser;
+            if (!user) {
+                showMessage('Veuillez vous connecter avant de continuer.');
+                return;
+            }
 
-                        step2.classList.add('hidden');
-                        step3.classList.remove('hidden');
-                    } catch (e) {
-                        console.error('Erreur lors de l\'enregistrement:', e);
-                        alert('Une erreur est survenue.');
-                    }
-                } else {
-                    alert('Vous devez être connecté pour enregistrer vos informations.');
-                    window.location.href = 'login.html';
-                }
-            });
+            try {
+                await setDoc(doc(db, 'users', user.uid), {
+                    username: username,
+                    discord: discord
+                }, { merge: true });
+
+                step2.classList.remove('active');
+                step3.classList.add('active');
+            } catch (err) {
+                console.error('Erreur lors de l'enregistrement:', err);
+                showMessage("Erreur lors de l'enregistrement.");
+            }
         });
     </script>
 </body>

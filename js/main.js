@@ -7,6 +7,7 @@ const profilePic = document.getElementById('profile-pic');
 const authButtons = document.getElementById('auth-buttons');
 const logoutButton = document.getElementById('logout-btn');
 const adminLink = document.getElementById('admin-link');
+const ordersLink = document.getElementById('orders-link'); // Nouveau bouton
 
 function updateUIForUser(user, userData = {}) {
     if (profileLink && profilePic && authButtons) {
@@ -18,8 +19,14 @@ function updateUIForUser(user, userData = {}) {
         profileLink.style.display = 'block';
         authButtons.style.display = 'none';
 
-        if (adminLink && userData.role === 'Admin') {
-            adminLink.style.display = 'block';
+        // Afficher les liens spéciaux en fonction du rôle
+        if (userData.role === 'Admin') {
+            if (adminLink) adminLink.style.display = 'block';
+        }
+        
+        const marketStaffRoles = ['Admin', 'Leader', 'Officier', 'Vendeur'];
+        if (marketStaffRoles.includes(userData.role)) {
+            if (ordersLink) ordersLink.style.display = 'block';
         }
     }
 };
@@ -28,9 +35,8 @@ function updateUIForGuest() {
     if (profileLink && authButtons) {
         profileLink.style.display = 'none';
         authButtons.style.display = 'flex';
-        if (adminLink) {
-            adminLink.style.display = 'none';
-        }
+        if (adminLink) adminLink.style.display = 'none';
+        if (ordersLink) ordersLink.style.display = 'none';
     }
 };
 

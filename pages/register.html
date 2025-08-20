@@ -4,19 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inscription - Faction R4TIO</title>
+
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Main Stylesheet -->
     <link rel="stylesheet" href="../css/style.css">
     
+    <!-- Page-specific Styles -->
     <style>
+        /* Override body styles for a centered layout */
         body {
             padding-top: 0;
             display: flex;
+            flex-direction: column; /* Allow message box to sit correctly */
             align-items: center;
             justify-content: center;
+            min-height: 100vh;
         }
         .form-container {
             background-color: var(--card-bg-color);
@@ -26,9 +35,10 @@
             width: 100%;
             max-width: 400px;
             border: 1px solid #444;
+            margin: 1rem;
         }
         .form-container h2 {
-            font-family: 'Anton', sans-serif;
+            font-family: var(--font-display);
             font-size: 2.5rem;
             color: var(--primary-red);
             text-align: center;
@@ -64,9 +74,9 @@
             align-items: center;
         }
         .password-container input {
-            padding-right: 2.5rem;
+            padding-right: 2.5rem; /* Space for the icon */
         }
-        .password-container .fa-eye, .password-container .fa-eye-slash {
+        .password-toggle-icon {
             position: absolute;
             right: 0.75rem;
             cursor: pointer;
@@ -85,7 +95,7 @@
             transition: background-color 0.3s;
             margin-top: 1rem;
         }
-        .submit-btn:hover {
+        .submit-btn:hover:not(:disabled) {
             background-color: var(--primary-red-dark);
         }
         .submit-btn:disabled {
@@ -104,12 +114,9 @@
             flex: 1;
             border-bottom: 1px solid #555;
         }
-        .divider:not(:empty)::before {
-            margin-right: .25em;
-        }
-        .divider:not(:empty)::after {
-            margin-left: .25em;
-        }
+        .divider:not(:empty)::before { margin-right: .5em; }
+        .divider:not(:empty)::after { margin-left: .5em; }
+        
         .social-btn {
             width: 100%;
             font-weight: bold;
@@ -117,30 +124,23 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s, opacity 0.3s;
             display: flex;
             align-items: center;
             justify-content: center;
+            gap: 0.75rem;
             margin-bottom: 0.75rem;
         }
-        .google-btn {
-            background-color: #fff;
-            color: #333;
+        .social-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
-        .google-btn:hover {
-            background-color: #eee;
-        }
-        .discord-btn {
-            background-color: var(--discord-blue);
-            color: white;
-        }
-        .discord-btn:hover {
-            background-color: #4752C4;
-        }
-        .social-btn i, .social-btn img {
-            height: 1.25rem;
-            margin-right: 0.75rem;
-        }
+        .google-btn { background-color: #fff; color: #333; }
+        .google-btn:hover:not(:disabled) { background-color: #eee; }
+        .discord-btn { background-color: var(--discord-blue); color: white; }
+        .discord-btn:hover:not(:disabled) { background-color: #4752C4; }
+        .social-btn img { height: 1.25rem; }
+        
         .login-link {
             text-align: center;
             margin-top: 1.5rem;
@@ -156,12 +156,12 @@
         }
     </style>
 </head>
-<body class="bg-gray-900 text-white min-h-screen flex items-center justify-center p-4">
+<body>
 
     <div class="form-container">
         <h2>Créer un compte</h2>
         
-        <form id="signup-form">
+        <form id="signup-form" novalidate>
             <div class="form-group">
                 <label for="email">Adresse e-mail</label>
                 <input type="email" id="email" placeholder="ton.email@exemple.com" required>
@@ -170,16 +170,16 @@
             <div class="form-group">
                 <label for="password">Mot de passe</label>
                 <div class="password-container">
-                    <input type="password" id="password" placeholder="6 caractères minimum" required>
-                    <i class="fas fa-eye" id="togglePassword"></i>
+                    <input type="password" id="password" placeholder="6 caractères minimum" required minlength="6">
+                    <i class="fas fa-eye password-toggle-icon" data-target="password"></i>
                 </div>
             </div>
             
             <div class="form-group">
                 <label for="confirm-password">Confirmer le mot de passe</label>
                 <div class="password-container">
-                    <input type="password" id="confirm-password" placeholder="**********" required>
-                    <i class="fas fa-eye" id="toggleConfirmPassword"></i>
+                    <input type="password" id="confirm-password" placeholder="Retapez votre mot de passe" required>
+                    <i class="fas fa-eye password-toggle-icon" data-target="confirm-password"></i>
                 </div>
             </div>
             
@@ -188,11 +188,11 @@
 
         <div class="divider">OU</div>
 
-        <button id="google-signup-button" class="social-btn google-btn">
+        <button id="google-signup-btn" class="social-btn google-btn">
             <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google logo">
             S'inscrire avec Google
         </button>
-        <button id="discord-signup-button" class="social-btn discord-btn">
+        <button id="discord-signup-btn" class="social-btn discord-btn">
             <i class="fa-brands fa-discord"></i>
             S'inscrire avec Discord
         </button>
@@ -202,85 +202,131 @@
         </p>
     </div>
 
+    <!-- Message Box for notifications -->
     <div id="message-box"></div>
 
     <script type="module">
-        import { auth } from '../js/firebase-config.js';
-        import { createUserWithEmailAndPassword, onAuthStateChanged, GoogleAuthProvider, OAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
-        
-        function showMessage(message) {
-            const box = document.getElementById('message-box');
-            box.textContent = message;
-            box.style.display = 'block';
-            setTimeout(() => box.style.display = 'none', 3000);
+        import { auth, db } from '../js/firebase-config.js';
+        import { createUserWithEmailAndPassword, onAuthStateChanged, GoogleAuthProvider, OAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { doc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- DOM Elements ---
+        const signupForm = document.getElementById('signup-form');
+        const googleBtn = document.getElementById('google-signup-btn');
+        const discordBtn = document.getElementById('discord-signup-btn');
+        const messageBox = document.getElementById('message-box');
+        const passwordToggleIcons = document.querySelectorAll('.password-toggle-icon');
+
+        // --- UI Functions ---
+        function showMessage(message, isError = false) {
+            messageBox.textContent = message;
+            messageBox.style.borderColor = isError ? 'var(--primary-red)' : 'var(--green)';
+            messageBox.classList.add('show');
+            setTimeout(() => messageBox.classList.remove('show'), 4000);
         }
 
+        function setFormLoading(isLoading) {
+            const submitBtn = signupForm.querySelector('button[type="submit"]');
+            googleBtn.disabled = isLoading;
+            discordBtn.disabled = isLoading;
+            submitBtn.disabled = isLoading;
+            
+            if (isLoading) {
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Inscription...';
+            } else {
+                submitBtn.innerHTML = "S'inscrire";
+            }
+        }
+
+        // --- Firebase Logic ---
+        async function handleSuccessfulLogin(userCredential) {
+            const user = userCredential.user;
+            // Check if a document for this user already exists
+            const userDocRef = doc(db, "users", user.uid);
+            
+            // For social sign-ups, we create a basic user profile if it doesn't exist
+            // This prevents overwriting data if they already signed up with email
+            await setDoc(userDocRef, {
+                email: user.email,
+                displayName: user.displayName || user.email.split('@')[0],
+                avatar: user.photoURL || `https://cravatar.eu/avatar/${user.uid}/128.png`,
+                createdAt: new Date().toISOString()
+            }, { merge: true }); // 'merge: true' is crucial!
+            
+            showMessage("Inscription réussie ! Redirection...");
+            // Redirect after a short delay to allow the user to read the message
+            setTimeout(() => window.location.href = '../index.html', 1500);
+        }
+
+        // --- Event Listeners ---
         onAuthStateChanged(auth, (user) => {
-            if (user && !user.isAnonymous) {
-                window.location.href = 'onboarding.html'; 
+            if (user) {
+                // Redirect if user is already logged in
+                window.location.href = '../index.html';
             }
         });
 
-        function togglePasswordVisibility(inputId, toggleIcon) {
-            const passwordInput = document.getElementById(inputId);
-            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            passwordInput.setAttribute('type', type);
-            toggleIcon.classList.toggle('fa-eye-slash');
-        }
+        passwordToggleIcons.forEach(icon => {
+            icon.addEventListener('click', (e) => {
+                const targetId = e.target.dataset.target;
+                const passwordInput = document.getElementById(targetId);
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                e.target.classList.toggle('fa-eye');
+                e.target.classList.toggle('fa-eye-slash');
+            });
+        });
 
-        const togglePassword = document.getElementById('togglePassword');
-        const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
-
-        togglePassword.addEventListener('click', () => togglePasswordVisibility('password', togglePassword));
-        toggleConfirmPassword.addEventListener('click', () => togglePasswordVisibility('confirm-password', toggleConfirmPassword));
-
-        document.getElementById('signup-form').addEventListener('submit', async function(event) {
-            event.preventDefault();
+        signupForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirm-password').value;
+
             if (password !== confirmPassword) {
-                showMessage("Les mots de passe ne correspondent pas.");
+                showMessage("Les mots de passe ne correspondent pas.", true);
                 return;
             }
-            const button = this.querySelector('button[type="submit"]');
-            button.disabled = true;
-            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Inscription...';
+
+            setFormLoading(true);
             try {
-                await createUserWithEmailAndPassword(auth, email, password);
-                showMessage("Inscription réussie ! Redirection...");
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                await handleSuccessfulLogin(userCredential);
             } catch (error) {
                 let msg = "Erreur lors de l'inscription.";
                 if (error.code === 'auth/email-already-in-use') msg = "Cet email est déjà utilisé.";
                 else if (error.code === 'auth/weak-password') msg = "Mot de passe trop faible (6 caractères min).";
-                showMessage(msg);
-                button.disabled = false;
-                button.innerHTML = "S'inscrire";
+                showMessage(msg, true);
+            } finally {
+                setFormLoading(false);
             }
         });
         
-        document.getElementById('google-signup-button').addEventListener('click', async () => {
+        googleBtn.addEventListener('click', async () => {
+            setFormLoading(true);
             const provider = new GoogleAuthProvider();
             try {
-                await signInWithPopup(auth, provider);
-                showMessage("Inscription avec Google réussie !");
+                const userCredential = await signInWithPopup(auth, provider);
+                await handleSuccessfulLogin(userCredential);
             } catch (error) {
-                console.error("Erreur d'inscription Google:", error);
-                showMessage("Erreur lors de l'inscription avec Google.");
+                showMessage("Erreur lors de l'inscription avec Google.", true);
+            } finally {
+                setFormLoading(false);
             }
         });
 
-        document.getElementById('discord-signup-button').addEventListener('click', async () => {
+        discordBtn.addEventListener('click', async () => {
+            setFormLoading(true);
             const provider = new OAuthProvider('oidc.discord');
             provider.addScope('identify');
             provider.addScope('email');
-
             try {
-                await signInWithPopup(auth, provider);
-                showMessage("Inscription avec Discord réussie !");
+                const userCredential = await signInWithPopup(auth, provider);
+                await handleSuccessfulLogin(userCredential);
             } catch (error) {
-                console.error("Erreur d'inscription Discord:", error);
-                showMessage("Erreur lors de l'inscription avec Discord.");
+                showMessage("Erreur lors de l'inscription avec Discord.", true);
+            } finally {
+                setFormLoading(false);
             }
         });
     </script>

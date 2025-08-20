@@ -1,87 +1,140 @@
-export const marketItems = [
-    // Équipement Histeria
-    { name: "Histerite Sword", buyPrice: 50000, img: "../images/market-icon/histeria-icon/histerite-sword.png", category: "Équipement Histeria" },
-    { name: "Histerite Pickaxe", buyPrice: 30000, img: "../images/market-icon/histeria-icon/histerite-pickaxe.png", category: "Équipement Histeria" },
-    { name: "Histerite Axe", buyPrice: 30000, img: "../images/market-icon/histeria-icon/histerite-axe.png", category: "Équipement Histeria" },
-    { name: "Histerite Shovel", buyPrice: 20000, img: "../images/market-icon/histeria-icon/histerite-shovel.png", category: "Équipement Histeria" },
-    { name: "Histerite Hoe", buyPrice: 20000, img: "../images/market-icon/histeria-icon/histerite-hoe.png", category: "Équipement Histeria" },
-    { name: "Histerite Helmet", buyPrice: 40000, img: "../images/market-icon/histeria-icon/histerite-helmet.png", category: "Équipement Histeria" },
-    { name: "Histerite Chestplate", buyPrice: 60000, img: "../images/market-icon/histeria-icon/histerite-chestplate.png", category: "Équipement Histeria" },
-    { name: "Histerite Leggings", buyPrice: 55000, img: "../images/market-icon/histeria-icon/histerite-leggings.png", category: "Équipement Histeria" },
-    { name: "Histerite Boots", buyPrice: 40000, img: "../images/market-icon/histeria-icon/histerite-boots.png", category: "Équipement Histeria" },
-    { name: "Nocturite Helmet", buyPrice: 25000, img: "../images/market-icon/histeria-icon/nocturite-helmet.png", category: "Équipement Histeria" },
-    { name: "Nocturite Chestplate", buyPrice: 40000, img: "../images/market-icon/histeria-icon/nocturite-chestplate.png", category: "Équipement Histeria" },
-    { name: "Nocturite Leggings", buyPrice: 35000, img: "../images/market-icon/histeria-icon/nocturite-leggings.png", category: "Équipement Histeria" },
-    { name: "Nocturite Boots", buyPrice: 25000, img: "../images/market-icon/histeria-icon/nocturite-boots.png", category: "Équipement Histeria" },
-    { name: "Hood Helmet", buyPrice: 15000, img: "../images/market-icon/histeria-icon/hood-helmet.png", category: "Équipement Histeria" },
-    { name: "Backpack", buyPrice: 10000, img: "../images/market-icon/histeria-icon/backpack.png", category: "Équipement Histeria" },
-    
-    // Ressources Histeria
-    { name: "Minerai d'Histerite", buyPrice: 10000, img: "../images/market-icon/histeria-icon/histerite-ore.png", category: "Ressources Histeria" },
-    { name: "Bloc d'Histerite", buyPrice: 90000, img: "../images/market-icon/histeria-icon/histerite-block.png", category: "Ressources Histeria" },
-    { name: "Histerite Ingot", buyPrice: 10000, img: "../images/market-icon/histeria-icon/histerite-ingot.png", category: "Ressources Histeria" },
-    { name: "Histerite Compress", buyPrice: 90000, img: "../images/market-icon/histeria-icon/histerite-compress.png", category: "Ressources Histeria" },
-    { name: "Nocturite Crystal", buyPrice: 5000, img: "../images/market-icon/histeria-icon/nocturite-crystal.png", category: "Ressources Histeria" },
-    { name: "Nocturite Block", buyPrice: 45000, img: "../images/market-icon/histeria-icon/nocturite-block.png", category: "Ressources Histeria" },
-    { name: "Nocturite Compress", buyPrice: 45000, img: "../images/market-icon/histeria-icon/nocturite-compress.png", category: "Ressources Histeria" },
-    { name: "Minerai Aléatoire", buyPrice: 20000, img: "../images/market-icon/histeria-icon/random-ore.png", category: "Ressources Histeria" },
+// ==========================================================================
+// Market Configuration File
+// ==========================================================================
+// INSTRUCTIONS:
+// 1. To add a new item, find its category below and add a new object to the array.
+// 2. To add a new category, copy the structure of an existing category.
+// 3. The 'sellPrice' is automatically calculated if not provided.
+// 4. The image path is automatically constructed from the base paths.
+// ==========================================================================
 
-    // Objets Spéciaux
-    { name: "Chest Finder", buyPrice: 15000, img: "../images/market-icon/histeria-icon/chest-finder.png", category: "Objets Spéciaux" },
-    { name: "Fertilized Dirt", buyPrice: 200000, img: "../images/market-icon/histeria-icon/fertilized-dirt.png", category: "Objets Spéciaux" },
-    { name: "Histerite Apple", buyPrice: 200000, img: "../images/market-icon/histeria-icon/histerite-apple.png", category: "Objets Spéciaux" },
-    { name: "Dynamite", buyPrice: 600, img: "../images/market-icon/histeria-icon/dynamite.png", category: "Objets Spéciaux" },
-    { name: "Sponger", buyPrice: 1000, img: "../images/market-icon/histeria-icon/sponger.png", category: "Objets Spéciaux" },
-    { name: "Chest Explorer", buyPrice: 10000, img: "../images/market-icon/histeria-icon/chest-explorer.png", category: "Objets Spéciaux" },
-    { name: "Hang Glider", buyPrice: 20000, img: "../images/market-icon/histeria-icon/hang-glider.png", category: "Objets Spéciaux" },
-    { name: "Vote Key", buyPrice: 5000, img: "../images/market-icon/histeria-icon/vote-key.png", category: "Objets Spéciaux" },
-    { name: "Vault", buyPrice: 25000, img: "../images/market-icon/histeria-icon/vault.png", category: "Objets Spéciaux" },
-    { name: "Vault Breacher", buyPrice: 50000, img: "../images/market-icon/histeria-icon/vault-breacher.png", category: "Objets Spéciaux" },
-    { name: "Thunderbolt", buyPrice: 15000, img: "../images/market-icon/histeria-icon/thunderbolt.png", category: "Objets Spéciaux" },
-    { name: "Speed Stick", buyPrice: 5000, img: "../images/market-icon/histeria-icon/speed-stick.png", category: "Objets Spéciaux" },
-    { name: "Lucky Block", buyPrice: 10000, img: "../images/market-icon/histeria-icon/lucky-block.png", category: "Objets Spéciaux" },
-    { name: "Jump Stick", buyPrice: 5000, img: "../images/market-icon/histeria-icon/jump-stick.png", category: "Objets Spéciaux" },
-    { name: "Histerite Totem", buyPrice: 100000, img: "../images/market-icon/histeria-icon/histerite-totem.png", category: "Objets Spéciaux" },
-    { name: "Heal Stick", buyPrice: 7500, img: "../images/market-icon/histeria-icon/heal-stick.png", category: "Objets Spéciaux" },
-    
-    // Blocs de Construction
-    { name: "Terre", buyPrice: 5, img: "../images/market-icon/minecraft_dirt.png", category: "Blocs de Construction" },
-    { name: "Roche", buyPrice: 15, img: "../images/market-icon/minecraft_stone.png", category: "Blocs de Construction" },
-    { name: "Pierre", buyPrice: 15, img: "../images/market-icon/minecraft_cobblestone.png", category: "Blocs de Construction" },
-    { name: "Planches de chêne", buyPrice: 15, img: "../images/market-icon/minecraft_oak_planks.png", category: "Blocs de Construction" },
-    { name: "Sable", buyPrice: 15, img: "../images/market-icon/minecraft_sand.png", category: "Blocs de Construction" },
-    { name: "Gravier", buyPrice: 15, img: "../images/market-icon/minecraft_gravel.png", category: "Blocs de Construction" },
-    { name: "Obsidienne", buyPrice: 500, img: "../images/market-icon/minecraft_obsidian.png", category: "Blocs de Construction" },
+/**
+ * Global settings for the market.
+ */
+const MARKET_SETTINGS = {
+    // The default percentage of the buy price to set the sell price at.
+    // For example, 0.75 means the sell price will be 75% of the buy price.
+    defaultSellPriceModifier: 0.75,
+};
 
-    // Minerais
-    { name: "Charbon", buyPrice: 200, img: "../images/market-icon/minecraft_coal.png", category: "Minerais" },
-    { name: "Lingot de fer", buyPrice: 200, img: "../images/market-icon/minecraft_iron_ingot.png", category: "Minerais" },
-    { name: "Lingot d'or", buyPrice: 500, img: "../images/market-icon/minecraft_gold_ingot.png", category: "Minerais" },
-    { name: "Diamant", buyPrice: 1000, img: "../images/market-icon/minecraft_diamond.png", category: "Minerais" },
-    { name: "Émeraude", buyPrice: 1500, img: "../images/market-icon/minecraft_emerald.png", category: "Minerais" },
-    { name: "Poussière de Redstone", buyPrice: 50, img: "../images/market-icon/minecraft_redstone.png", category: "Minerais" },
-    { name: "Lapis Lazuli", buyPrice: 100, img: "../images/market-icon/minecraft_lapis_lazuli.png", category: "Minerais" },
+/**
+ * Base paths for item images to avoid repetition.
+ */
+const IMAGE_BASE_PATHS = {
+    histeria: "../images/market-icon/histeria-icon/",
+    minecraft: "../images/market-icon/"
+};
 
-    // Agriculture & Nature
-    { name: "Blé", buyPrice: 50, img: "../images/market-icon/minecraft_wheat.png", category: "Agriculture & Nature" },
-    { name: "Carotte", buyPrice: 50, img: "../images/market-icon/minecraft_carrot.png", category: "Agriculture & Nature" },
-    { name: "Pomme de terre", buyPrice: 50, img: "../images/market-icon/minecraft_potato.png", category: "Agriculture & Nature" },
-    { name: "Pousse de chêne", buyPrice: 100, img: "../images/market-icon/minecraft_oak_sapling.png", category: "Agriculture & Nature" },
-    { name: "Canne à sucre", buyPrice: 75, img: "../images/market-icon/minecraft_sugar_cane.png", category: "Agriculture & Nature" },
-    { name: "Cactus", buyPrice: 100, img: "../images/market-icon/minecraft_cactus.png", category: "Agriculture & Nature" },
+/**
+ * Raw data for all market items, grouped by category for easy editing.
+ */
+const marketDataByCategory = {
+    "Équipement Histeria": [
+        { name: "Histerite Sword", buyPrice: 50000, img: "histerite-sword.png" },
+        { name: "Histerite Pickaxe", buyPrice: 30000, img: "histerite-pickaxe.png" },
+        { name: "Histerite Axe", buyPrice: 30000, img: "histerite-axe.png" },
+        { name: "Histerite Shovel", buyPrice: 20000, img: "histerite-shovel.png" },
+        { name: "Histerite Hoe", buyPrice: 20000, img: "histerite-hoe.png" },
+        { name: "Histerite Helmet", buyPrice: 40000, img: "histerite-helmet.png" },
+        { name: "Histerite Chestplate", buyPrice: 60000, img: "histerite-chestplate.png" },
+        { name: "Histerite Leggings", buyPrice: 55000, img: "histerite-leggings.png" },
+        { name: "Histerite Boots", buyPrice: 40000, img: "histerite-boots.png" },
+        { name: "Nocturite Helmet", buyPrice: 25000, img: "nocturite-helmet.png" },
+        { name: "Nocturite Chestplate", buyPrice: 40000, img: "nocturite-chestplate.png" },
+        { name: "Nocturite Leggings", buyPrice: 35000, img: "nocturite-leggings.png" },
+        { name: "Nocturite Boots", buyPrice: 25000, img: "nocturite-boots.png" },
+        { name: "Hood Helmet", buyPrice: 15000, img: "hood-helmet.png" },
+        { name: "Backpack", buyPrice: 10000, img: "backpack.png" },
+    ],
+    "Ressources Histeria": [
+        { name: "Minerai d'Histerite", buyPrice: 10000, img: "histerite-ore.png" },
+        { name: "Bloc d'Histerite", buyPrice: 90000, img: "histerite-block.png" },
+        { name: "Histerite Ingot", buyPrice: 10000, img: "histerite-ingot.png" },
+        { name: "Histerite Compress", buyPrice: 90000, img: "histerite-compress.png" },
+        { name: "Nocturite Crystal", buyPrice: 5000, img: "nocturite-crystal.png" },
+        { name: "Nocturite Block", buyPrice: 45000, img: "nocturite-block.png" },
+        { name: "Nocturite Compress", buyPrice: 45000, img: "nocturite-compress.png" },
+        { name: "Minerai Aléatoire", buyPrice: 20000, img: "random-ore.png" },
+    ],
+    "Objets Spéciaux": [
+        { name: "Chest Finder", buyPrice: 15000, img: "chest-finder.png" },
+        { name: "Fertilized Dirt", buyPrice: 200000, img: "fertilized-dirt.png" },
+        { name: "Histerite Apple", buyPrice: 200000, img: "histerite-apple.png" },
+        { name: "Dynamite", buyPrice: 600, img: "dynamite.png" },
+        { name: "Sponger", buyPrice: 1000, img: "sponger.png" },
+        { name: "Chest Explorer", buyPrice: 10000, img: "chest-explorer.png" },
+        { name: "Hang Glider", buyPrice: 20000, img: "hang-glider.png" },
+        { name: "Vote Key", buyPrice: 5000, img: "vote-key.png" },
+        { name: "Vault", buyPrice: 25000, img: "vault.png" },
+        { name: "Vault Breacher", buyPrice: 50000, img: "vault-breacher.png" },
+        { name: "Thunderbolt", buyPrice: 15000, img: "thunderbolt.png" },
+        { name: "Speed Stick", buyPrice: 5000, img: "speed-stick.png" },
+        { name: "Lucky Block", buyPrice: 10000, img: "lucky-block.png" },
+        { name: "Jump Stick", buyPrice: 5000, img: "jump-stick.png" },
+        { name: "Histerite Totem", buyPrice: 100000, img: "histerite-totem.png" },
+        { name: "Heal Stick", buyPrice: 7500, img: "heal-stick.png" },
+    ],
+    "Blocs de Construction": [
+        { name: "Terre", buyPrice: 5, img: "minecraft_dirt.png", pathKey: "minecraft" },
+        { name: "Roche", buyPrice: 15, img: "minecraft_stone.png", pathKey: "minecraft" },
+        { name: "Pierre", buyPrice: 15, img: "minecraft_cobblestone.png", pathKey: "minecraft" },
+        { name: "Planches de chêne", buyPrice: 15, img: "minecraft_oak_planks.png", pathKey: "minecraft" },
+        { name: "Sable", buyPrice: 15, img: "minecraft_sand.png", pathKey: "minecraft" },
+        { name: "Gravier", buyPrice: 15, img: "minecraft_gravel.png", pathKey: "minecraft" },
+        { name: "Obsidienne", buyPrice: 500, img: "minecraft_obsidian.png", pathKey: "minecraft" },
+    ],
+    "Minerais": [
+        { name: "Charbon", buyPrice: 200, img: "minecraft_coal.png", pathKey: "minecraft" },
+        { name: "Lingot de fer", buyPrice: 200, img: "minecraft_iron_ingot.png", pathKey: "minecraft" },
+        { name: "Lingot d'or", buyPrice: 500, img: "minecraft_gold_ingot.png", pathKey: "minecraft" },
+        { name: "Diamant", buyPrice: 1000, img: "minecraft_diamond.png", pathKey: "minecraft" },
+        { name: "Émeraude", buyPrice: 1500, img: "minecraft_emerald.png", pathKey: "minecraft" },
+        { name: "Poussière de Redstone", buyPrice: 50, img: "minecraft_redstone.png", pathKey: "minecraft" },
+        { name: "Lapis Lazuli", buyPrice: 100, img: "minecraft_lapis_lazuli.png", pathKey: "minecraft" },
+    ],
+    "Agriculture & Nature": [
+        { name: "Blé", buyPrice: 50, img: "minecraft_wheat.png", pathKey: "minecraft" },
+        { name: "Carotte", buyPrice: 50, img: "minecraft_carrot.png", pathKey: "minecraft" },
+        { name: "Pomme de terre", buyPrice: 50, img: "minecraft_potato.png", pathKey: "minecraft" },
+        { name: "Pousse de chêne", buyPrice: 100, img: "minecraft_oak_sapling.png", pathKey: "minecraft" },
+        { name: "Canne à sucre", buyPrice: 75, img: "minecraft_sugar_cane.png", pathKey: "minecraft" },
+        { name: "Cactus", buyPrice: 100, img: "minecraft_cactus.png", pathKey: "minecraft" },
+    ],
+    "Décoration": [
+        { name: "Torche", buyPrice: 3, img: "minecraft_torch.png", pathKey: "minecraft" },
+        { name: "Lanterne", buyPrice: 50, img: "minecraft_lantern.png", pathKey: "minecraft" },
+        { name: "Table", buyPrice: 200, img: "table.png" },
+        { name: "Chaise", buyPrice: 150, img: "chair.png" },
+        { name: "Verre", buyPrice: 20, img: "minecraft_glass.png", pathKey: "minecraft" },
+        { name: "Laine Blanche", buyPrice: 30, img: "minecraft_white_wool.png", pathKey: "minecraft" },
+    ],
+    "Utilitaires": [
+        { name: "Table de Craft", buyPrice: 100, img: "minecraft_crafting_table.png", pathKey: "minecraft" },
+        { name: "Four", buyPrice: 100, img: "minecraft_furnace.png", pathKey: "minecraft" },
+        { name: "Coffre", buyPrice: 100, img: "minecraft_chest.png", pathKey: "minecraft" },
+        { name: "Enclume", buyPrice: 1000, img: "minecraft_anvil.png", pathKey: "minecraft" },
+        { name: "Table d'enchantement", buyPrice: 1000, img: "minecraft_enchanting_table.png", pathKey: "minecraft" },
+    ]
+};
 
-    // Décoration
-    { name: "Torche", buyPrice: 3, img: "../images/market-icon/minecraft_torch.png", category: "Décoration" },
-    { name: "Lanterne", buyPrice: 50, img: "../images/market-icon/minecraft_lantern.png", category: "Décoration" },
-    { name: "Table", buyPrice: 200, img: "../images/market-icon/histeria-icon/table.png", category: "Décoration" },
-    { name: "Chaise", buyPrice: 150, img: "../images/market-icon/histeria-icon/chair.png", category: "Décoration" },
-    { name: "Verre", buyPrice: 20, img: "../images/market-icon/minecraft_glass.png", category: "Décoration" },
-    { name: "Laine Blanche", buyPrice: 30, img: "../images/market-icon/minecraft_white_wool.png", category: "Décoration" },
-    
-    // Utilitaires
-    { name: "Table de Craft", buyPrice: 100, img: "../images/market-icon/minecraft_crafting_table.png", category: "Utilitaires" },
-    { name: "Four", buyPrice: 100, img: "../images/market-icon/minecraft_furnace.png", category: "Utilitaires" },
-    { name: "Coffre", buyPrice: 100, img: "../images/market-icon/minecraft_chest.png", category: "Utilitaires" },
-    { name: "Enclume", buyPrice: 1000, img: "../images/market-icon/minecraft_anvil.png", category: "Utilitaires" },
-    { name: "Table d'enchantement", buyPrice: 1000, img: "../images/market-icon/minecraft_enchanting_table.png", category: "Utilitaires" }
-];
+/**
+ * Processes the raw data and exports a single, ready-to-use array of market items.
+ * This function constructs the full image paths and calculates sell prices.
+ */
+export const marketItems = Object.entries(marketDataByCategory).flatMap(([category, items]) => {
+    return items.map(item => {
+        // Determine which base path to use. Default to 'histeria'.
+        const basePathKey = item.pathKey || 'histeria';
+        const basePath = IMAGE_BASE_PATHS[basePathKey];
+
+        // Calculate sell price if not provided
+        const sellPrice = item.sellPrice || Math.floor(item.buyPrice * MARKET_SETTINGS.defaultSellPriceModifier);
+
+        return {
+            ...item,
+            category: category,
+            img: `${basePath}${item.img}`,
+            sellPrice: sellPrice
+        };
+    });
+});

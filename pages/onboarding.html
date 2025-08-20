@@ -3,108 +3,303 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Onboarding - Faction R4TIO</title>
+    <title>Premiers pas - Faction R4TIO</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Main Stylesheet -->
     <link rel="stylesheet" href="../css/style.css">
+    
+    <!-- Page-specific Styles -->
     <style>
-        .onboarding-container {
-            max-width: 700px;
-            margin: 3rem auto;
+        body {
+            padding-top: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .form-container {
             background-color: var(--card-bg-color);
             padding: 2rem;
             border-radius: 10px;
-            border: 1px solid #333;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 600px;
+            border: 1px solid #444;
+            margin: 1rem;
         }
-        h1, h2 {
+        .form-container h2 {
+            font-family: 'Anton', sans-serif;
+            font-size: 2.5rem;
             color: var(--primary-red);
             text-align: center;
-            font-family: 'Anton', sans-serif;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
         }
-        .step { display: none; }
-        .step.active { display: block; }
-        input { width: 100%; padding: 0.75rem; margin: 0.5rem 0; border-radius: 5px; border: 1px solid #555; background-color: #222; color: var(--text-light); }
-        button { background-color: var(--primary-red); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 5px; cursor: pointer; font-weight: bold; text-transform: uppercase; }
-        button:hover { background-color: var(--primary-red-dark); }
-        #message-box { bottom: 2rem; right: 2rem; }
+        .form-container .subtitle {
+            text-align: center;
+            color: var(--text-medium);
+            margin-bottom: 2rem;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .form-group label {
+            display: block;
+            color: var(--text-medium);
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: 5px;
+            background-color: #333;
+            color: var(--text-light);
+            border: 2px solid #555;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-red);
+        }
+        .profile-picture-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .avatar-container {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            margin-top: 0.5rem;
+            border-radius: 50%;
+            border: 4px solid var(--primary-red);
+            overflow: hidden;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+        .avatar-container:hover {
+            border-color: var(--primary-red-dark);
+        }
+        .avatar-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .avatar-container .overlay {
+            position: absolute;
+            inset: 0;
+            background-color: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .avatar-container:hover .overlay {
+            opacity: 1;
+        }
+        .grid-inputs {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        @media (min-width: 640px) {
+            .grid-inputs {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        .submit-btn {
+            width: 100%;
+            background-color: var(--primary-red);
+            color: white;
+            font-weight: bold;
+            padding: 0.8rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: background-color 0.3s;
+            margin-top: 1.5rem;
+        }
+        .submit-btn:hover:not(:disabled) {
+            background-color: var(--primary-red-dark);
+        }
+        .submit-btn:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body>
-    <div class="onboarding-container">
-        <div id="step-1" class="step active">
-            <h1>Bienvenue sur R4TIO</h1>
-            <p>Prêt à rejoindre notre faction ?</p>
-            <button id="start-btn">C'est parti !</button>
-        </div>
 
-        <div id="step-2" class="step">
-            <h2>Informations personnelles</h2>
-            <input type="text" id="username" placeholder="Nom d'utilisateur">
-            <input type="text" id="discord" placeholder="Discord #0000">
-            <button id="save-info-btn">Enregistrer</button>
-        </div>
+    <div class="form-container">
+        <h2>Bienvenue !</h2>
+        <p class="subtitle">Pour commencer, dis-nous en un peu plus sur toi.</p>
+        
+        <form id="onboarding-form" novalidate>
+            <div class="profile-picture-section">
+                <label>Photo de profil</label>
+                <div class="avatar-container" id="avatar-container">
+                    <img class="avatar-preview" id="avatar-preview" src="" alt="Aperçu de l'avatar">
+                    <div class="overlay">
+                        <i class="fas fa-camera text-white text-2xl"></i>
+                    </div>
+                </div>
+                <input type="file" id="avatar-file-input" accept="image/*" class="d-none">
+            </div>
 
-        <div id="step-3" class="step">
-            <h2>Confirmation</h2>
-            <p>Merci ! Vos informations ont été enregistrées.</p>
-            <a href="../index.html"><button>Retour à l'accueil</button></a>
-        </div>
+            <div class="grid-inputs">
+                <div class="form-group">
+                    <label for="username">Pseudo Minecraft</label>
+                    <input type="text" id="username" placeholder="Ton pseudo en jeu" required>
+                </div>
+                <div class="form-group">
+                    <label for="discordTag">Tag Discord (Optionnel)</label>
+                    <input type="text" id="discordTag" placeholder="pseudo#0000">
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">C'est parti !</button>
+        </form>
     </div>
 
     <div id="message-box"></div>
 
     <script type="module">
-        import { auth, db } from '../js/firebase-config.js';
-        import { doc, setDoc } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+        import { auth, db, storage } from '../js/firebase-config.js';
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
 
-        const step1 = document.getElementById('step-1');
-        const step2 = document.getElementById('step-2');
-        const step3 = document.getElementById('step-3');
-
-        const startBtn = document.getElementById('start-btn');
-        const saveInfoBtn = document.getElementById('save-info-btn');
-
+        // --- DOM Elements ---
+        const onboardingForm = document.getElementById('onboarding-form');
+        const avatarContainer = document.getElementById('avatar-container');
+        const avatarPreview = document.getElementById('avatar-preview');
+        const avatarFileInput = document.getElementById('avatar-file-input');
         const usernameInput = document.getElementById('username');
-        const discordInput = document.getElementById('discord');
-
+        const discordTagInput = document.getElementById('discordTag');
         const messageBox = document.getElementById('message-box');
+        
+        let currentUser = null;
+        let selectedAvatarFile = null;
 
-        function showMessage(msg) {
-            messageBox.textContent = msg;
-            messageBox.style.display = 'block';
-            messageBox.style.opacity = '1';
-            setTimeout(() => { messageBox.style.opacity = '0'; setTimeout(() => { messageBox.style.display = 'none'; }, 500); }, 3000);
+        // --- UI Functions ---
+        function showMessage(message, isError = false) {
+            messageBox.textContent = message;
+            messageBox.style.borderColor = isError ? 'var(--primary-red)' : 'var(--green)';
+            messageBox.classList.add('show');
+            setTimeout(() => messageBox.classList.remove('show'), 4000);
         }
 
-        startBtn.addEventListener('click', () => {
-            step1.classList.remove('active');
-            step2.classList.add('active');
+        function setFormLoading(isLoading) {
+            const submitBtn = onboardingForm.querySelector('button[type="submit"]');
+            submitBtn.disabled = isLoading;
+            submitBtn.innerHTML = isLoading ? '<i class="fas fa-spinner fa-spin"></i> Enregistrement...' : "C'est parti !";
+        }
+
+        /**
+         * Populates the form with existing user data.
+         */
+        function populateForm(user) {
+            // Set username from displayName, or part of email if displayName is null
+            usernameInput.value = user.displayName || user.email.split('@')[0];
+            
+            // Set avatar from provider, or fallback to Minecraft head using the username
+            const initialAvatar = user.photoURL || `https://mc-heads.net/avatar/${usernameInput.value}/100`;
+            avatarPreview.src = initialAvatar;
+            avatarPreview.onerror = () => { avatarPreview.src = 'https://mc-heads.net/avatar/Steve/100'; }; // Fallback to Steve
+        }
+
+        // --- Event Listeners ---
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                const userDocRef = doc(db, 'users', user.uid);
+                const docSnap = await getDoc(userDocRef);
+
+                // If user has already completed onboarding, redirect them
+                if (docSnap.exists() && docSnap.data().minecraftUsername) {
+                    window.location.href = '../index.html';
+                    return;
+                }
+                populateForm(user);
+            } else {
+                // If no user is logged in, redirect to login page
+                window.location.href = 'login.html';
+            }
         });
 
-        saveInfoBtn.addEventListener('click', async () => {
+        avatarContainer.addEventListener('click', () => avatarFileInput.click());
+
+        avatarFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                selectedAvatarFile = file;
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    avatarPreview.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        onboardingForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentUser) {
+                showMessage("Utilisateur non trouvé. Veuillez vous reconnecter.", true);
+                return;
+            }
+
             const username = usernameInput.value.trim();
-            const discord = discordInput.value.trim();
-
-            if (!username || !discord) {
-                showMessage('Veuillez remplir tous les champs.');
+            if (!username) {
+                showMessage("Le pseudo Minecraft est obligatoire.", true);
                 return;
             }
 
-            const user = auth.currentUser;
-            if (!user) {
-                showMessage('Veuillez vous connecter avant de continuer.');
-                return;
-            }
+            setFormLoading(true);
 
             try {
-                await setDoc(doc(db, 'users', user.uid), {
-                    username: username,
-                    discord: discord
-                }, { merge: true });
+                let finalAvatarURL = currentUser.photoURL;
 
-                step2.classList.remove('active');
-                step3.classList.add('active');
-            } catch (err) {
-                console.error('Erreur lors de l'enregistrement:', err);
-                showMessage("Erreur lors de l'enregistrement.");
+                // If a new avatar file was selected, upload it to Storage
+                if (selectedAvatarFile) {
+                    const storageRef = ref(storage, `avatars/${currentUser.uid}/${selectedAvatarFile.name}`);
+                    const snapshot = await uploadBytes(storageRef, selectedAvatarFile);
+                    finalAvatarURL = await getDownloadURL(snapshot.ref);
+                }
+
+                // Prepare the data to update in Firestore
+                const userProfileData = {
+                    minecraftUsername: username,
+                    discordTag: discordTagInput.value.trim(),
+                    avatar: finalAvatarURL || `https://mc-heads.net/avatar/${username}/100`, // Fallback to MC head
+                    onboardingComplete: true
+                };
+
+                // Update the existing user document
+                const userDocRef = doc(db, 'users', currentUser.uid);
+                await updateDoc(userDocRef, userProfileData);
+
+                showMessage("Profil mis à jour avec succès !", false);
+                setTimeout(() => window.location.href = '../index.html', 1500);
+
+            } catch (error) {
+                console.error("Error updating profile:", error);
+                showMessage("Une erreur est survenue. Veuillez réessayer.", true);
+            } finally {
+                setFormLoading(false);
             }
         });
     </script>

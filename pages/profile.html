@@ -4,8 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profil - Faction R4TIO</title>
+    
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
     <style>
         .profile-container {
             max-width: 800px;
@@ -20,6 +28,7 @@
             margin-bottom: 2rem;
             border-bottom: 1px solid #444;
             padding-bottom: 2rem;
+            gap: 2rem;
         }
         .profile-avatar {
             width: 120px;
@@ -27,20 +36,42 @@
             border-radius: 50%;
             object-fit: cover;
             border: 4px solid var(--primary-red);
-            margin-right: 2rem;
-        }
-        .profile-info {
-            flex-grow: 1;
+            flex-shrink: 0; /* Prevents avatar from shrinking */
         }
         .profile-info h1 {
             margin: 0;
             font-size: 2.5rem;
             font-family: 'Anton', sans-serif;
+            word-break: break-all; /* Prevents long names from overflowing */
         }
         .profile-info p {
             margin: 5px 0 15px 0;
             color: var(--text-medium);
+            font-weight: bold;
+            text-transform: uppercase;
         }
+        .profile-actions button {
+            background-color: transparent;
+            color: var(--text-light);
+            border: 2px solid var(--primary-red);
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: all 0.3s;
+            margin-right: 10px;
+        }
+        .profile-actions button:hover {
+            background-color: var(--primary-red);
+        }
+        .logout-btn {
+            background-color: var(--primary-red) !important;
+        }
+        .logout-btn:hover {
+            background-color: var(--primary-red-dark) !important;
+        }
+
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -59,35 +90,32 @@
         }
         .stat-card h3 {
             margin: 0 0 0.5rem 0;
-            font-size: 1.8rem;
+            font-size: 1.5rem;
+            word-break: break-all;
         }
         .stat-card p {
             margin: 0;
             color: var(--text-medium);
+            font-size: 0.9rem;
         }
-        .logout-btn {
-            background-color: var(--primary-red);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            text-transform: uppercase;
-            transition: background-color 0.3s;
-        }
-        .logout-btn:hover {
-            background-color: var(--primary-red-dark);
+
+        /* Loading state */
+        .loading #username, .loading #user-role, .loading #discord-tag {
+            background-color: #444;
+            color: transparent;
+            border-radius: 4px;
+            min-height: 1em;
         }
     </style>
 </head>
 <body>
+    <!-- Navbar -->
     <nav class="navbar">
         <div class="nav-left">
             <a href="../index.html"><img src="../images/pictures/Logo.png" alt="Logo R4TIO" class="nav-logo"></a>
         </div>
         <div class="nav-center">
-            <a href="https://discord.gg/UFVCDc4mkU" target="_blank">Discord</a>
+            <a href="https://discord.gg/UFVCDc4mkU" target="_blank" rel="noopener noreferrer">Discord</a>
             <a href="recrutement.html">Recrutement</a>
             <a href="market.html">Marché</a>
         </div>
@@ -95,27 +123,30 @@
             <a href="profile.html" id="profile-link" style="display: none;">
                 <img id="profile-pic" src="" alt="Photo de profil">
             </a>
-            <div id="auth-buttons">
+            <div id="auth-buttons" style="display: none;">
                 <a href="login.html">Connexion</a>
                 <a href="register.html" class="register-btn">Inscription</a>
             </div>
         </div>
     </nav>
 
-    <div class="profile-container">
+    <div class="profile-container loading" id="profile-container">
         <div class="profile-header">
-            <img src="../images/pictures/Logo.png" alt="Avatar" class="profile-avatar" id="avatar-img">
+            <img src="" alt="Avatar de l'utilisateur" class="profile-avatar" id="avatar-img">
             <div class="profile-info">
-                <h1 id="username">CHARGEMENT...</h1>
-                <p id="user-role">Membre</p>
-                <button id="logout-btn" class="logout-btn">Déconnexion</button>
+                <h1 id="username">CHARGEMENT</h1>
+                <p id="user-role">...</p>
+                <div class="profile-actions">
+                    <button id="edit-profile-btn"><i class="fas fa-pencil-alt"></i> Éditer</button>
+                    <button id="logout-btn" class="logout-btn">Déconnexion</button>
+                </div>
             </div>
         </div>
 
         <div class="stats-grid">
             <div class="stat-card">
-                <i class="fas fa-tag"></i>
-                <h3 id="discord-tag">N/A</h3>
+                <i class="fa-brands fa-discord"></i>
+                <h3 id="discord-tag">...</h3>
                 <p>Tag Discord</p>
             </div>
             <div class="stat-card">
@@ -131,59 +162,72 @@
         </div>
     </div>
 
+    <div id="message-box"></div>
+
+    <!-- Main script for navbar logic -->
     <script type="module" src="../js/main.js"></script>
+    
+    <!-- Page-specific script for profile data -->
     <script type="module">
         import { auth, db } from '../js/firebase-config.js';
         import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+        // --- DOM Elements ---
+        const profileContainer = document.getElementById('profile-container');
         const usernameEl = document.getElementById('username');
         const userRoleEl = document.getElementById('user-role');
         const discordTagEl = document.getElementById('discord-tag');
         const avatarImg = document.getElementById('avatar-img');
         const logoutBtn = document.getElementById('logout-btn');
+        const editProfileBtn = document.getElementById('edit-profile-btn');
 
+        // --- Auth Listener & Data Fetching ---
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                const userDocRef = doc(db, 'users', user.uid);
-                const userDoc = await getDoc(userDocRef);
+                try {
+                    const userDocRef = doc(db, 'users', user.uid);
+                    const docSnap = await getDoc(userDocRef);
 
-                if (userDoc.exists()) {
-                    const userData = userDoc.data();
-                    usernameEl.textContent = userData.username;
-                    userRoleEl.textContent = userData.role || 'Membre';
-                    discordTagEl.textContent = userData.discordTag || 'N/A';
-                    
-                    // Logique pour la photo de profil
-                    if (user.photoURL) {
-                        // Utilise la photo de profil du fournisseur (Google, Discord)
-                        avatarImg.src = user.photoURL;
-                    } else if (userData.avatar) {
-                        // Fallback sur l'avatar enregistré si existant (ancienne méthode)
-                        avatarImg.src = userData.avatar;
+                    if (docSnap.exists() && docSnap.data().onboardingComplete) {
+                        const userData = docSnap.data();
+                        
+                        // Populate the page with user data
+                        usernameEl.textContent = userData.minecraftUsername || "Utilisateur";
+                        userRoleEl.textContent = userData.role || 'Membre';
+                        discordTagEl.textContent = userData.discordTag || 'Non défini';
+                        avatarImg.src = userData.avatar || `https://mc-heads.net/avatar/${userData.minecraftUsername}/120`;
+                        avatarImg.onerror = () => { avatarImg.src = 'https://mc-heads.net/avatar/Steve/120'; };
+                        
+                        // Remove loading state
+                        profileContainer.classList.remove('loading');
+
                     } else {
-                        // Affiche une tête de skin Minecraft aléatoire basée sur l'UID
-                        avatarImg.src = `https://cravatar.eu/avatar/${user.uid}/120.png`;
+                        // User is authenticated but hasn't completed onboarding
+                        window.location.href = 'onboarding.html';
                     }
-                } else {
-                    // Si l'utilisateur est authentifié mais n'a pas de profil, on le redirige
-                    window.location.href = 'onboarding.html';
+                } catch (error) {
+                    console.error("Error fetching user data:", error);
+                    usernameEl.textContent = "Erreur de profil";
                 }
             } else {
-                // Si non connecté, redirection vers la page de connexion
+                // Not logged in, redirect to login page
                 window.location.href = 'login.html';
             }
         });
 
+        // --- Event Listeners ---
         logoutBtn.addEventListener('click', () => {
-            signOut(auth).then(() => {
-                // Redirection après déconnexion réussie
-                window.location.href = 'login.html';
-            }).catch((error) => {
-                console.error("Erreur de déconnexion:", error);
+            signOut(auth).catch((error) => {
+                console.error("Logout Error:", error);
             });
         });
 
+        editProfileBtn.addEventListener('click', () => {
+            // For now, this is a placeholder. In the future, this could open a modal
+            // or redirect to an edit page.
+            alert("La fonctionnalité d'édition du profil sera bientôt disponible !");
+        });
     </script>
 </body>
 </html>

@@ -3,8 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Commande - Faction R4TIO</title>
+    <title>Confirmation de Commande - Faction R4TIO</title>
+    
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="../css/style.css">
+    
     <style>
         body {
             background-color: #111;
@@ -13,16 +22,31 @@
             max-width: 800px;
             margin: 2rem auto;
             padding: 2rem;
-            background-color: #1c1c1c;
+            background-color: var(--card-bg-color);
             border-radius: 10px;
             border: 1px solid #333;
         }
-        h1 {
+        .checkout-container h1 {
             color: var(--primary-red);
             font-family: 'Anton', sans-serif;
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 0.5rem;
         }
-        .order-summary, .user-info {
+        .checkout-container .subtitle {
+            text-align: center;
+            color: var(--text-medium);
             margin-bottom: 2rem;
+        }
+        .order-section {
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #333;
+            padding-bottom: 2rem;
+        }
+        .order-section h2 {
+            font-size: 1.5rem;
+            color: var(--text-light);
+            margin-bottom: 1rem;
         }
         .order-item {
             display: flex;
@@ -30,51 +54,79 @@
             padding: 1rem 0;
             border-bottom: 1px solid #333;
         }
+        .order-item:last-child {
+            border-bottom: none;
+        }
         .order-item img {
             width: 50px;
             height: 50px;
             margin-right: 1rem;
             image-rendering: pixelated;
+            background-color: #111;
+            border-radius: 5px;
+        }
+        .order-item-details {
+            flex-grow: 1;
+        }
+        .order-item-details strong {
+            color: var(--text-light);
+        }
+        .order-total {
+            text-align: right;
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-top: 1rem;
+        }
+        .instructions {
+            text-align: center;
+        }
+        .instructions p {
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+        .discord-btn {
+            display: inline-block;
+            background-color: var(--discord-blue);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: background-color 0.3s;
+        }
+        .discord-btn:hover {
+            background-color: #4752C4;
         }
     </style>
 </head>
 <body>
     <nav class="navbar">
-        <div class="nav-left">
-            <a href="../index.html"><img src="../images/pictures/Logo.png" alt="Logo R4TIO" class="nav-logo"></a>
-        </div>
-        <div class="nav-center">
-            <a href="https://discord.gg/UFVCDc4mkU" target="_blank">Discord</a>
-            <a href="recrutement.html">Recrutement</a>
-            <a href="market.html">Marché</a>
-        </div>
-        <div class="nav-auth">
-            <a href="profile.html" id="profile-link" style="display: none;">
-                <img id="profile-pic" src="" alt="Photo de profil">
-            </a>
-            <div id="auth-buttons">
-                <a href="login.html">Connexion</a>
-                <a href="register.html" class="register-btn">Inscription</a>
-            </div>
-        </div>
+        <!-- Navbar content -->
     </nav>
 
-    <div class="checkout-container">
-        <h1>Finaliser la Commande</h1>
+    <div class="checkout-container" id="checkout-container">
+        <h1>Commande Reçue !</h1>
+        <p class="subtitle">Votre commande a été enregistrée avec succès.</p>
         
-        <div class="order-summary">
+        <div class="order-section">
             <h2>Résumé de la commande</h2>
-            <div id="order-items-summary"></div>
-            <h3 id="order-total"></h3>
+            <div id="order-items-summary">
+                <p>Chargement des détails de la commande...</p>
+            </div>
+            <div class="order-total" id="order-total"></div>
         </div>
 
-        <div class="user-info">
-            <h2>Vos informations</h2>
-            <p><strong>Utilisateur :</strong> <span id="user-name">Chargement...</span></p>
-            <p>Pour finaliser votre commande, veuillez contacter un vendeur sur notre Discord avec le résumé ci-dessus.</p>
-            <a href="https://discord.gg/UFVCDc4mkU" class="register-btn" target="_blank">Rejoindre le Discord</a>
+        <div class="instructions">
+            <h2>Prochaines étapes</h2>
+            <p>Pour finaliser votre commande et recevoir vos objets en jeu, veuillez contacter un vendeur sur notre Discord en mentionnant votre pseudo : <strong id="user-name">...</strong></p>
+            <a href="https://discord.gg/UFVCDc4mkU" class="discord-btn" target="_blank" rel="noopener noreferrer">
+                <i class="fa-brands fa-discord"></i> Rejoindre le Discord
+            </a>
         </div>
     </div>
+
+    <div id="message-box"></div>
 
     <script type="module" src="../js/main.js"></script>
     <script type="module">
@@ -82,53 +134,77 @@
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+        // --- DOM Elements ---
+        const container = document.getElementById('checkout-container');
         const orderItemsContainer = document.getElementById('order-items-summary');
         const orderTotalElement = document.getElementById('order-total');
         const userNameElement = document.getElementById('user-name');
 
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                const userDocRef = doc(db, 'users', user.uid);
-                const userDoc = await getDoc(userDocRef);
-                if (userDoc.exists()) {
-                    userNameElement.textContent = userDoc.data().username;
-                }
-            } else {
-                userNameElement.textContent = "Non connecté";
-            }
-        });
-
-        document.addEventListener('DOMContentLoaded', () => {
+        // --- Main Logic ---
+        async function loadOrderDetails() {
             const params = new URLSearchParams(window.location.search);
-            const orderData = params.get('order');
+            const orderId = params.get('orderId');
 
-            if (orderData) {
-                try {
-                    const cart = JSON.parse(decodeURIComponent(orderData));
-                    let total = 0;
-                    
-                    cart.forEach(item => {
-                        const itemElement = document.createElement('div');
-                        itemElement.className = 'order-item';
-                        itemElement.innerHTML = `
-                            <img src="${item.img}" alt="${item.name}">
-                            <div>
-                                <p><strong>${item.name}</strong></p>
-                                <p>Quantité: ${item.quantity}</p>
-                                <p>Prix: ${item.quantity * item.buyPrice}$</p>
-                            </div>
-                        `;
-                        orderItemsContainer.appendChild(itemElement);
-                        total += item.quantity * item.buyPrice;
-                    });
+            if (!orderId) {
+                container.innerHTML = "<h1>Erreur</h1><p>Aucun ID de commande fourni.</p>";
+                return;
+            }
 
-                    orderTotalElement.textContent = `Total de la commande : ${total}$`;
+            const user = auth.currentUser;
+            if (!user) {
+                // User might be loading, let's wait for onAuthStateChanged
+                return;
+            }
 
-                } catch (e) {
-                    orderItemsContainer.innerHTML = "<p>Erreur lors de la lecture de la commande.</p>";
+            try {
+                const orderDocRef = doc(db, 'orders', orderId);
+                const orderDocSnap = await getDoc(orderDocRef);
+
+                if (!orderDocSnap.exists()) {
+                    container.innerHTML = "<h1>Erreur</h1><p>Commande introuvable.</p>";
+                    return;
                 }
+
+                const orderData = orderDocSnap.data();
+
+                // Security check: ensure the logged-in user is the one who made the order
+                if (orderData.clientId !== user.uid) {
+                    container.innerHTML = "<h1>Accès non autorisé</h1><p>Vous n'avez pas la permission de voir cette commande.</p>";
+                    return;
+                }
+
+                // Populate the page with order data
+                userNameElement.textContent = orderData.clientUsername;
+                orderItemsContainer.innerHTML = ''; // Clear loading message
+                
+                orderData.items.forEach(item => {
+                    const itemElement = document.createElement('div');
+                    itemElement.className = 'order-item';
+                    itemElement.innerHTML = `
+                        <img src="${item.img}" alt="${item.name}">
+                        <div class="order-item-details">
+                            <p><strong>${item.name}</strong></p>
+                            <p>Quantité: ${item.quantity}</p>
+                        </div>
+                        <p><strong>${(item.quantity * item.buyPrice).toLocaleString('fr-FR')}$</strong></p>
+                    `;
+                    orderItemsContainer.appendChild(itemElement);
+                });
+
+                orderTotalElement.textContent = `Total : ${orderData.totalPrice.toLocaleString('fr-FR')}$`;
+
+            } catch (error) {
+                console.error("Error fetching order:", error);
+                container.innerHTML = "<h1>Erreur</h1><p>Impossible de charger les détails de la commande.</p>";
+            }
+        }
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                loadOrderDetails();
             } else {
-                orderItemsContainer.innerHTML = "<p>Aucune commande spécifiée.</p>";
+                // If no user is logged in, they can't view an order. Redirect.
+                window.location.href = 'login.html';
             }
         });
     </script>

@@ -216,10 +216,15 @@
             // Set username from displayName, or part of email if displayName is null
             usernameInput.value = user.displayName || user.email.split('@')[0];
             
-            // Set avatar from provider, or fallback to Minecraft head using the username
-            const initialAvatar = user.photoURL || `https://mc-heads.net/avatar/${usernameInput.value}/100`;
+            // **CORS FIX HERE**
+            // Set avatar from provider, or fallback to Minecraft head using a CORS proxy
+            const mcHeadUrl = `https://mc-heads.net/avatar/${usernameInput.value}/100`;
+            const initialAvatar = user.photoURL || `https://corsproxy.io/?${encodeURIComponent(mcHeadUrl)}`;
+            
             avatarPreview.src = initialAvatar;
-            avatarPreview.onerror = () => { avatarPreview.src = 'https://mc-heads.net/avatar/Steve/100'; }; // Fallback to Steve
+            avatarPreview.onerror = () => { 
+                avatarPreview.src = `https://corsproxy.io/?${encodeURIComponent('https://mc-heads.net/avatar/Steve/100')}`; 
+            };
         }
 
         // --- Event Listeners ---
@@ -284,7 +289,7 @@
                 const userProfileData = {
                     minecraftUsername: username,
                     discordTag: discordTagInput.value.trim(),
-                    avatar: finalAvatarURL || `https://mc-heads.net/avatar/${username}/100`, // Fallback to MC head
+                    avatar: finalAvatarURL || `https://corsproxy.io/?${encodeURIComponent(`https://mc-heads.net/avatar/${username}/100`)}`, // Fallback to MC head with proxy
                     onboardingComplete: true
                 };
 

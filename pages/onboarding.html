@@ -180,7 +180,7 @@
     <script type="module">
         import { auth, db, storage } from '../js/firebase-config.js';
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
 
         // --- DOM Elements ---
@@ -209,18 +209,10 @@
             submitBtn.innerHTML = isLoading ? '<i class="fas fa-spinner fa-spin"></i> Enregistrement...' : "C'est parti !";
         }
 
-        /**
-         * Populates the form with existing user data.
-         */
         function populateForm(user) {
-            // Set username from displayName, or part of email if displayName is null
             usernameInput.value = user.displayName || user.email.split('@')[0];
-            
-            // **CORS FIX HERE**
-            // Set avatar from provider, or fallback to Minecraft head using a CORS proxy
             const mcHeadUrl = `https://mc-heads.net/avatar/${usernameInput.value}/100`;
             const initialAvatar = user.photoURL || `https://corsproxy.io/?${encodeURIComponent(mcHeadUrl)}`;
-            
             avatarPreview.src = initialAvatar;
             avatarPreview.onerror = () => { 
                 avatarPreview.src = `https://corsproxy.io/?${encodeURIComponent('https://mc-heads.net/avatar/Steve/100')}`; 
@@ -234,14 +226,19 @@
                 const userDocRef = doc(db, 'users', user.uid);
                 const docSnap = await getDoc(userDocRef);
 
-                // If user has already completed onboarding, redirect them
-                if (docSnap.exists() && docSnap.data().minecraftUsername) {
+                if (!docSnap.exists()) {
+                    console.error("Le document utilisateur n'existe pas, cela ne devrait pas arriver. Redirection...");
+                    window.location.href = 'register.html';
+                    return;
+                }
+                
+                if (docSnap.data().onboardingComplete) {
                     window.location.href = '../index.html';
                     return;
                 }
+                
                 populateForm(user);
             } else {
-                // If no user is logged in, redirect to login page
                 window.location.href = 'login.html';
             }
         });
@@ -253,9 +250,7 @@
             if (file) {
                 selectedAvatarFile = file;
                 const reader = new FileReader();
-                reader.onload = (event) => {
-                    avatarPreview.src = event.target.result;
-                };
+                reader.onload = (event) => { avatarPreview.src = event.target.result; };
                 reader.readAsDataURL(file);
             }
         });
@@ -278,24 +273,23 @@
             try {
                 let finalAvatarURL = currentUser.photoURL;
 
-                // If a new avatar file was selected, upload it to Storage
                 if (selectedAvatarFile) {
                     const storageRef = ref(storage, `avatars/${currentUser.uid}/${selectedAvatarFile.name}`);
                     const snapshot = await uploadBytes(storageRef, selectedAvatarFile);
                     finalAvatarURL = await getDownloadURL(snapshot.ref);
                 }
 
-                // Prepare the data to update in Firestore
                 const userProfileData = {
                     minecraftUsername: username,
                     discordTag: discordTagInput.value.trim(),
-                    avatar: finalAvatarURL || `https://corsproxy.io/?${encodeURIComponent(`https://mc-heads.net/avatar/${username}/100`)}`, // Fallback to MC head with proxy
-                    onboardingComplete: true
+                    avatar: finalAvatarURL || `https://corsproxy.io/?${encodeURIComponent(`https://mc-heads.net/avatar/${username}/100`)}`,
+                    onboardingComplete: true,
+                    role: 'Visiteur' // Assign a default role
                 };
 
-                // Update the existing user document
+                // Use setDoc with merge to update the document
                 const userDocRef = doc(db, 'users', currentUser.uid);
-                await updateDoc(userDocRef, userProfileData);
+                await setDoc(userDocRef, userProfileData, { merge: true });
 
                 showMessage("Profil mis à jour avec succès !", false);
                 setTimeout(() => window.location.href = '../index.html', 1500);

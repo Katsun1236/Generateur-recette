@@ -7,7 +7,8 @@ const profilePic = document.getElementById('profile-pic');
 const authButtons = document.getElementById('auth-buttons');
 const logoutButton = document.getElementById('logout-btn');
 const adminLink = document.getElementById('admin-link');
-const ordersLink = document.getElementById('orders-link'); // Nouveau bouton
+const ordersLink = document.getElementById('orders-link'); // Pour le staff
+const myOrdersLink = document.getElementById('my-orders-link'); // Pour les utilisateurs
 
 function updateUIForUser(user, userData = {}) {
     if (profileLink && profilePic && authButtons) {
@@ -18,8 +19,8 @@ function updateUIForUser(user, userData = {}) {
 
         profileLink.style.display = 'block';
         authButtons.style.display = 'none';
+        if(myOrdersLink) myOrdersLink.style.display = 'block'; // Afficher "Mes Commandes" pour tous les connectés
 
-        // Afficher les liens spéciaux en fonction du rôle
         if (userData.role === 'Admin') {
             if (adminLink) adminLink.style.display = 'block';
         }
@@ -27,6 +28,7 @@ function updateUIForUser(user, userData = {}) {
         const marketStaffRoles = ['Admin', 'Leader', 'Officier', 'Vendeur'];
         if (marketStaffRoles.includes(userData.role)) {
             if (ordersLink) ordersLink.style.display = 'block';
+            if(myOrdersLink) myOrdersLink.style.display = 'none'; // Cacher "Mes Commandes" si on est staff pour éviter le doublon
         }
     }
 };
@@ -37,6 +39,7 @@ function updateUIForGuest() {
         authButtons.style.display = 'flex';
         if (adminLink) adminLink.style.display = 'none';
         if (ordersLink) ordersLink.style.display = 'none';
+        if (myOrdersLink) myOrdersLink.style.display = 'none';
     }
 };
 

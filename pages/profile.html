@@ -87,13 +87,14 @@
     <script type="module" src="../js/main.js"></script>
     <script type="module">
         import { auth, db } from '../js/firebase-config.js';
-        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-functions.js";
 
-        // On attend que le DOM soit complètement chargé pour éviter les erreurs
         document.addEventListener('DOMContentLoaded', () => {
             const profileContainer = document.getElementById('profile-container');
+            if (!profileContainer) return;
+
             const usernameEl = document.getElementById('username');
             const userRoleEl = document.getElementById('user-role');
             const discordContentEl = document.getElementById('discord-content');
@@ -101,9 +102,6 @@
             const logoutBtn = document.getElementById('logout-btn');
             const editProfileBtn = document.getElementById('edit-profile-btn');
             
-            // Si on n'est pas sur la page de profil, on ne fait rien
-            if (!profileContainer) return;
-
             const functions = getFunctions("europe-west1");
             const discordClientId = "1407045715485786144";
             const redirectUri = "https://ratio-faction.netlify.app/pages/profile.html";
@@ -119,7 +117,7 @@
                         const linkDiscordAccount = httpsCallable(functions, 'linkDiscordAccount');
                         try {
                             await linkDiscordAccount({ code: discordCode, redirectUri: redirectUri });
-                            window.location.href = 'profile.html'; // Recharger la page proprement
+                            window.location.href = 'profile.html';
                         } catch (error) {
                             console.error("Erreur de liaison Discord:", error);
                             document.body.innerHTML = `<h1>Erreur</h1><p>Impossible de lier votre compte Discord. Veuillez réessayer.</p><a href="profile.html">Retour au profil</a>`;
@@ -151,7 +149,7 @@
             });
 
             logoutBtn.addEventListener('click', () => {
-                auth.signOut();
+                signOut(auth).catch(error => console.error("Logout Error:", error));
             });
 
             editProfileBtn.addEventListener('click', () => {

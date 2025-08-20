@@ -1,14 +1,13 @@
 import { auth, db } from './firebase-config.js';
-import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
 const profileLink = document.getElementById('profile-link');
 const profilePic = document.getElementById('profile-pic');
 const authButtons = document.getElementById('auth-buttons');
-const logoutButton = document.getElementById('logout-btn');
 const adminLink = document.getElementById('admin-link');
-const ordersLink = document.getElementById('orders-link'); // Pour le staff
-const myOrdersLink = document.getElementById('my-orders-link'); // Pour les utilisateurs
+const ordersLink = document.getElementById('orders-link');
+const myOrdersLink = document.getElementById('my-orders-link');
 
 function updateUIForUser(user, userData = {}) {
     if (profileLink && profilePic && authButtons) {
@@ -19,7 +18,7 @@ function updateUIForUser(user, userData = {}) {
 
         profileLink.style.display = 'block';
         authButtons.style.display = 'none';
-        if(myOrdersLink) myOrdersLink.style.display = 'block'; // Afficher "Mes Commandes" pour tous les connectés
+        if(myOrdersLink) myOrdersLink.style.display = 'block';
 
         if (userData.role === 'Admin') {
             if (adminLink) adminLink.style.display = 'block';
@@ -28,7 +27,7 @@ function updateUIForUser(user, userData = {}) {
         const marketStaffRoles = ['Admin', 'Leader', 'Officier', 'Vendeur'];
         if (marketStaffRoles.includes(userData.role)) {
             if (ordersLink) ordersLink.style.display = 'block';
-            if(myOrdersLink) myOrdersLink.style.display = 'none'; // Cacher "Mes Commandes" si on est staff pour éviter le doublon
+            if(myOrdersLink) myOrdersLink.style.display = 'none';
         }
     }
 };
@@ -77,18 +76,9 @@ function initializeAuth() {
     });
 };
 
-function setupEventListeners() {
-    if (logoutButton) {
-        logoutButton.addEventListener('click', () => {
-            signOut(auth).catch(error => console.error("Error signing out:", error));
-        });
-    }
-};
-
 document.addEventListener("DOMContentLoaded", () => {
     try {
         initializeAuth();
-        setupEventListeners();
     } catch (error) {
         console.error("Critical error during app initialization:", error);
     }

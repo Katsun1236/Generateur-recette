@@ -1,7 +1,6 @@
 import { auth, db } from './firebase-config.js';
-import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-functions.js";
 
 // --- Éléments de la barre de navigation ---
 const profileLink = document.getElementById('profile-link');
@@ -41,41 +40,6 @@ function updateNavbarForGuest() {
     }
 };
 
-// --- Logique spécifique à la page de profil ---
-function setupProfilePage(userData) {
-    const profileContainer = document.getElementById('profile-container');
-    if (!profileContainer) return;
-
-    const usernameEl = document.getElementById('username');
-    const userRoleEl = document.getElementById('user-role');
-    const discordContentEl = document.getElementById('discord-content');
-    const avatarImg = document.getElementById('avatar-img');
-    const logoutBtn = document.getElementById('logout-btn');
-    const editProfileBtn = document.getElementById('edit-profile-btn');
-
-    usernameEl.textContent = userData.minecraftUsername || "Utilisateur";
-    userRoleEl.textContent = userData.role || 'Membre';
-    avatarImg.src = userData.avatar || `https://mc-heads.net/avatar/${userData.minecraftUsername}/120`;
-    
-    if (userData.discordId) {
-        discordContentEl.innerHTML = `<h3 class="discord-linked">Lié</h3><p style="margin:0;">${userData.discordUsername}</p>`;
-    } else {
-        const discordClientId = "1407045715485786144";
-        const redirectUri = "https://ratio-faction.netlify.app/pages/profile.html";
-        const discordAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${discordClientId}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&scope=identify`;
-        discordContentEl.innerHTML = `<h3>Non lié</h3><a href="${discordAuthUrl}" class="discord-link-btn">Lier mon compte</a>`;
-    }
-    
-    profileContainer.classList.remove('loading');
-
-    logoutBtn.addEventListener('click', () => {
-        signOut(auth).catch(error => console.error("Logout Error:", error));
-    });
-    editProfileBtn.addEventListener('click', () => {
-        alert("La fonctionnalité d'édition du profil sera bientôt disponible !");
-    });
-}
-
 // --- Logique principale d'authentification ---
 function initializeAuth() {
     onAuthStateChanged(auth, async (user) => {
@@ -88,9 +52,6 @@ function initializeAuth() {
 
             if (docSnap.exists() && docSnap.data().onboardingComplete) {
                 updateNavbarForUser(user, docSnap.data());
-                if (currentPage === 'profile.html') {
-                    setupProfilePage(docSnap.data());
-                }
             } else {
                 const path = window.location.pathname.includes('/pages/') ? 'onboarding.html' : 'pages/onboarding.html';
                 if (currentPage !== 'onboarding.html') window.location.href = path;

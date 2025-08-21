@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion du Marché - Faction R4TIO</title>
+    <link rel="icon" href="../images/pictures/Logo.png" type="image/png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .admin-container { max-width: 900px; margin: 2rem auto; padding: 2rem; background-color: var(--card-bg-color); border-radius: 10px; }
+        .admin-section { margin-bottom: 3rem; }
+        .admin-section h2 { font-family: 'Anton', sans-serif; font-size: 2rem; color: var(--primary-red); border-bottom: 2px solid var(--primary-red); padding-bottom: 0.5rem; margin-bottom: 1.5rem; }
+        .admin-section p, .admin-section li { color: var(--text-medium); line-height: 1.7; }
+        .admin-section a { color: var(--primary-red); text-decoration: none; font-weight: bold; }
+        .admin-section a:hover { text-decoration: underline; }
+        .form-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+        @media (min-width: 768px) { .form-grid { grid-template-columns: 1fr 1fr; } }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; font-weight: bold; margin-bottom: 0.5rem; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 0.75rem; background-color: #333; border: 1px solid #555; border-radius: 5px; color: var(--text-light); box-sizing: border-box; }
+        .code-output { background-color: #111; color: #f0f0f0; padding: 1rem; border-radius: 5px; white-space: pre-wrap; word-wrap: break-word; border: 1px solid #444; margin-top: 1.5rem; }
+        .nav-auth { display: flex; align-items: center; gap: 25px; }
+        .nav-admin-links { display: flex; gap: 20px; }
+        .nav-admin-links a { color: var(--yellow); font-weight: 700; text-transform: uppercase; }
+        .nav-toggle { display: none; background: none; border: none; cursor: pointer; padding: 10px; }
+        .nav-toggle .hamburger { display: block; width: 25px; height: 3px; background-color: var(--text-light); position: relative; transition: transform 0.3s ease; }
+        .nav-toggle .hamburger::before, .nav-toggle .hamburger::after { content: ''; position: absolute; left: 0; width: 100%; height: 3px; background-color: var(--text-light); transition: transform 0.3s ease, top 0.3s ease, bottom 0.3s ease; }
+        .nav-toggle .hamburger::before { top: -8px; }
+        .nav-toggle .hamburger::after { bottom: -8px; }
+        @media (max-width: 991px) {
+            .navbar { flex-wrap: wrap; justify-content: space-between; }
+            .nav-toggle { display: block; }
+            .nav-center, .nav-auth { display: none; flex-direction: column; width: 100%; text-align: center; gap: 15px; padding: 20px 0; }
+            .nav-auth { gap: 20px; }
+            .navbar.active .nav-center, .navbar.active .nav-auth { display: flex; }
+            .nav-admin-links { justify-content: center; }
+            #auth-buttons { display: flex; flex-direction: column; gap: 15px; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-left"><a href="../index.html"><img src="../images/pictures/Logo.png" alt="Logo R4TIO" class="nav-logo"></a></div>
+        <button class="nav-toggle" id="nav-toggle"><span class="hamburger"></span></button>
+        <div class="nav-center">
+            <a href="https://discord.gg/UFVCDc4mkU" target="_blank" rel="noopener noreferrer">Discord</a>
+            <a href="recrutement.html">Recrutement</a>
+            <a href="market.html">Marché</a>
+        </div>
+        <div class="nav-auth">
+            <div class="nav-admin-links">
+                <a href="orders.html" id="orders-link" style="display: none;">Commandes</a>
+                <a href="admin.html" id="admin-link" style="display: none;">Administration</a>
+                <a href="market-admin.html" id="market-admin-link" style="display: none;">Gestion Marché</a>
+            </div>
+            <div id="auth-buttons"><a href="login.html">Connexion</a><a href="register.html" class="register-btn">Inscription</a></div>
+            <a href="profile.html" id="profile-link" style="display: none;"><img id="profile-pic" src="" alt="Photo de profil"></a>
+        </div>
+    </nav>
+
+    <div class="admin-container">
+        <div class="page-header">
+            <h1>Gestion du Marché</h1>
+            <p>Outils pour mettre à jour les articles du marché.</p>
+        </div>
+
+        <div class="admin-section">
+            <h2><i class="fas fa-info-circle"></i> Comment ça marche ?</h2>
+            <p>Le marché est géré par un fichier de configuration sur GitHub. Cette page vous aide à générer le code correct à copier-coller dans ce fichier.</p>
+            <ol>
+                <li>Remplissez le formulaire ci-dessous avec les informations de l'objet.</li>
+                <li>Cliquez sur "Générer le code".</li>
+                <li>Copiez le code généré dans le bloc qui apparaîtra.</li>
+                <li>Ouvrez le fichier <a href="https://github.com/Katsun1236/Ratio/blob/main/js/market-config.js" target="_blank">market-config.js</a> sur GitHub, cliquez sur l'icône de crayon pour l'éditer, et collez le code à la fin de la liste `marketItems`.</li>
+                <li>Validez les changements sur GitHub ("Commit changes").</li>
+            </ol>
+        </div>
+
+        <div class="admin-section">
+            <h2><i class="fas fa-plus-circle"></i> Ajouter ou Modifier un Objet</h2>
+            <form id="item-form">
+                <div class="form-grid">
+                    <div class="form-group"><label for="itemId">ID de l'objet (ex: "minecraft_diamond")</label><input type="text" id="itemId" required></div>
+                    <div class="form-group"><label for="itemName">Nom de l'objet</label><input type="text" id="itemName" required></div>
+                    <div class="form-group"><label for="itemImg">URL de l'image</label><input type="text" id="itemImg" placeholder="ex: ../images/market-icon/minecraft_diamond.png" required></div>
+                    <div class="form-group"><label for="itemCategory">Catégorie</label><input type="text" id="itemCategory" required></div>
+                    <div class="form-group"><label for="itemBuyPrice">Prix de Vente</label><input type="number" id="itemBuyPrice" required></div>
+                    <div class="form-group"><label for="itemSellPrice">Prix de Rachat</label><input type="number" id="itemSellPrice" required></div>
+                </div>
+                <div class="form-group">
+                    <label for="itemDescription">Description (courte)</label>
+                    <textarea id="itemDescription" rows="2"></textarea>
+                </div>
+                <button type="submit" class="btn">Générer le code</button>
+            </form>
+            <div id="code-output-container" style="display:none;">
+                <h3>Code à copier :</h3>
+                <pre><code id="code-output" class="code-output"></code></pre>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../js/main.js"></script>
+    <script>
+        const navToggle = document.getElementById('nav-toggle');
+        const navbar = document.querySelector('.navbar');
+        if(navToggle) {
+            navToggle.addEventListener('click', () => {
+                navbar.classList.toggle('active');
+            });
+        }
+
+        const itemForm = document.getElementById('item-form');
+        const codeOutputContainer = document.getElementById('code-output-container');
+        const codeOutput = document.getElementById('code-output');
+
+        itemForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const item = {
+                id: document.getElementById('itemId').value,
+                name: document.getElementById('itemName').value,
+                img: document.getElementById('itemImg').value,
+                category: document.getElementById('itemCategory').value,
+                buyPrice: parseInt(document.getElementById('itemBuyPrice').value, 10),
+                sellPrice: parseInt(document.getElementById('itemSellPrice').value, 10),
+                description: document.getElementById('itemDescription').value
+            };
+
+            const codeString = `{\n    id: "${item.id}",\n    name: "${item.name}",\n    img: "${item.img}",\n    category: "${item.category}",\n    buyPrice: ${item.buyPrice},\n    sellPrice: ${item.sellPrice},\n    description: "${item.description}"\n},`;
+            
+            codeOutput.textContent = codeString;
+            codeOutputContainer.style.display = 'block';
+        });
+    </script>
+</body>
+</html>

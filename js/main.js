@@ -2,15 +2,14 @@ import { auth, db } from './firebase-config.js';
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-// --- Éléments de la barre de navigation ---
 const profileLink = document.getElementById('profile-link');
 const profilePic = document.getElementById('profile-pic');
 const authButtons = document.getElementById('auth-buttons');
 const adminLink = document.getElementById('admin-link');
 const ordersLink = document.getElementById('orders-link');
 const myOrdersLink = document.getElementById('my-orders-link');
+const marketAdminLink = document.getElementById('market-admin-link');
 
-// --- Fonctions de mise à jour de la barre de navigation ---
 function updateNavbarForUser(user, userData = {}) {
     if (profileLink && profilePic && authButtons) {
         const avatarUrl = userData.avatar || user.photoURL || `https://corsproxy.io/?https://mc-heads.net/avatar/${userData.minecraftUsername || 'Steve'}/64`;
@@ -19,16 +18,21 @@ function updateNavbarForUser(user, userData = {}) {
         profileLink.style.display = 'block';
         authButtons.style.display = 'none';
 
-        // **LOGIQUE DE RÔLE MISE À JOUR**
-        const userRoles = userData.roles || [userData.role]; // Gère l'ancien et le nouveau système de rôles
+        const userRoles = userData.roles || [userData.role];
         const marketStaffRoles = ['Admin', 'Leader', 'Officier', 'Vendeur'];
+        const marketManagerRoles = ['Admin', 'Leader', 'Officier', 'Responsable'];
         const isStaff = userRoles.some(role => marketStaffRoles.includes(role));
+        const isManager = userRoles.some(role => marketManagerRoles.includes(role));
 
         if (isStaff) {
             if (ordersLink) ordersLink.style.display = 'block';
-            if (myOrdersLink) myOrdersLink.style.display = 'none'; // Le staff voit tout dans "Commandes Staff"
+            if (myOrdersLink) myOrdersLink.style.display = 'none';
         } else if (userRoles.includes('Client')) {
-            if (myOrdersLink) myOrdersLink.style.display = 'block'; // Le client voit "Mes Commandes"
+            if (myOrdersLink) myOrdersLink.style.display = 'block';
+        }
+
+        if (isManager) {
+            if (marketAdminLink) marketAdminLink.style.display = 'block';
         }
 
         if (userRoles.includes('Admin')) {
@@ -44,10 +48,10 @@ function updateNavbarForGuest() {
         if (adminLink) adminLink.style.display = 'none';
         if (ordersLink) ordersLink.style.display = 'none';
         if (myOrdersLink) myOrdersLink.style.display = 'none';
+        if (marketAdminLink) marketAdminLink.style.display = 'none';
     }
 };
 
-// --- Logique principale d'authentification ---
 function initializeAuth() {
     onAuthStateChanged(auth, async (user) => {
         const currentPage = window.location.pathname.split('/').pop();
@@ -64,8 +68,8 @@ function initializeAuth() {
                     avatar: user.photoURL || null,
                     createdAt: new Date().toISOString(),
                     onboardingComplete: false,
-                    role: 'Visiteur', // Rôle de base
-                    roles: ['Visiteur'] // Nouveau système de rôles multiples
+                    role: 'Visiteur',
+                    roles: ['Visiteur']
                 });
                 docSnap = await getDoc(userDocRef);
             }
@@ -84,7 +88,7 @@ function initializeAuth() {
             }
         } else {
             updateNavbarForGuest();
-            const protectedPages = ['profile.html', 'admin.html', 'orders.html', 'checkout.html'];
+            const protectedPages = ['profile.html', 'admin.html', 'orders.html', 'checkout.html', 'market-admin.html'];
             if (protectedPages.includes(currentPage)) {
                 window.location.href = path('login.html');
             }

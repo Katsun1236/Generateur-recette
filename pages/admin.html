@@ -40,12 +40,8 @@
 </head>
 <body>
     <nav class="navbar">
-        <div class="nav-left">
-            <a href="../index.html"><img src="../images/pictures/Logo.png" alt="Logo R4TIO" class="nav-logo"></a>
-        </div>
-        <button class="nav-toggle" id="nav-toggle">
-            <span class="hamburger"></span>
-        </button>
+        <div class="nav-left"><a href="../index.html"><img src="../images/pictures/Logo.png" alt="Logo R4TIO" class="nav-logo"></a></div>
+        <button class="nav-toggle" id="nav-toggle"><span class="hamburger"></span></button>
         <div class="nav-center">
             <a href="https://discord.gg/UFVCDc4mkU" target="_blank" rel="noopener noreferrer">Discord</a>
             <a href="recrutement.html">Recrutement</a>
@@ -55,14 +51,10 @@
             <div class="nav-admin-links">
                 <a href="orders.html" id="orders-link" style="display: none;">Commandes</a>
                 <a href="admin.html" id="admin-link" style="display: none;">Administration</a>
+                <a href="market-admin.html" id="market-admin-link" style="display: none;">Gestion Marché</a>
             </div>
-            <div id="auth-buttons">
-                <a href="login.html">Connexion</a>
-                <a href="register.html" class="register-btn">Inscription</a>
-            </div>
-            <a href="profile.html" id="profile-link" style="display: none;">
-                <img id="profile-pic" src="" alt="Photo de profil">
-            </a>
+            <div id="auth-buttons"><a href="login.html">Connexion</a><a href="register.html" class="register-btn">Inscription</a></div>
+            <a href="profile.html" id="profile-link" style="display: none;"><img id="profile-pic" src="" alt="Photo de profil"></a>
         </div>
     </nav>
 
@@ -80,8 +72,7 @@
                         <th>Rôle</th>
                     </tr>
                 </thead>
-                <tbody id="user-list-body">
-                </tbody>
+                <tbody id="user-list-body"></tbody>
             </table>
         </div>
     </div>
@@ -98,7 +89,7 @@
         const messageBox = document.getElementById('message-box');
         const navToggle = document.getElementById('nav-toggle');
         const navbar = document.querySelector('.navbar');
-        const availableRoles = ['Admin', 'Leader', 'Recruteur', 'Vendeur', 'Membre', 'Candidat', 'Visiteur'];
+        const availableRoles = ['Admin', 'Leader', 'Officier', 'Responsable', 'Recruteur', 'Vendeur', 'Membre', 'Candidat', 'Visiteur'];
 
         navToggle.addEventListener('click', () => {
             navbar.classList.toggle('active');

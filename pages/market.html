@@ -161,12 +161,20 @@
 
     <script type="module" src="../js/main.js"></script>
     <script type="module">
-        import { marketItems } from '../js/market-config.js';
+        // ON SUPPRIME : L'ancien import du fichier de configuration local
+        // import { marketItems } from '../js/market-config.js';
+
+        // ON GARDE : Les imports de Firebase
         import { auth, db } from '../js/firebase-config.js';
-        import { collection, addDoc, serverTimestamp, doc, getDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { collection, getDocs, doc, getDoc, serverTimestamp, addDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
         const elements = { featuredGrid: document.getElementById('featured-grid'), marketGrid: document.getElementById('market-grid'), categoryList: document.getElementById('category-list'), searchBar: document.getElementById('search-bar'), cartButton: document.getElementById('cart-button'), cartCount: document.getElementById('cart-count'), cartModal: document.getElementById('cart-modal'), closeCartModal: document.getElementById('close-cart-modal'), cartItemsContainer: document.getElementById('cart-items'), cartTotal: document.getElementById('cart-total'), checkoutBtn: document.getElementById('checkout-btn'), messageBox: document.getElementById('message-box') };
+        
+        // Ce tableau sera maintenant rempli depuis Firebase
+        let marketItems = []; 
         let cart = [];
+
+        // --- Les fonctions existantes (showMessage, getRarity, createItemCard, etc.) restent les mêmes ---
 
         function showMessage(message, isError = false) {
             elements.messageBox.textContent = message;
@@ -224,10 +232,11 @@
             });
             elements.categoryList.querySelectorAll('input[type="checkbox"]').forEach(checkbox => checkbox.addEventListener('change', renderMarket));
         }
-
-        function setupFeatured() {
-            const featuredItemNames = ["Histerite Apple", "Hang Glider", "Histerite Sword", "Vault Breacher"];
-            featuredItemNames.forEach(name => {
+        
+        // MODIFIÉ : setupFeatured est remplacé par renderFeatured
+        function renderFeatured(featuredNames) {
+            elements.featuredGrid.innerHTML = '';
+            featuredNames.forEach(name => {
                 const item = marketItems.find(i => i.name === name);
                 if (item) elements.featuredGrid.appendChild(createItemCard(item));
             });
@@ -270,7 +279,7 @@
         }
 
         async function handleCheckout() {
-            if (cart.length === 0) { showMessage("Votre panier est vide !", true); return; }
+             if (cart.length === 0) { showMessage("Votre panier est vide !", true); return; }
             const user = auth.currentUser;
             if (!user) {
                 showMessage("Veuillez vous connecter pour passer une commande.", true);
@@ -322,6 +331,28 @@
                 elements.checkoutBtn.textContent = "Passer la commande";
             }
         }
+        
+        // NOUVEAU : Fonction principale pour charger les données
+        async function loadMarketData() {
+            try {
+                // 1. Récupérer tous les objets du marché
+                const itemsSnapshot = await getDocs(collection(db, 'marketItems'));
+                marketItems = itemsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                // 2. Récupérer la configuration (objets à l'affiche)
+                const featuredRef = doc(db, 'marketConfig', 'featured');
+                const featuredSnap = await getDoc(featuredRef);
+                const featuredItemNames = featuredSnap.exists() ? featuredSnap.data().items : [];
+
+                // 3. Afficher les éléments
+                setupDynamicCategories();
+                renderFeatured(featuredItemNames);
+                renderMarket(); // Affiche tous les objets
+            } catch (error) {
+                console.error("Erreur de chargement du marché:", error);
+                elements.marketGrid.innerHTML = `<p style="color: var(--primary-red);">Impossible de charger les objets du marché.</p>`;
+            }
+        }
 
         function init() {
             const navToggle = document.getElementById('nav-toggle');
@@ -329,11 +360,13 @@
             if(navToggle) {
                 navToggle.addEventListener('click', () => navbar.classList.toggle('active'));
             }
+
             cart = JSON.parse(localStorage.getItem('r4tioCart')) || [];
-            setupDynamicCategories();
-            setupFeatured();
-            renderMarket();
             updateCart();
+            
+            // MODIFIÉ : On appelle la nouvelle fonction de chargement
+            loadMarketData();
+
             elements.searchBar.addEventListener('input', renderMarket);
             elements.cartButton.addEventListener('click', () => elements.cartModal.classList.add('show'));
             elements.closeCartModal.addEventListener('click', () => elements.cartModal.classList.remove('show'));
@@ -353,6 +386,7 @@
                 updateCart();
             });
         }
+        
         init();
     </script>
 </body>

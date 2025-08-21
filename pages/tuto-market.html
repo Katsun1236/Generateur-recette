@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutoriel Gestion Marché - R4TIO</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="icon" href="../images/pictures/Logo.png" type="image/png">
+    <style>
+        body { background-color: #111; }
+        .tuto-container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: var(--card-bg-color);
+            color: var(--text-light);
+            border-radius: 8px;
+            border: 1px solid #333;
+        }
+        .tuto-container h1, .tuto-container h2 {
+            border-bottom: 2px solid var(--primary-red);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .tuto-container ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .tuto-container ul li {
+            background-color: #2c2c2c;
+            margin-bottom: 10px;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 3px solid var(--discord-blue);
+        }
+        .tuto-container code {
+            background-color: #111;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: var(--yellow);
+        }
+        .warning {
+            background-color: #4e2a2a;
+            border-left-color: var(--primary-red) !important;
+            padding: 15px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="../index.html"><img src="../images/pictures/Logo.png" alt="Logo R4TIO" class="nav-logo"></a>
+        </div>
+        <button class="nav-toggle" id="nav-toggle">
+            <span class="hamburger"></span>
+        </button>
+        <div class="nav-center">
+            <a href="https://discord.gg/UFVCDc4mkU" target="_blank" rel="noopener noreferrer">Discord</a>
+            <a href="recrutement.html">Recrutement</a>
+            <a href="market.html">Marché</a>
+        </div>
+        <div class="nav-auth">
+            </div>
+    </nav>
+
+    <main class="tuto-container">
+        <h1>Tutoriel de Gestion du Marché</h1>
+        <p>Cette page explique comment utiliser l'interface d'administration du marché pour ajouter, modifier et gérer les objets en vente.</p>
+
+        <h2>Ajouter ou Modifier un objet</h2>
+        <p>Le formulaire en haut de la page "Admin Marché" est utilisé pour créer et mettre à jour les objets.</p>
+        <ul>
+            <li><strong>Pour créer :</strong> Laisse le formulaire vide, remplis tous les champs, puis clique sur "Sauvegarder l'Objet".</li>
+            <li><strong>Pour modifier :</strong> Clique sur le bouton "Modifier" d'un objet dans la liste. Le formulaire se remplira automatiquement. Fais tes changements, puis clique sur "Sauvegarder l'Objet".</li>
+        </ul>
+
+        <h3>Détails importants des champs :</h3>
+        <ul>
+            <li><strong>Nom de l'objet :</strong> Ce nom doit être unique. C'est ce qui est affiché sur le site. Ex: <code>Histerite Sword</code>.</li>
+            <li><strong>Prix d'achat :</strong> N'écris que le nombre, sans le "$" ni de points. Ex: <code>15000</code>.</li>
+            <li><strong>URL de l'image :</strong> C'est le chemin vers l'image. Le chemin part du dossier `js/` où se trouve le script. En général, ce sera <code>../images/market-icon/histeria-icon/nom-de-l-item.png</code>.</li>
+            <li><strong>Catégorie :</strong> Choisis une catégorie dans la liste pour que les filtres fonctionnent correctement.</li>
+        </ul>
+
+        <h2>Gérer les objets "À l'affiche"</h2>
+        <p>Ce sont les objets mis en avant en haut de la page du marché. Tu peux en avoir 4 ou 5 pour un bel affichage.</p>
+        <ul>
+            <li>Pour ajouter un objet à cette section, trouve-le dans la liste "Tous les objets" et clique sur le bouton "Mettre en affiche".</li>
+            <li>Pour le retirer, trouve-le dans la section "Objets à l'affiche" et clique sur "Retirer".</li>
+        </ul>
+        
+        <div class="warning">
+            <p><strong>ATTENTION :</strong> La suppression d'un objet est une action définitive et irréversible. Sois certain de ton choix avant de cliquer sur "Supprimer".</p>
+        </div>
+    </main>
+    
+    <script type="module" src="../js/main.js"></script>
+</body>
+</html>

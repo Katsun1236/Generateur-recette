@@ -19,16 +19,21 @@ function updateNavbarForUser(user, userData = {}) {
         profileLink.style.display = 'block';
         authButtons.style.display = 'none';
 
-        // **MODIFICATION : Les boutons sont maintenant toujours visibles si l'utilisateur est connecté**
-        if (ordersLink) ordersLink.style.display = 'block';
-        if (adminLink) adminLink.style.display = 'block';
+        // --- Logique d'affichage des liens ---
+        const userRoles = userData.roles || [userData.role] || [];
         
-        // --- Logique pour le bouton "Mes Commandes" ---
-        const userRoles = userData.roles || [userData.role]; 
-        const marketStaffRoles = ['Admin', 'Leader', 'Officier', 'Vendeur'];
-        const isStaff = userRoles.some(role => marketStaffRoles.includes(role));
+        // NOUVEAU : Ajout du rôle "Responsable"
+        const marketStaffRoles = ['Admin', 'Leader', 'Officier', 'Responsable', 'Vendeur'];
+        const isAdminOrStaff = userRoles.some(role => marketStaffRoles.includes(role));
 
-        if (isStaff) {
+        // Affiche les liens "Commandes" et "Administration" si l'utilisateur est un membre du staff
+        if (isAdminOrStaff) {
+            if (ordersLink) ordersLink.style.display = 'block';
+            if (adminLink) adminLink.style.display = 'block';
+        }
+
+        // Gère l'affichage de "Mes Commandes"
+        if (isAdminOrStaff) {
             if (myOrdersLink) myOrdersLink.style.display = 'none'; // Le staff voit tout dans "Commandes"
         } else if (userRoles.includes('Client')) {
             if (myOrdersLink) myOrdersLink.style.display = 'block'; // Le client voit "Mes Commandes"
@@ -63,7 +68,7 @@ function initializeAuth() {
                     avatar: user.photoURL || null,
                     createdAt: new Date().toISOString(),
                     onboardingComplete: false,
-                    role: 'Visiteur', // Rôle de base
+                    role: 'Visiteur', // Ancien système
                     roles: ['Visiteur'] // Nouveau système de rôles multiples
                 });
                 docSnap = await getDoc(userDocRef);
@@ -83,7 +88,8 @@ function initializeAuth() {
             }
         } else {
             updateNavbarForGuest();
-            const protectedPages = ['profile.html', 'admin.html', 'orders.html', 'checkout.html'];
+            // AJOUT : Protection de la nouvelle page admin
+            const protectedPages = ['profile.html', 'admin.html', 'market-admin.html', 'orders.html', 'checkout.html'];
             if (protectedPages.includes(currentPage)) {
                 window.location.href = path('login.html');
             }

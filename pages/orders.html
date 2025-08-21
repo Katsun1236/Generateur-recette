@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Commandes - Faction R4TIO</title>
+    <link rel="icon" href="../images/pictures/Logo.png" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
@@ -11,7 +12,8 @@
     <link rel="stylesheet" href="../css/style.css">
     <style>
         .orders-container { max-width: 1200px; margin: 2rem auto; padding: 2rem; background-color: var(--card-bg-color); border-radius: 10px; }
-        .orders-table { width: 100%; border-collapse: collapse; margin-top: 2rem; }
+        .table-wrapper { overflow-x: auto; }
+        .orders-table { width: 100%; border-collapse: collapse; margin-top: 2rem; min-width: 600px; }
         .orders-table th, .orders-table td { padding: 1rem; text-align: left; border-bottom: 1px solid #444; }
         .orders-table th { font-family: 'Anton', sans-serif; color: var(--primary-red); font-size: 1.2rem; }
         .orders-table td { color: var(--text-medium); }
@@ -20,22 +22,41 @@
         .status.pending { background-color: var(--yellow); color: #111; }
         .status.in-progress { background-color: var(--discord-blue); color: white; }
         .status.completed { background-color: var(--green); color: #111; }
+        .nav-auth { display: flex; align-items: center; gap: 25px; }
+        .nav-admin-links { display: flex; gap: 20px; }
+        .nav-admin-links a { color: var(--yellow); font-weight: 700; text-transform: uppercase; }
+        .nav-toggle { display: none; background: none; border: none; cursor: pointer; padding: 10px; }
+        .nav-toggle .hamburger { display: block; width: 25px; height: 3px; background-color: var(--text-light); position: relative; transition: transform 0.3s ease; }
+        .nav-toggle .hamburger::before, .nav-toggle .hamburger::after { content: ''; position: absolute; left: 0; width: 100%; height: 3px; background-color: var(--text-light); transition: transform 0.3s ease, top 0.3s ease, bottom 0.3s ease; }
+        .nav-toggle .hamburger::before { top: -8px; }
+        .nav-toggle .hamburger::after { bottom: -8px; }
+        @media (max-width: 991px) {
+            .navbar { flex-wrap: wrap; justify-content: space-between; }
+            .nav-toggle { display: block; }
+            .nav-center, .nav-auth { display: none; flex-direction: column; width: 100%; text-align: center; gap: 15px; padding: 20px 0; }
+            .nav-auth { gap: 20px; }
+            .navbar.active .nav-center, .navbar.active .nav-auth { display: flex; }
+            .nav-admin-links { justify-content: center; }
+            #auth-buttons { display: flex; flex-direction: column; gap: 15px; }
+        }
     </style>
 </head>
 <body>
     <nav class="navbar">
         <div class="nav-left"><a href="../index.html"><img src="../images/pictures/Logo.png" alt="Logo R4TIO" class="nav-logo"></a></div>
+        <button class="nav-toggle" id="nav-toggle"><span class="hamburger"></span></button>
         <div class="nav-center">
             <a href="https://discord.gg/UFVCDc4mkU" target="_blank" rel="noopener noreferrer">Discord</a>
             <a href="recrutement.html">Recrutement</a>
             <a href="market.html">Marché</a>
-            <a href="orders.html" id="my-orders-link" style="display: none;">Mes Commandes</a>
-            <a href="orders.html" id="orders-link" style="display: none; color: var(--yellow);">Commandes Staff</a>
-            <a href="admin.html" id="admin-link" style="display: none; color: var(--yellow);">Administration</a>
         </div>
         <div class="nav-auth">
-             <div id="auth-buttons" style="display: none;"><a href="login.html">Connexion</a><a href="register.html" class="register-btn">Inscription</a></div>
-            <a href="profile.html" id="profile-link"><img id="profile-pic" src="" alt="Photo de profil"></a>
+            <div class="nav-admin-links">
+                <a href="orders.html" id="orders-link" style="display: none;">Commandes</a>
+                <a href="admin.html" id="admin-link" style="display: none;">Administration</a>
+            </div>
+            <div id="auth-buttons"><a href="login.html">Connexion</a><a href="register.html" class="register-btn">Inscription</a></div>
+            <a href="profile.html" id="profile-link" style="display: none;"><img id="profile-pic" src="" alt="Photo de profil"></a>
         </div>
     </nav>
     <div class="orders-container">
@@ -43,17 +64,19 @@
             <h1 id="page-title">Gestion des Commandes</h1>
             <p id="page-subtitle">Cliquez sur une commande pour voir les détails et discuter avec le client.</p>
         </div>
-        <table class="orders-table">
-            <thead>
-                <tr>
-                    <th id="client-header">Client</th>
-                    <th>Date</th>
-                    <th>Total</th>
-                    <th>Statut</th>
-                </tr>
-            </thead>
-            <tbody id="orders-list-body"></tbody>
-        </table>
+        <div class="table-wrapper">
+            <table class="orders-table">
+                <thead>
+                    <tr>
+                        <th id="client-header">Client</th>
+                        <th>Date</th>
+                        <th>Total</th>
+                        <th>Statut</th>
+                    </tr>
+                </thead>
+                <tbody id="orders-list-body"></tbody>
+            </table>
+        </div>
     </div>
     <div id="message-box"></div>
     <script type="module" src="../js/main.js"></script>
@@ -66,7 +89,13 @@
         const pageTitle = document.getElementById('page-title');
         const pageSubtitle = document.getElementById('page-subtitle');
         const clientHeader = document.getElementById('client-header');
+        const navToggle = document.getElementById('nav-toggle');
+        const navbar = document.querySelector('.navbar');
         const marketStaffRoles = ['Admin', 'Leader', 'Officier', 'Vendeur'];
+
+        navToggle.addEventListener('click', () => {
+            navbar.classList.toggle('active');
+        });
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
@@ -91,12 +120,12 @@
             if (isStaff) {
                 pageTitle.textContent = "Gestion des Commandes";
                 pageSubtitle.textContent = "Cliquez sur une commande pour voir les détails et discuter avec le client.";
-                clientHeader.style.display = ''; // Show client column
+                clientHeader.style.display = '';
                 q = query(collection(db, 'orders'), orderBy('createdAt', 'desc'));
             } else {
                 pageTitle.textContent = "Mes Commandes";
                 pageSubtitle.textContent = "Voici la liste de toutes vos commandes passées.";
-                clientHeader.style.display = 'none'; // Hide client column for regular users
+                clientHeader.style.display = 'none';
                 q = query(collection(db, 'orders'), where('clientId', '==', userId), orderBy('createdAt', 'desc'));
             }
 

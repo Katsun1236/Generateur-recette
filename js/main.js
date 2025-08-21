@@ -9,7 +9,6 @@ const authButtons = document.getElementById('auth-buttons');
 const adminLink = document.getElementById('admin-link');
 const ordersLink = document.getElementById('orders-link');
 const myOrdersLink = document.getElementById('my-orders-link');
-const marketAdminLink = document.getElementById('market-admin-link'); // Ajout pour le nouveau lien
 
 // --- Fonctions de mise à jour de la barre de navigation ---
 function updateNavbarForUser(user, userData = {}) {
@@ -20,33 +19,19 @@ function updateNavbarForUser(user, userData = {}) {
         profileLink.style.display = 'block';
         authButtons.style.display = 'none';
 
-        // Utilise le nouveau champ 'roles' (un tableau) ou l'ancien 'role' pour la compatibilité
+        // **MODIFICATION : Les boutons sont maintenant toujours visibles si l'utilisateur est connecté**
+        if (ordersLink) ordersLink.style.display = 'block';
+        if (adminLink) adminLink.style.display = 'block';
+        
+        // --- Logique pour le bouton "Mes Commandes" ---
         const userRoles = userData.roles || [userData.role]; 
-
         const marketStaffRoles = ['Admin', 'Leader', 'Officier', 'Vendeur'];
-        const marketManagerRoles = ['Admin', 'Leader', 'Officier', 'Responsable'];
-        
         const isStaff = userRoles.some(role => marketStaffRoles.includes(role));
-        const isManager = userRoles.some(role => marketManagerRoles.includes(role));
 
-        // Affiche "Commandes Staff" pour le staff, et cache "Mes Commandes"
         if (isStaff) {
-            if (ordersLink) ordersLink.style.display = 'block';
-            if (myOrdersLink) myOrdersLink.style.display = 'none';
-        } 
-        // Sinon, si l'utilisateur est un client (et pas un staff), affiche "Mes Commandes"
-        else if (userRoles.includes('Client')) {
-            if (myOrdersLink) myOrdersLink.style.display = 'block';
-        }
-        
-        // Affiche "Gestion Marché" pour les responsables et plus
-        if (isManager && marketAdminLink) {
-            marketAdminLink.style.display = 'block';
-        }
-
-        // Affiche "Administration" uniquement pour les Admins
-        if (userRoles.includes('Admin')) {
-            if (adminLink) adminLink.style.display = 'block';
+            if (myOrdersLink) myOrdersLink.style.display = 'none'; // Le staff voit tout dans "Commandes"
+        } else if (userRoles.includes('Client')) {
+            if (myOrdersLink) myOrdersLink.style.display = 'block'; // Le client voit "Mes Commandes"
         }
     }
 };
@@ -58,7 +43,6 @@ function updateNavbarForGuest() {
         if (adminLink) adminLink.style.display = 'none';
         if (ordersLink) ordersLink.style.display = 'none';
         if (myOrdersLink) myOrdersLink.style.display = 'none';
-        if (marketAdminLink) marketAdminLink.style.display = 'none';
     }
 };
 
@@ -79,8 +63,8 @@ function initializeAuth() {
                     avatar: user.photoURL || null,
                     createdAt: new Date().toISOString(),
                     onboardingComplete: false,
-                    role: 'Visiteur', // Gardé pour la compatibilité
-                    roles: ['Visiteur'] // Nouveau système de rôles
+                    role: 'Visiteur', // Rôle de base
+                    roles: ['Visiteur'] // Nouveau système de rôles multiples
                 });
                 docSnap = await getDoc(userDocRef);
             }
@@ -99,7 +83,7 @@ function initializeAuth() {
             }
         } else {
             updateNavbarForGuest();
-            const protectedPages = ['profile.html', 'admin.html', 'orders.html', 'checkout.html', 'market-admin.html'];
+            const protectedPages = ['profile.html', 'admin.html', 'orders.html', 'checkout.html'];
             if (protectedPages.includes(currentPage)) {
                 window.location.href = path('login.html');
             }

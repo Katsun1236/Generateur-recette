@@ -4,162 +4,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Premiers pas - Faction R4TIO</title>
-
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    
-    <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
-    <!-- Main Stylesheet -->
     <link rel="stylesheet" href="../css/style.css">
-    
-    <!-- Page-specific Styles -->
     <style>
-        body {
-            padding-top: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-        }
-        .form-container {
-            background-color: var(--card-bg-color);
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            width: 100%;
-            max-width: 600px;
-            border: 1px solid #444;
-            margin: 1rem;
-        }
-        .form-container h2 {
-            font-family: 'Anton', sans-serif;
-            font-size: 2.5rem;
-            color: var(--primary-red);
-            text-align: center;
-            margin-bottom: 0.5rem;
-            text-transform: uppercase;
-        }
-        .form-container .subtitle {
-            text-align: center;
-            color: var(--text-medium);
-            margin-bottom: 2rem;
-        }
-        .form-group {
-            margin-bottom: 1rem;
-        }
-        .form-group label {
-            display: block;
-            color: var(--text-medium);
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-        }
-        .form-group input {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border-radius: 5px;
-            background-color: #333;
-            color: var(--text-light);
-            border: 2px solid #555;
-            box-sizing: border-box;
-            transition: border-color 0.3s;
-        }
-        .form-group input:focus {
-            outline: none;
-            border-color: var(--primary-red);
-        }
-        .profile-picture-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-        .avatar-container {
-            position: relative;
-            width: 100px;
-            height: 100px;
-            margin-top: 0.5rem;
-            border-radius: 50%;
-            border: 4px solid var(--primary-red);
-            overflow: hidden;
-            cursor: pointer;
-            transition: border-color 0.3s;
-        }
-        .avatar-container:hover {
-            border-color: var(--primary-red-dark);
-        }
-        .avatar-preview {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .avatar-container .overlay {
-            position: absolute;
-            inset: 0;
-            background-color: rgba(0,0,0,0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        .avatar-container:hover .overlay {
-            opacity: 1;
-        }
-        .grid-inputs {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1rem;
-        }
-        @media (min-width: 640px) {
-            .grid-inputs {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-        .submit-btn {
-            width: 100%;
-            background-color: var(--primary-red);
-            color: white;
-            font-weight: bold;
-            padding: 0.8rem 1rem;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-transform: uppercase;
-            transition: background-color 0.3s;
-            margin-top: 1.5rem;
-        }
-        .submit-btn:hover:not(:disabled) {
-            background-color: var(--primary-red-dark);
-        }
-        .submit-btn:disabled {
-            background-color: #555;
-            cursor: not-allowed;
-        }
+        body { padding-top: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; }
+        .form-container { background-color: var(--card-bg-color); padding: 2rem; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); width: 100%; max-width: 600px; border: 1px solid #444; margin: 1rem; }
+        .form-container h2 { font-family: var(--font-display); font-size: 2.5rem; color: var(--primary-red); text-align: center; margin-bottom: 0.5rem; text-transform: uppercase; }
+        .form-container .subtitle { text-align: center; color: var(--text-medium); margin-bottom: 2rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; color: var(--text-medium); font-weight: bold; margin-bottom: 0.5rem; }
+        .form-group input { width: 100%; padding: 0.75rem 1rem; border-radius: 5px; background-color: #333; color: var(--text-light); border: 2px solid #555; box-sizing: border-box; transition: border-color 0.3s; }
+        .form-group input:focus { outline: none; border-color: var(--primary-red); }
+        .profile-picture-section { display: flex; flex-direction: column; align-items: center; margin-bottom: 1.5rem; }
+        .avatar-container { position: relative; width: 100px; height: 100px; margin-top: 0.5rem; border-radius: 50%; border: 4px solid var(--primary-red); overflow: hidden; }
+        .avatar-preview { width: 100%; height: 100%; object-fit: cover; }
+        .grid-inputs { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+        @media (min-width: 640px) { .grid-inputs { grid-template-columns: 1fr 1fr; } }
+        .submit-btn { width: 100%; background-color: var(--primary-red); color: white; font-weight: bold; padding: 0.8rem 1rem; border: none; border-radius: 5px; cursor: pointer; text-transform: uppercase; transition: background-color 0.3s; margin-top: 1.5rem; }
+        .submit-btn:hover:not(:disabled) { background-color: var(--primary-red-dark); }
+        .submit-btn:disabled { background-color: #555; cursor: not-allowed; }
     </style>
 </head>
 <body>
-
     <div class="form-container">
         <h2>Bienvenue !</h2>
         <p class="subtitle">Pour commencer, dis-nous en un peu plus sur toi.</p>
-        
         <form id="onboarding-form" novalidate>
             <div class="profile-picture-section">
                 <label>Photo de profil</label>
-                <div class="avatar-container" id="avatar-container">
+                <!-- L'avatar n'est plus cliquable -->
+                <div class="avatar-container">
                     <img class="avatar-preview" id="avatar-preview" src="" alt="Aperçu de l'avatar">
-                    <div class="overlay">
-                        <i class="fas fa-camera text-white text-2xl"></i>
-                    </div>
                 </div>
-                <input type="file" id="avatar-file-input" accept="image/*" class="d-none">
             </div>
-
             <div class="grid-inputs">
                 <div class="form-group">
                     <label for="username">Pseudo Minecraft</label>
@@ -170,32 +50,22 @@
                     <input type="text" id="discordTag" placeholder="pseudo#0000">
                 </div>
             </div>
-
             <button type="submit" class="submit-btn">C'est parti !</button>
         </form>
     </div>
-
     <div id="message-box"></div>
-
     <script type="module">
-        import { auth, db, storage } from '../js/firebase-config.js';
+        import { auth, db } from '../js/firebase-config.js';
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
 
-        // --- DOM Elements ---
         const onboardingForm = document.getElementById('onboarding-form');
-        const avatarContainer = document.getElementById('avatar-container');
         const avatarPreview = document.getElementById('avatar-preview');
-        const avatarFileInput = document.getElementById('avatar-file-input');
         const usernameInput = document.getElementById('username');
         const discordTagInput = document.getElementById('discordTag');
         const messageBox = document.getElementById('message-box');
-        
         let currentUser = null;
-        let selectedAvatarFile = null;
 
-        // --- UI Functions ---
         function showMessage(message, isError = false) {
             messageBox.textContent = message;
             messageBox.style.borderColor = isError ? 'var(--primary-red)' : 'var(--green)';
@@ -214,86 +84,35 @@
             const mcHeadUrl = `https://mc-heads.net/avatar/${usernameInput.value}/100`;
             const initialAvatar = user.photoURL || `https://corsproxy.io/?${encodeURIComponent(mcHeadUrl)}`;
             avatarPreview.src = initialAvatar;
-            avatarPreview.onerror = () => { 
-                avatarPreview.src = `https://corsproxy.io/?${encodeURIComponent('https://mc-heads.net/avatar/Steve/100')}`; 
-            };
+            avatarPreview.onerror = () => { avatarPreview.src = `https://corsproxy.io/?${encodeURIComponent('https://mc-heads.net/avatar/Steve/100')}`; };
         }
 
-        // --- Event Listeners ---
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 currentUser = user;
-                const userDocRef = doc(db, 'users', user.uid);
-                const docSnap = await getDoc(userDocRef);
-
-                if (!docSnap.exists()) {
-                    console.error("Le document utilisateur n'existe pas, cela ne devrait pas arriver. Redirection...");
-                    window.location.href = 'register.html';
-                    return;
-                }
-                
-                if (docSnap.data().onboardingComplete) {
-                    window.location.href = '../index.html';
-                    return;
-                }
-                
                 populateForm(user);
             } else {
                 window.location.href = 'login.html';
             }
         });
 
-        avatarContainer.addEventListener('click', () => avatarFileInput.click());
-
-        avatarFileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                selectedAvatarFile = file;
-                const reader = new FileReader();
-                reader.onload = (event) => { avatarPreview.src = event.target.result; };
-                reader.readAsDataURL(file);
-            }
-        });
-
         onboardingForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            if (!currentUser) {
-                showMessage("Utilisateur non trouvé. Veuillez vous reconnecter.", true);
-                return;
-            }
-
+            if (!currentUser) { showMessage("Utilisateur non trouvé. Veuillez vous reconnecter.", true); return; }
             const username = usernameInput.value.trim();
-            if (!username) {
-                showMessage("Le pseudo Minecraft est obligatoire.", true);
-                return;
-            }
-
+            if (!username) { showMessage("Le pseudo Minecraft est obligatoire.", true); return; }
             setFormLoading(true);
-
             try {
-                let finalAvatarURL = currentUser.photoURL;
-
-                if (selectedAvatarFile) {
-                    const storageRef = ref(storage, `avatars/${currentUser.uid}/${selectedAvatarFile.name}`);
-                    const snapshot = await uploadBytes(storageRef, selectedAvatarFile);
-                    finalAvatarURL = await getDownloadURL(snapshot.ref);
-                }
-
                 const userProfileData = {
                     minecraftUsername: username,
                     discordTag: discordTagInput.value.trim(),
-                    avatar: finalAvatarURL || `https://corsproxy.io/?${encodeURIComponent(`https://mc-heads.net/avatar/${username}/100`)}`,
-                    onboardingComplete: true,
-                    role: 'Visiteur' // Assign a default role
+                    avatar: currentUser.photoURL || `https://mc-heads.net/avatar/${username}/100`,
+                    onboardingComplete: true
                 };
-
-                // Use setDoc with merge to update the document
                 const userDocRef = doc(db, 'users', currentUser.uid);
                 await setDoc(userDocRef, userProfileData, { merge: true });
-
                 showMessage("Profil mis à jour avec succès !", false);
                 setTimeout(() => window.location.href = '../index.html', 1500);
-
             } catch (error) {
                 console.error("Error updating profile:", error);
                 showMessage("Une erreur est survenue. Veuillez réessayer.", true);

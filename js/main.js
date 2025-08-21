@@ -50,7 +50,7 @@ function initializeAuth() {
             const userDocRef = doc(db, 'users', user.uid);
             let docSnap = await getDoc(userDocRef);
 
-            // Si le document n'existe pas, on le crée (cas d'une première connexion)
+            // CORRECTION DE LA BOUCLE : Si le document n'existe pas, on le crée.
             if (!docSnap.exists()) {
                 await setDoc(userDocRef, {
                     email: user.email,

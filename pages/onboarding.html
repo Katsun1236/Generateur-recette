@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Premiers pas - Faction R4TIO</title>
+    <link rel="icon" href="../images/pictures/Logo.png" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
@@ -22,10 +23,11 @@
         .avatar-container { position: relative; width: 100px; height: 100px; margin-top: 0.5rem; border-radius: 50%; border: 4px solid var(--primary-red); overflow: hidden; }
         .avatar-preview { width: 100%; height: 100%; object-fit: cover; }
         .grid-inputs { display: grid; grid-template-columns: 1fr; gap: 1rem; }
-        @media (min-width: 640px) { .grid-inputs { grid-template-columns: 1fr 1fr; } }
         .submit-btn { width: 100%; background-color: var(--primary-red); color: white; font-weight: bold; padding: 0.8rem 1rem; border: none; border-radius: 5px; cursor: pointer; text-transform: uppercase; transition: background-color 0.3s; margin-top: 1.5rem; }
         .submit-btn:hover:not(:disabled) { background-color: var(--primary-red-dark); }
         .submit-btn:disabled { background-color: #555; cursor: not-allowed; }
+        .nav-toggle { display: none; } /* On cache le toggle car pas de nav sur cette page */
+        @media (min-width: 640px) { .grid-inputs { grid-template-columns: 1fr 1fr; } }
     </style>
 </head>
 <body>
@@ -35,7 +37,6 @@
         <form id="onboarding-form" novalidate>
             <div class="profile-picture-section">
                 <label>Photo de profil</label>
-                <!-- L'avatar n'est plus cliquable -->
                 <div class="avatar-container">
                     <img class="avatar-preview" id="avatar-preview" src="" alt="Aperçu de l'avatar">
                 </div>

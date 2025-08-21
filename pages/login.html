@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connexion - Faction R4TIO</title>
+    <link rel="icon" href="../images/pictures/Logo.png" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
@@ -37,9 +38,53 @@
         .register-link { text-align: center; margin-top: 1.5rem; color: var(--text-medium); }
         .register-link a { color: var(--primary-red); text-decoration: none; font-weight: bold; }
         .register-link a:hover { text-decoration: underline; }
+        .nav-auth { display: flex; align-items: center; gap: 25px; }
+        .nav-admin-links { display: flex; gap: 20px; }
+        .nav-admin-links a { color: var(--yellow); font-weight: 700; text-transform: uppercase; }
+        .nav-toggle { display: none; background: none; border: none; cursor: pointer; padding: 10px; }
+        .nav-toggle .hamburger { display: block; width: 25px; height: 3px; background-color: var(--text-light); position: relative; transition: transform 0.3s ease; }
+        .nav-toggle .hamburger::before, .nav-toggle .hamburger::after { content: ''; position: absolute; left: 0; width: 100%; height: 3px; background-color: var(--text-light); transition: transform 0.3s ease, top 0.3s ease, bottom 0.3s ease; }
+        .nav-toggle .hamburger::before { top: -8px; }
+        .nav-toggle .hamburger::after { bottom: -8px; }
+        @media (max-width: 991px) {
+            .navbar { flex-wrap: wrap; justify-content: space-between; position: absolute; top: 0; left: 0; right: 0; }
+            .nav-toggle { display: block; }
+            .nav-center, .nav-auth { display: none; flex-direction: column; width: 100%; text-align: center; gap: 15px; padding: 20px 0; background-color: var(--navbar-bg-color); }
+            .nav-auth { gap: 20px; }
+            .navbar.active .nav-center, .navbar.active .nav-auth { display: flex; }
+            .nav-admin-links { justify-content: center; }
+            #auth-buttons { display: flex; flex-direction: column; gap: 15px; }
+        }
     </style>
 </head>
 <body>
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="../index.html"><img src="../images/pictures/Logo.png" alt="Logo R4TIO" class="nav-logo"></a>
+        </div>
+        <button class="nav-toggle" id="nav-toggle">
+            <span class="hamburger"></span>
+        </button>
+        <div class="nav-center">
+            <a href="https://discord.gg/UFVCDc4mkU" target="_blank" rel="noopener noreferrer">Discord</a>
+            <a href="recrutement.html">Recrutement</a>
+            <a href="market.html">Marché</a>
+        </div>
+        <div class="nav-auth">
+            <div class="nav-admin-links">
+                <a href="orders.html" id="orders-link" style="display: none;">Commandes</a>
+                <a href="admin.html" id="admin-link" style="display: none;">Administration</a>
+            </div>
+            <div id="auth-buttons">
+                <a href="login.html">Connexion</a>
+                <a href="register.html" class="register-btn">Inscription</a>
+            </div>
+            <a href="profile.html" id="profile-link" style="display: none;">
+                <img id="profile-pic" src="" alt="Photo de profil">
+            </a>
+        </div>
+    </nav>
+
     <div class="form-container">
         <h2>Connexion</h2>
         <form id="login-form" novalidate>
@@ -67,6 +112,7 @@
         <p class="register-link">Pas encore de compte ? <a href="register.html">S'inscrire</a></p>
     </div>
     <div id="message-box"></div>
+
     <script type="module">
         import { auth } from '../js/firebase-config.js';
         import { onAuthStateChanged, signInWithEmailAndPassword, sendPasswordResetEmail, OAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -76,6 +122,12 @@
         const forgotPasswordLink = document.getElementById('forgot-password-link');
         const messageBox = document.getElementById('message-box');
         const passwordToggleIcon = document.querySelector('.password-toggle-icon');
+        const navToggle = document.getElementById('nav-toggle');
+        const navbar = document.querySelector('.navbar');
+
+        navToggle.addEventListener('click', () => {
+            navbar.classList.toggle('active');
+        });
 
         function showMessage(message, isError = false) {
             messageBox.textContent = message;
@@ -94,6 +146,7 @@
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 setFormLoading(true);
+                window.location.href = '../index.html';
             }
         });
 

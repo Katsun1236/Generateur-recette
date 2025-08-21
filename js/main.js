@@ -44,8 +44,7 @@ function updateNavbarForGuest() {
 function initializeAuth() {
     onAuthStateChanged(auth, async (user) => {
         const currentPage = window.location.pathname.split('/').pop();
-        const isAuthPage = ['login.html', 'register.html', 'onboarding.html'].includes(currentPage);
-
+        
         if (user) {
             const userDocRef = doc(db, 'users', user.uid);
             const docSnap = await getDoc(userDocRef);
@@ -54,7 +53,9 @@ function initializeAuth() {
                 updateNavbarForUser(user, docSnap.data());
             } else {
                 const path = window.location.pathname.includes('/pages/') ? 'onboarding.html' : 'pages/onboarding.html';
-                if (currentPage !== 'onboarding.html') window.location.href = path;
+                if (currentPage !== 'onboarding.html' && currentPage !== 'register.html' && currentPage !== 'login.html') {
+                    window.location.href = path;
+                }
             }
         } else {
             updateNavbarForGuest();

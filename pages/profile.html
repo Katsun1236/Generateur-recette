@@ -85,63 +85,67 @@
         import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-functions.js";
 
-        const profileContainer = document.getElementById('profile-container');
-        const usernameEl = document.getElementById('username');
-        const userRoleEl = document.getElementById('user-role');
-        const discordContentEl = document.getElementById('discord-content');
-        const avatarImg = document.getElementById('avatar-img');
-        const logoutBtn = document.getElementById('logout-btn');
-        const editProfileBtn = document.getElementById('edit-profile-btn');
-        
-        const functions = getFunctions("europe-west1");
-        const discordClientId = "1407045715485786144";
-        const redirectUri = "https://ratio-faction.netlify.app/pages/profile.html";
-        const discordAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${discordClientId}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&scope=identify`;
+        // On attend que le DOM soit complètement chargé pour éviter les erreurs
+        document.addEventListener('DOMContentLoaded', () => {
+            const profileContainer = document.getElementById('profile-container');
+            if (!profileContainer) return;
 
-        // Écouteur de connexion spécifique à cette page
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                const params = new URLSearchParams(window.location.search);
-                const discordCode = params.get('code');
+            const usernameEl = document.getElementById('username');
+            const userRoleEl = document.getElementById('user-role');
+            const discordContentEl = document.getElementById('discord-content');
+            const avatarImg = document.getElementById('avatar-img');
+            const logoutBtn = document.getElementById('logout-btn');
+            const editProfileBtn = document.getElementById('edit-profile-btn');
+            
+            const functions = getFunctions("europe-west1");
+            const discordClientId = "1407045715485786144";
+            const redirectUri = "https://ratio-faction.netlify.app/pages/profile.html";
+            const discordAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${discordClientId}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&scope=identify`;
 
-                if (discordCode) {
-                    document.body.innerHTML = '<h1>Liaison de votre compte Discord en cours...</h1>';
-                    const linkDiscordAccount = httpsCallable(functions, 'linkDiscordAccount');
-                    try {
-                        await linkDiscordAccount({ code: discordCode, redirectUri: redirectUri });
-                        window.location.href = 'profile.html';
-                    } catch (error) {
-                        document.body.innerHTML = `<h1>Erreur</h1><p>Impossible de lier votre compte Discord. Veuillez réessayer.</p><a href="profile.html">Retour au profil</a>`;
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    const params = new URLSearchParams(window.location.search);
+                    const discordCode = params.get('code');
+
+                    if (discordCode) {
+                        document.body.innerHTML = '<h1>Liaison de votre compte Discord en cours...</h1>';
+                        const linkDiscordAccount = httpsCallable(functions, 'linkDiscordAccount');
+                        try {
+                            await linkDiscordAccount({ code: discordCode, redirectUri: redirectUri });
+                            window.location.href = 'profile.html'; // Recharger la page proprement
+                        } catch (error) {
+                            console.error("Erreur de liaison Discord:", error);
+                            document.body.innerHTML = `<h1>Erreur</h1><p>Impossible de lier votre compte Discord. Veuillez réessayer.</p><a href="profile.html">Retour au profil</a>`;
+                        }
+                        return;
                     }
-                    return;
-                }
 
-                const userDocRef = doc(db, 'users', user.uid);
-                const docSnap = await getDoc(userDocRef);
-                if (docSnap.exists() && docSnap.data().onboardingComplete) {
-                    const userData = docSnap.data();
-                    usernameEl.textContent = userData.minecraftUsername || "Utilisateur";
-                    userRoleEl.textContent = userData.role || 'Membre';
-                    avatarImg.src = userData.avatar || `https://mc-heads.net/avatar/${userData.minecraftUsername}/120`;
-                    
-                    if (userData.discordId) {
-                        discordContentEl.innerHTML = `<h3 class="discord-linked">Lié</h3><p style="margin:0;">${userData.discordUsername}</p>`;
-                    } else {
-                        discordContentEl.innerHTML = `<h3>Non lié</h3><a href="${discordAuthUrl}" class="discord-link-btn">Lier mon compte</a>`;
+                    const userDocRef = doc(db, 'users', user.uid);
+                    const docSnap = await getDoc(userDocRef);
+                    if (docSnap.exists() && docSnap.data().onboardingComplete) {
+                        const userData = docSnap.data();
+                        usernameEl.textContent = userData.minecraftUsername || "Utilisateur";
+                        userRoleEl.textContent = userData.role || 'Membre';
+                        avatarImg.src = userData.avatar || `https://mc-heads.net/avatar/${userData.minecraftUsername}/120`;
+                        
+                        if (userData.discordId) {
+                            discordContentEl.innerHTML = `<h3 class="discord-linked">Lié</h3><p style="margin:0;">${userData.discordUsername}</p>`;
+                        } else {
+                            discordContentEl.innerHTML = `<h3>Non lié</h3><a href="${discordAuthUrl}" class="discord-link-btn">Lier mon compte</a>`;
+                        }
+                        
+                        profileContainer.classList.remove('loading');
                     }
-                    
-                    profileContainer.classList.remove('loading');
                 }
-            }
-        });
+            });
 
-        // Les écouteurs d'événements pour les boutons sont ici
-        logoutBtn.addEventListener('click', () => {
-            signOut(auth).catch(error => console.error("Logout Error:", error));
-        });
+            logoutBtn.addEventListener('click', () => {
+                signOut(auth).catch(error => console.error("Logout Error:", error));
+            });
 
-        editProfileBtn.addEventListener('click', () => {
-            alert("La fonctionnalité d'édition du profil sera bientôt disponible !");
+            editProfileBtn.addEventListener('click', () => {
+                alert("La fonctionnalité d'édition du profil sera bientôt disponible !");
+            });
         });
     </script>
 </body>

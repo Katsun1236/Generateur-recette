@@ -66,6 +66,24 @@
         .cart-item-actions { display: flex; align-items: center; }
         .cart-item-actions button { background: none; border: 1px solid #555; color: white; width: 30px; height: 30px; cursor: pointer; border-radius: 5px; }
         .cart-item-actions input { width: 40px; text-align: center; background-color: #333; border: none; color: white; margin: 0 0.5rem; }
+
+        /* Style pour le bouton "Mes Commandes" */
+        .my-orders-btn {
+            background-color: var(--discord-blue);
+            color: var(--text-light);
+            padding: 0.6rem 1.2rem;
+            border-radius: 5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            text-decoration: none;
+            margin-right: 1rem;
+        }
+        .my-orders-btn:hover {
+            background-color: #4752C4;
+            transform: translateY(-2px);
+            color: var(--text-light);
+        }
     </style>
 </head>
 <body>
@@ -73,24 +91,32 @@
         <div class="nav-left">
             <a href="../index.html"><img src="../images/pictures/Logo.png" alt="Logo R4TIO" class="nav-logo"></a>
         </div>
+        <button class="nav-toggle" id="nav-toggle">
+            <span class="hamburger"></span>
+        </button>
         <div class="nav-center">
             <a href="https://discord.gg/UFVCDc4mkU" target="_blank" rel="noopener noreferrer">Discord</a>
             <a href="recrutement.html">Recrutement</a>
             <a href="market.html">Marché</a>
-            <a href="orders.html" id="my-orders-link" style="display: none;">Mes Commandes</a>
-            <a href="orders.html" id="orders-link" style="display: none; color: var(--yellow);">Commandes Staff</a>
-            <a href="admin.html" id="admin-link" style="display: none; color: var(--yellow);">Administration</a>
         </div>
         <div class="nav-auth">
-             <div id="auth-buttons" style="display: none;">
+            <div class="nav-admin-links">
+                <a href="orders.html" id="orders-link" style="display: none;">Commandes</a>
+                <a href="admin.html" id="admin-link" style="display: none;">Administration</a>
+            </div>
+    
+            <a href="orders.html" id="my-orders-link" class="my-orders-btn" style="display: none;">Mes Commandes</a>
+            
+            <div id="auth-buttons">
                 <a href="login.html">Connexion</a>
                 <a href="register.html" class="register-btn">Inscription</a>
             </div>
-            <a href="profile.html" id="profile-link">
+            <a href="profile.html" id="profile-link" style="display: none;">
                 <img id="profile-pic" src="" alt="Photo de profil">
             </a>
         </div>
     </nav>
+
     <div class="market-container">
         <div class="featured-section">
             <h2 class="featured-title">À L'AFFICHE</h2>
@@ -107,10 +133,12 @@
             </main>
         </div>
     </div>
+
     <div class="cart-button" id="cart-button">
         <i class="fas fa-shopping-cart"></i>
         <span class="cart-count" id="cart-count">0</span>
     </div>
+
     <div id="cart-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn" id="close-cart-modal">&times;</span>
@@ -120,26 +148,32 @@
             <button id="checkout-btn" class="buy-btn">Passer la commande</button>
         </div>
     </div>
+
     <div id="message-box"></div>
+
     <script type="module" src="../js/main.js"></script>
     <script type="module">
         import { marketItems } from '../js/market-config.js';
         import { auth, db } from '../js/firebase-config.js';
         import { collection, addDoc, serverTimestamp, doc, getDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
         const elements = { featuredGrid: document.getElementById('featured-grid'), marketGrid: document.getElementById('market-grid'), categoryList: document.getElementById('category-list'), searchBar: document.getElementById('search-bar'), cartButton: document.getElementById('cart-button'), cartCount: document.getElementById('cart-count'), cartModal: document.getElementById('cart-modal'), closeCartModal: document.getElementById('close-cart-modal'), cartItemsContainer: document.getElementById('cart-items'), cartTotal: document.getElementById('cart-total'), checkoutBtn: document.getElementById('checkout-btn'), messageBox: document.getElementById('message-box') };
         let cart = [];
+
         function showMessage(message, isError = false) {
             elements.messageBox.textContent = message;
             elements.messageBox.style.borderColor = isError ? 'var(--primary-red)' : 'var(--green)';
             elements.messageBox.classList.add('show');
             setTimeout(() => elements.messageBox.classList.remove('show'), 4000);
         }
+
         function getRarity(price) {
             if (price >= 20000) return 'legendary';
             if (price >= 5000) return 'epic';
             if (price >= 1000) return 'rare';
             return 'common';
         }
+
         function createItemCard(item) {
             const card = document.createElement('div');
             card.className = `item-card ${getRarity(item.buyPrice)}`;
@@ -159,6 +193,7 @@
             card.querySelector('.buy-btn').addEventListener('click', () => addToCart(item));
             return card;
         }
+
         function renderMarket() {
             elements.marketGrid.innerHTML = '';
             const searchTerm = elements.searchBar.value.toLowerCase();
@@ -170,6 +205,7 @@
                 itemsToDisplay.forEach(item => elements.marketGrid.appendChild(createItemCard(item)));
             }
         }
+
         function setupDynamicCategories() {
             const categories = [...new Set(marketItems.map(item => item.category))];
             elements.categoryList.innerHTML = '';
@@ -180,6 +216,7 @@
             });
             elements.categoryList.querySelectorAll('input[type="checkbox"]').forEach(checkbox => checkbox.addEventListener('change', renderMarket));
         }
+
         function setupFeatured() {
             const featuredItemNames = ["Histerite Apple", "Hang Glider", "Histerite Sword", "Vault Breacher"];
             featuredItemNames.forEach(name => {
@@ -187,6 +224,7 @@
                 if (item) elements.featuredGrid.appendChild(createItemCard(item));
             });
         }
+
         function addToCart(itemToAdd) {
             const existingItem = cart.find(item => item.name === itemToAdd.name);
             if (existingItem) { existingItem.quantity++; }
@@ -194,6 +232,7 @@
             showMessage(`${itemToAdd.name} a été ajouté au panier !`);
             updateCart();
         }
+
         function updateCart() {
             localStorage.setItem('r4tioCart', JSON.stringify(cart));
             const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
@@ -221,6 +260,7 @@
             }
             elements.cartTotal.textContent = `Total: ${total.toLocaleString('fr-FR')}$`;
         }
+
         async function handleCheckout() {
             if (cart.length === 0) { showMessage("Votre panier est vide !", true); return; }
             const user = auth.currentUser;
@@ -274,6 +314,7 @@
                 elements.checkoutBtn.textContent = "Passer la commande";
             }
         }
+
         function init() {
             const navToggle = document.getElementById('nav-toggle');
             const navbar = document.querySelector('.navbar');

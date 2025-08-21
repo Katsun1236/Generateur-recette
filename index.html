@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Faction R4TIO - Histeria</title>
     <meta name="description" content="La faction R4TIO, l'élite du serveur Histeria. Rejoignez-nous pour dominer le jeu, du PvP aux pillages. Découvrez nos membres, nos exploits et comment nous recrutons.">
+    <!-- Ajout du favicon -->
+    <link rel="icon" href="images/pictures/Logo.png" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
@@ -18,7 +20,23 @@
         .content-section { padding: 80px 20px; }
         .content-section:not(:first-of-type) { border-top: 2px solid var(--card-bg-color); }
         .content-section h2 { font-family: var(--font-display); font-size: 3rem; color: var(--primary-red); text-align: center; margin-bottom: 50px; text-transform: uppercase; }
-        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+        
+        /* Modification pour la grille */
+        .grid-container { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            gap: 30px; 
+            max-width: 1200px; /* Ajout d'une largeur maximale pour mieux contrôler l'alignement */
+            margin: 0 auto; /* Centrage de la grille */
+        }
+
+        /* Media query pour forcer 3 colonnes sur les grands écrans */
+        @media (min-width: 992px) {
+            #membres .grid-container, #exploits .grid-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
         .card { background-color: var(--card-bg-color); border-radius: 10px; padding: 25px; text-align: center; border: 1px solid #444; transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; }
         .card:hover { transform: translateY(-10px); box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4); }
         .card .card-avatar { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary-red); margin: 0 auto 15px auto; }

@@ -18,14 +18,21 @@ function updateNavbarForUser(user, userData = {}) {
         profilePic.onerror = () => { profilePic.src = `https://corsproxy.io/?https://mc-heads.net/avatar/Steve/64`; };
         profileLink.style.display = 'block';
         authButtons.style.display = 'none';
-        if(myOrdersLink) myOrdersLink.style.display = 'block';
-        if (userData.role === 'Admin') {
-            if (adminLink) adminLink.style.display = 'block';
-        }
+
+        // **LOGIQUE DE RÔLE MISE À JOUR**
+        const userRoles = userData.roles || [userData.role]; // Gère l'ancien et le nouveau système de rôles
         const marketStaffRoles = ['Admin', 'Leader', 'Officier', 'Vendeur'];
-        if (marketStaffRoles.includes(userData.role)) {
+        const isStaff = userRoles.some(role => marketStaffRoles.includes(role));
+
+        if (isStaff) {
             if (ordersLink) ordersLink.style.display = 'block';
-            if(myOrdersLink) myOrdersLink.style.display = 'none';
+            if (myOrdersLink) myOrdersLink.style.display = 'none'; // Le staff voit tout dans "Commandes Staff"
+        } else if (userRoles.includes('Client')) {
+            if (myOrdersLink) myOrdersLink.style.display = 'block'; // Le client voit "Mes Commandes"
+        }
+
+        if (userRoles.includes('Admin')) {
+            if (adminLink) adminLink.style.display = 'block';
         }
     }
 };
@@ -50,7 +57,6 @@ function initializeAuth() {
             const userDocRef = doc(db, 'users', user.uid);
             let docSnap = await getDoc(userDocRef);
 
-            // CORRECTION DE LA BOUCLE : Si le document n'existe pas, on le crée.
             if (!docSnap.exists()) {
                 await setDoc(userDocRef, {
                     email: user.email,
@@ -58,9 +64,10 @@ function initializeAuth() {
                     avatar: user.photoURL || null,
                     createdAt: new Date().toISOString(),
                     onboardingComplete: false,
-                    role: 'Visiteur'
+                    role: 'Visiteur', // Rôle de base
+                    roles: ['Visiteur'] // Nouveau système de rôles multiples
                 });
-                docSnap = await getDoc(userDocRef); // On relit le document qu'on vient de créer
+                docSnap = await getDoc(userDocRef);
             }
 
             const userData = docSnap.data();

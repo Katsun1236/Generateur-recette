@@ -75,16 +75,20 @@
     </div>
     <div id="message-box"></div>
 
-    <!-- Le script principal s'occupe de la barre de navigation -->
-    <script type="module" src="../js/main.js"></script>
-    
-    <!-- Le script de la page s'occupe du contenu de la page -->
+    <!-- Ce script gère TOUT pour CETTE page UNIQUEMENT -->
     <script type="module">
         import { auth, db } from '../js/firebase-config.js';
         import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-functions.js";
 
+        // --- Éléments de la page (Navbar + Contenu) ---
+        const profileLink = document.getElementById('profile-link');
+        const profilePic = document.getElementById('profile-pic');
+        const authButtons = document.getElementById('auth-buttons');
+        const adminLink = document.getElementById('admin-link');
+        const ordersLink = document.getElementById('orders-link');
+        const myOrdersLink = document.getElementById('my-orders-link');
         const profileContainer = document.getElementById('profile-container');
         const usernameEl = document.getElementById('username');
         const userRoleEl = document.getElementById('user-role');
@@ -92,34 +96,49 @@
         const avatarImg = document.getElementById('avatar-img');
         const logoutBtn = document.getElementById('logout-btn');
         const editProfileBtn = document.getElementById('edit-profile-btn');
-        
-        const functions = getFunctions("europe-west1");
-        const discordClientId = "1407045715485786144";
-        const redirectUri = "https://ratio-faction.netlify.app/pages/profile.html";
-        const discordAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${discordClientId}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&scope=identify`;
 
-        // Écouteur de connexion spécifique à cette page
+        // --- Logique principale ---
         onAuthStateChanged(auth, async (user) => {
             if (user) {
+                // Gérer la redirection depuis Discord
                 const params = new URLSearchParams(window.location.search);
                 const discordCode = params.get('code');
-
                 if (discordCode) {
                     document.body.innerHTML = '<h1>Liaison de votre compte Discord en cours...</h1>';
+                    const functions = getFunctions("europe-west1");
                     const linkDiscordAccount = httpsCallable(functions, 'linkDiscordAccount');
                     try {
-                        await linkDiscordAccount({ code: discordCode, redirectUri: redirectUri });
+                        await linkDiscordAccount({ code: discordCode, redirectUri: "https://ratio-faction.netlify.app/pages/profile.html" });
                         window.location.href = 'profile.html';
                     } catch (error) {
-                        document.body.innerHTML = `<h1>Erreur</h1><p>Impossible de lier votre compte Discord. Veuillez réessayer.</p><a href="profile.html">Retour au profil</a>`;
+                        document.body.innerHTML = `<h1>Erreur</h1><p>Impossible de lier votre compte Discord.</p><a href="profile.html">Retour</a>`;
                     }
                     return;
                 }
 
+                // Récupérer les données utilisateur
                 const userDocRef = doc(db, 'users', user.uid);
                 const docSnap = await getDoc(userDocRef);
+
                 if (docSnap.exists() && docSnap.data().onboardingComplete) {
                     const userData = docSnap.data();
+                    
+                    // 1. Mettre à jour la barre de navigation
+                    const avatarUrl = userData.avatar || user.photoURL || `https://corsproxy.io/?https://mc-heads.net/avatar/${userData.minecraftUsername || 'Steve'}/64`;
+                    profilePic.src = avatarUrl;
+                    profileLink.style.display = 'block';
+                    authButtons.style.display = 'none';
+                    if(myOrdersLink) myOrdersLink.style.display = 'block';
+                    const marketStaffRoles = ['Admin', 'Leader', 'Officier', 'Vendeur'];
+                    if (marketStaffRoles.includes(userData.role)) {
+                        if (ordersLink) ordersLink.style.display = 'block';
+                        if(myOrdersLink) myOrdersLink.style.display = 'none';
+                    }
+                    if (userData.role === 'Admin') {
+                        if (adminLink) adminLink.style.display = 'block';
+                    }
+
+                    // 2. Mettre à jour le contenu de la page de profil
                     usernameEl.textContent = userData.minecraftUsername || "Utilisateur";
                     userRoleEl.textContent = userData.role || 'Membre';
                     avatarImg.src = userData.avatar || `https://mc-heads.net/avatar/${userData.minecraftUsername}/120`;
@@ -127,21 +146,28 @@
                     if (userData.discordId) {
                         discordContentEl.innerHTML = `<h3 class="discord-linked">Lié</h3><p style="margin:0;">${userData.discordUsername}</p>`;
                     } else {
+                        const discordClientId = "1407045715485786144";
+                        const redirectUri = "https://ratio-faction.netlify.app/pages/profile.html";
+                        const discordAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${discordClientId}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&scope=identify`;
                         discordContentEl.innerHTML = `<h3>Non lié</h3><a href="${discordAuthUrl}" class="discord-link-btn">Lier mon compte</a>`;
                     }
                     
                     profileContainer.classList.remove('loading');
+
+                    // 3. Activer les boutons
+                    logoutBtn.addEventListener('click', () => {
+                        signOut(auth).catch(error => console.error("Logout Error:", error));
+                    });
+                    editProfileBtn.addEventListener('click', () => {
+                        alert("La fonctionnalité d'édition du profil sera bientôt disponible !");
+                    });
+
+                } else {
+                    window.location.href = 'onboarding.html';
                 }
+            } else {
+                window.location.href = 'login.html';
             }
-        });
-
-        // Les écouteurs d'événements pour les boutons sont ici
-        logoutBtn.addEventListener('click', () => {
-            signOut(auth).catch(error => console.error("Logout Error:", error));
-        });
-
-        editProfileBtn.addEventListener('click', () => {
-            alert("La fonctionnalité d'édition du profil sera bientôt disponible !");
         });
     </script>
 </body>

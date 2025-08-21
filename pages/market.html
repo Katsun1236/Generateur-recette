@@ -84,6 +84,14 @@
             transform: translateY(-2px);
             color: var(--text-light);
         }
+
+        /* Style pour les liens admin */
+        .nav-admin-links {
+            display: flex;
+            flex-direction: row; /* Assure que les liens restent sur la même ligne */
+            justify-content: center;
+            gap: 20px;
+        }
     </style>
 </head>
 <body>
@@ -101,8 +109,8 @@
         </div>
         <div class="nav-auth">
             <div class="nav-admin-links">
-                <a href="orders.html" id="orders-link" style="display: none;">Commandes</a>
-                <a href="admin.html" id="admin-link" style="display: none;">Administration</a>
+                <a href="orders.html" id="orders-link" style="display: none; color: var(--yellow);">Commandes</a>
+                <a href="admin.html" id="admin-link" style="display: none; color: var(--yellow);">Administration</a>
             </div>
     
             <a href="orders.html" id="my-orders-link" class="my-orders-btn" style="display: none;">Mes Commandes</a>

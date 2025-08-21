@@ -9,7 +9,7 @@ const authButtons = document.getElementById('auth-buttons');
 const adminLink = document.getElementById('admin-link');
 const ordersLink = document.getElementById('orders-link');
 const myOrdersLink = document.getElementById('my-orders-link');
-const marketAdminLink = document.getElementById('market-admin-link'); // On ajoute le nouveau bouton
+const marketAdminLink = document.getElementById('market-admin-link');
 
 // --- Fonctions de mise à jour de la barre de navigation ---
 function updateNavbarForUser(user, userData = {}) {
@@ -20,30 +20,24 @@ function updateNavbarForUser(user, userData = {}) {
         profileLink.style.display = 'block';
         authButtons.style.display = 'none';
 
-        // --- Logique d'affichage des liens basée sur les rôles ---
-        const userRole = userData.role || 'Visiteur'; // On utilise le rôle principal
+        const userRole = userData.role || 'Visiteur';
 
-        // On cache tous les liens admin par défaut pour commencer proprement
         if (ordersLink) ordersLink.style.display = 'none';
         if (adminLink) adminLink.style.display = 'none';
         if (marketAdminLink) marketAdminLink.style.display = 'none';
 
-        // Affichage des "Commandes" pour tout le staff du marché
         if (['Vendeur', 'Responsable', 'Officier', 'Leader', 'Admin'].includes(userRole)) {
             if (ordersLink) ordersLink.style.display = 'block';
         }
         
-        // Affichage de "Admin Marché" pour les responsables et plus
         if (['Responsable', 'Officier', 'Leader', 'Admin'].includes(userRole)) {
             if (marketAdminLink) marketAdminLink.style.display = 'block';
         }
 
-        // Affichage de "Administration" (générale) pour les plus hauts gradés
         if (['Leader', 'Admin'].includes(userRole)) {
             if (adminLink) adminLink.style.display = 'block';
         }
 
-        // --- Logique pour le bouton "Mes Commandes" ---
         const isMarketStaff = ['Vendeur', 'Responsable', 'Officier', 'Leader', 'Admin'].includes(userRole);
         if (isMarketStaff) {
             if (myOrdersLink) myOrdersLink.style.display = 'none';
@@ -60,11 +54,10 @@ function updateNavbarForGuest() {
         if (adminLink) adminLink.style.display = 'none';
         if (ordersLink) ordersLink.style.display = 'none';
         if (myOrdersLink) myOrdersLink.style.display = 'none';
-        if (marketAdminLink) marketAdminLink.style.display = 'none'; // On cache aussi le nouveau bouton
+        if (marketAdminLink) marketAdminLink.style.display = 'none';
     }
 };
 
-// --- Logique principale d'authentification ---
 function initializeAuth() {
     onAuthStateChanged(auth, async (user) => {
         const currentPage = window.location.pathname.split('/').pop();
@@ -91,6 +84,17 @@ function initializeAuth() {
 
             if (userData.onboardingComplete) {
                 updateNavbarForUser(user, userData);
+                
+                // --- Protection des pages Admin ---
+                const userRole = userData.role || 'Visiteur';
+                const marketAdminRoles = ['Responsable', 'Officier', 'Leader', 'Admin'];
+
+                if (currentPage === 'market-admin.html' && !marketAdminRoles.includes(userRole)) {
+                    alert("Accès refusé. Vous n'avez pas les permissions nécessaires.");
+                    window.location.href = '../index.html';
+                }
+                // --- Fin de la protection ---
+
                 if (['login.html', 'register.html', 'onboarding.html'].includes(currentPage)) {
                     window.location.href = '../index.html';
                 }

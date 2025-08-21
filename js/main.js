@@ -9,6 +9,7 @@ const authButtons = document.getElementById('auth-buttons');
 const adminLink = document.getElementById('admin-link');
 const ordersLink = document.getElementById('orders-link');
 const myOrdersLink = document.getElementById('my-orders-link');
+const marketAdminLink = document.getElementById('market-admin-link'); // On ajoute le nouveau bouton
 
 // --- Fonctions de mise à jour de la barre de navigation ---
 function updateNavbarForUser(user, userData = {}) {
@@ -19,24 +20,35 @@ function updateNavbarForUser(user, userData = {}) {
         profileLink.style.display = 'block';
         authButtons.style.display = 'none';
 
-        // --- Logique d'affichage des liens ---
-        const userRoles = userData.roles || [userData.role] || [];
-        
-        // NOUVEAU : Ajout du rôle "Responsable"
-        const marketStaffRoles = ['Admin', 'Leader', 'Officier', 'Responsable', 'Vendeur'];
-        const isAdminOrStaff = userRoles.some(role => marketStaffRoles.includes(role));
+        // --- Logique d'affichage des liens basée sur les rôles ---
+        const userRole = userData.role || 'Visiteur'; // On utilise le rôle principal
 
-        // Affiche les liens "Commandes" et "Administration" si l'utilisateur est un membre du staff
-        if (isAdminOrStaff) {
+        // On cache tous les liens admin par défaut pour commencer proprement
+        if (ordersLink) ordersLink.style.display = 'none';
+        if (adminLink) adminLink.style.display = 'none';
+        if (marketAdminLink) marketAdminLink.style.display = 'none';
+
+        // Affichage des "Commandes" pour tout le staff du marché
+        if (['Vendeur', 'Responsable', 'Officier', 'Leader', 'Admin'].includes(userRole)) {
             if (ordersLink) ordersLink.style.display = 'block';
+        }
+        
+        // Affichage de "Admin Marché" pour les responsables et plus
+        if (['Responsable', 'Officier', 'Leader', 'Admin'].includes(userRole)) {
+            if (marketAdminLink) marketAdminLink.style.display = 'block';
+        }
+
+        // Affichage de "Administration" (générale) pour les plus hauts gradés
+        if (['Leader', 'Admin'].includes(userRole)) {
             if (adminLink) adminLink.style.display = 'block';
         }
 
-        // Gère l'affichage de "Mes Commandes"
-        if (isAdminOrStaff) {
-            if (myOrdersLink) myOrdersLink.style.display = 'none'; // Le staff voit tout dans "Commandes"
-        } else if (userRoles.includes('Client')) {
-            if (myOrdersLink) myOrdersLink.style.display = 'block'; // Le client voit "Mes Commandes"
+        // --- Logique pour le bouton "Mes Commandes" ---
+        const isMarketStaff = ['Vendeur', 'Responsable', 'Officier', 'Leader', 'Admin'].includes(userRole);
+        if (isMarketStaff) {
+            if (myOrdersLink) myOrdersLink.style.display = 'none';
+        } else if (userRole === 'Client') {
+            if (myOrdersLink) myOrdersLink.style.display = 'block';
         }
     }
 };
@@ -48,6 +60,7 @@ function updateNavbarForGuest() {
         if (adminLink) adminLink.style.display = 'none';
         if (ordersLink) ordersLink.style.display = 'none';
         if (myOrdersLink) myOrdersLink.style.display = 'none';
+        if (marketAdminLink) marketAdminLink.style.display = 'none'; // On cache aussi le nouveau bouton
     }
 };
 
@@ -68,8 +81,8 @@ function initializeAuth() {
                     avatar: user.photoURL || null,
                     createdAt: new Date().toISOString(),
                     onboardingComplete: false,
-                    role: 'Visiteur', // Ancien système
-                    roles: ['Visiteur'] // Nouveau système de rôles multiples
+                    role: 'Visiteur',
+                    roles: ['Visiteur']
                 });
                 docSnap = await getDoc(userDocRef);
             }
@@ -88,7 +101,6 @@ function initializeAuth() {
             }
         } else {
             updateNavbarForGuest();
-            // AJOUT : Protection de la nouvelle page admin
             const protectedPages = ['profile.html', 'admin.html', 'market-admin.html', 'orders.html', 'checkout.html'];
             if (protectedPages.includes(currentPage)) {
                 window.location.href = path('login.html');

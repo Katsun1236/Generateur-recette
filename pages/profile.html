@@ -3,171 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profil - Faction R4TIO</title>
+    <title>Profil Utilisateur - Faction R4TIO</title>
+    <meta name="description" content="Gérez votre profil de membre de la faction R4TIO.">
+    <link rel="icon" href="../images/pictures/Logo.png" type="image/png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        .profile-container { max-width: 800px; margin: 2rem auto; padding: 2rem; background-color: var(--card-bg-color); border-radius: 10px; }
-        .profile-header { display: flex; align-items: center; margin-bottom: 2rem; border-bottom: 1px solid #444; padding-bottom: 2rem; gap: 2rem; }
-        .profile-avatar { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid var(--primary-red); flex-shrink: 0; }
-        .profile-info h1 { margin: 0; font-size: 2.5rem; font-family: 'Anton', sans-serif; word-break: break-all; }
-        .profile-info p { margin: 5px 0 15px 0; color: var(--text-medium); font-weight: bold; text-transform: uppercase; }
-        .profile-actions button { background-color: transparent; color: var(--text-light); border: 2px solid var(--primary-red); padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; text-transform: uppercase; transition: all 0.3s; margin-right: 10px; }
-        .profile-actions button:hover { background-color: var(--primary-red); }
-        .logout-btn { background-color: var(--primary-red) !important; }
-        .logout-btn:hover { background-color: var(--primary-red-dark) !important; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1.5rem; }
-        .stat-card { background-color: #2c2c2c; padding: 1.5rem; border-radius: 8px; text-align: center; }
-        .stat-card i { font-size: 2rem; color: var(--primary-red); margin-bottom: 1rem; }
-        .stat-card h3 { margin: 0 0 0.5rem 0; font-size: 1.5rem; word-break: break-all; }
-        .stat-card p { margin: 0; color: var(--text-medium); font-size: 0.9rem; }
-        .loading #username, .loading #user-role { background-color: #444; color: transparent; border-radius: 4px; min-height: 1em; animation: pulse-bg 1s infinite; }
-        .discord-link-btn { background-color: var(--discord-blue); color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; display: inline-block; margin-top: 1rem; }
-        .discord-linked { color: var(--green); font-weight: bold; }
-        @keyframes pulse-bg { 50% { background-color: #555; } }
+        .profile-container { max-width: 800px; margin: 40px auto; padding: 20px; background-color: var(--card-bg-color); border-radius: 10px; border: 1px solid #444; }
+        .profile-header { text-align: center; margin-bottom: 30px; }
+        .profile-header img { width: 150px; height: 150px; border-radius: 50%; border: 4px solid var(--primary-red); object-fit: cover; }
+        .profile-header h1 { margin: 15px 0 5px 0; color: var(--text-light); }
+        .profile-header p { color: var(--text-medium); font-size: 1.1rem; }
+        .profile-details h2 { color: var(--primary-red); border-bottom: 2px solid var(--primary-red); padding-bottom: 10px; margin-bottom: 20px; }
+        .profile-details .detail-item { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 1.1rem; }
+        .profile-details .detail-item span:first-child { font-weight: 700; color: var(--text-light); }
+        .profile-details .detail-item span:last-child { color: var(--text-medium); }
+        .profile-actions { text-align: center; margin-top: 30px; }
+        .profile-actions .btn { margin: 5px; }
+        .site-footer { text-align: center; padding: 2rem; background-color: var(--card-bg-color); color: #888; font-size: 0.9rem; margin-top: 40px; }
+        .nav-auth { display: flex; align-items: center; gap: 25px; }
+        .nav-admin-links { display: flex; gap: 20px; }
+        .nav-admin-links a { color: var(--yellow); font-weight: 700; text-transform: uppercase; }
+        .nav-toggle { display: none; background: none; border: none; cursor: pointer; padding: 10px; }
+        .nav-toggle .hamburger { display: block; width: 25px; height: 3px; background-color: var(--text-light); position: relative; transition: transform 0.3s ease; }
+        .nav-toggle .hamburger::before, .nav-toggle .hamburger::after { content: ''; position: absolute; left: 0; width: 100%; height: 3px; background-color: var(--text-light); transition: transform 0.3s ease, top 0.3s ease, bottom 0.3s ease; }
+        .nav-toggle .hamburger::before { top: -8px; }
+        .nav-toggle .hamburger::after { bottom: -8px; }
+
+        @media (max-width: 991px) {
+            .navbar { flex-wrap: wrap; justify-content: space-between; }
+            .nav-toggle { display: block; }
+            .nav-center, .nav-auth { display: none; flex-direction: column; width: 100%; text-align: center; gap: 15px; padding: 20px 0; }
+            .nav-auth { gap: 20px; }
+            .navbar.active .nav-center, .navbar.active .nav-auth { display: flex; }
+            .nav-admin-links { justify-content: center; }
+            #auth-buttons { display: flex; flex-direction: column; gap: 15px; }
+        }
     </style>
 </head>
 <body>
     <nav class="navbar">
-        <div class="nav-left"><a href="../index.html"><img src="../images/pictures/Logo.png" alt="Logo R4TIO" class="nav-logo"></a></div>
+        <div class="nav-left">
+            <a href="../index.html"><img src="../images/pictures/Logo.png" alt="Logo R4TIO" class="nav-logo"></a>
+        </div>
+        <button class="nav-toggle" id="nav-toggle">
+            <span class="hamburger"></span>
+        </button>
         <div class="nav-center">
             <a href="https://discord.gg/UFVCDc4mkU" target="_blank" rel="noopener noreferrer">Discord</a>
             <a href="recrutement.html">Recrutement</a>
             <a href="market.html">Marché</a>
-            <a href="orders.html" id="my-orders-link" style="display: none;">Mes Commandes</a>
-            <a href="orders.html" id="orders-link" style="display: none; color: var(--yellow);">Commandes Staff</a>
-            <a href="admin.html" id="admin-link" style="display: none; color: var(--yellow);">Administration</a>
         </div>
         <div class="nav-auth">
-             <div id="auth-buttons" style="display: none;"><a href="login.html">Connexion</a><a href="register.html" class="register-btn">Inscription</a></div>
-            <a href="profile.html" id="profile-link"><img id="profile-pic" src="" alt="Photo de profil"></a>
+            <div class="nav-admin-links">
+                <a href="orders.html" id="orders-link" style="display: none;">Commandes</a>
+                <a href="admin.html" id="admin-link" style="display: none;">Administration</a>
+            </div>
+            <div id="auth-buttons">
+                <a href="login.html">Connexion</a>
+                <a href="register.html" class="register-btn">Inscription</a>
+            </div>
+            <a href="profile.html" id="profile-link" style="display: none;">
+                <img id="profile-pic" src="" alt="Photo de profil">
+            </a>
         </div>
     </nav>
-    <div class="profile-container loading" id="profile-container">
-        <div class="profile-header">
-            <img src="" alt="Avatar de l'utilisateur" class="profile-avatar" id="avatar-img">
-            <div class="profile-info">
-                <h1 id="username">CHARGEMENT</h1>
-                <p id="user-role">...</p>
-                <div class="profile-actions">
-                    <button id="edit-profile-btn"><i class="fas fa-pencil-alt"></i> Éditer</button>
-                    <button id="logout-btn" class="logout-btn">Déconnexion</button>
+
+    <main class="page-container">
+        <div class="profile-container">
+            <div class="profile-header">
+                <img id="profile-avatar" src="https://placehold.co/150x150/2c2c2c/e74c3c?text=N/A" alt="Avatar de l'utilisateur">
+                <h1 id="profile-username">Nom d'Utilisateur</h1>
+                <p id="profile-role">Membre</p>
+            </div>
+            <div class="profile-details">
+                <h2>Informations</h2>
+                <div class="detail-item">
+                    <span>Email:</span>
+                    <span id="profile-email">email@example.com</span>
+                </div>
+                <div class="detail-item">
+                    <span>Membre depuis:</span>
+                    <span id="profile-creation-date">01/01/2024</span>
                 </div>
             </div>
-        </div>
-        <div class="stats-grid">
-            <div class="stat-card" id="discord-card">
-                <i class="fa-brands fa-discord"></i>
-                <div id="discord-content"></div>
-                <p>Statut Discord</p>
-            </div>
-            <div class="stat-card">
-                <i class="fas fa-skull-crossbones"></i>
-                <h3 id="user-kills">0</h3>
-                <p>Kills (à venir)</p>
-            </div>
-            <div class="stat-card">
-                <i class="fas fa-cross"></i>
-                <h3 id="user-deaths">0</h3>
-                <p>Morts (à venir)</p>
+            <div class="profile-actions">
+                <button id="logout-button" class="btn btn-danger">Déconnexion</button>
             </div>
         </div>
-    </div>
-    <div id="message-box"></div>
+    </main>
 
-    <!-- Ce script gère TOUT pour CETTE page UNIQUEMENT -->
-    <script type="module">
-        import { auth, db } from '../js/firebase-config.js';
-        import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-functions.js";
+    <footer class="site-footer">
+        <p>&copy; 2024 Faction R4TIO. Tous droits réservés.</p>
+        <p>Développé par Katsun1246</p>
+    </footer>
 
-        // --- Éléments de la page (Navbar + Contenu) ---
-        const profileLink = document.getElementById('profile-link');
-        const profilePic = document.getElementById('profile-pic');
-        const authButtons = document.getElementById('auth-buttons');
-        const adminLink = document.getElementById('admin-link');
-        const ordersLink = document.getElementById('orders-link');
-        const myOrdersLink = document.getElementById('my-orders-link');
-        const profileContainer = document.getElementById('profile-container');
-        const usernameEl = document.getElementById('username');
-        const userRoleEl = document.getElementById('user-role');
-        const discordContentEl = document.getElementById('discord-content');
-        const avatarImg = document.getElementById('avatar-img');
-        const logoutBtn = document.getElementById('logout-btn');
-        const editProfileBtn = document.getElementById('edit-profile-btn');
-
-        // --- Logique principale ---
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                // Gérer la redirection depuis Discord
-                const params = new URLSearchParams(window.location.search);
-                const discordCode = params.get('code');
-                if (discordCode) {
-                    document.body.innerHTML = '<h1>Liaison de votre compte Discord en cours...</h1>';
-                    const functions = getFunctions("europe-west1");
-                    const linkDiscordAccount = httpsCallable(functions, 'linkDiscordAccount');
-                    try {
-                        await linkDiscordAccount({ code: discordCode, redirectUri: "https://ratio-faction.netlify.app/pages/profile.html" });
-                        window.location.href = 'profile.html';
-                    } catch (error) {
-                        document.body.innerHTML = `<h1>Erreur</h1><p>Impossible de lier votre compte Discord.</p><a href="profile.html">Retour</a>`;
-                    }
-                    return;
-                }
-
-                // Récupérer les données utilisateur
-                const userDocRef = doc(db, 'users', user.uid);
-                const docSnap = await getDoc(userDocRef);
-
-                if (docSnap.exists() && docSnap.data().onboardingComplete) {
-                    const userData = docSnap.data();
-                    
-                    // 1. Mettre à jour la barre de navigation
-                    const avatarUrl = userData.avatar || user.photoURL || `https://corsproxy.io/?https://mc-heads.net/avatar/${userData.minecraftUsername || 'Steve'}/64`;
-                    profilePic.src = avatarUrl;
-                    profileLink.style.display = 'block';
-                    authButtons.style.display = 'none';
-                    if(myOrdersLink) myOrdersLink.style.display = 'block';
-                    const marketStaffRoles = ['Admin', 'Leader', 'Officier', 'Vendeur'];
-                    if (marketStaffRoles.includes(userData.role)) {
-                        if (ordersLink) ordersLink.style.display = 'block';
-                        if(myOrdersLink) myOrdersLink.style.display = 'none';
-                    }
-                    if (userData.role === 'Admin') {
-                        if (adminLink) adminLink.style.display = 'block';
-                    }
-
-                    // 2. Mettre à jour le contenu de la page de profil
-                    usernameEl.textContent = userData.minecraftUsername || "Utilisateur";
-                    userRoleEl.textContent = userData.role || 'Membre';
-                    avatarImg.src = userData.avatar || `https://mc-heads.net/avatar/${userData.minecraftUsername}/120`;
-                    
-                    if (userData.discordId) {
-                        discordContentEl.innerHTML = `<h3 class="discord-linked">Lié</h3><p style="margin:0;">${userData.discordUsername}</p>`;
-                    } else {
-                        const discordClientId = "1407045715485786144";
-                        const redirectUri = "https://ratio-faction.netlify.app/pages/profile.html";
-                        const discordAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${discordClientId}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&scope=identify`;
-                        discordContentEl.innerHTML = `<h3>Non lié</h3><a href="${discordAuthUrl}" class="discord-link-btn">Lier mon compte</a>`;
-                    }
-                    
-                    profileContainer.classList.remove('loading');
-
-                    // 3. Activer les boutons
-                    logoutBtn.addEventListener('click', () => {
-                        signOut(auth).catch(error => console.error("Logout Error:", error));
-                    });
-                    editProfileBtn.addEventListener('click', () => {
-                        alert("La fonctionnalité d'édition du profil sera bientôt disponible !");
-                    });
-
-                } else {
-                    window.location.href = 'onboarding.html';
-                }
-            } else {
-                window.location.href = 'login.html';
-            }
+    <script type="module" src="../js/main.js"></script>
+    <script>
+        const navToggle = document.getElementById('nav-toggle');
+        const navbar = document.querySelector('.navbar');
+        navToggle.addEventListener('click', () => {
+            navbar.classList.toggle('active');
         });
     </script>
 </body>

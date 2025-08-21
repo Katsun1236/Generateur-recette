@@ -1,6 +1,6 @@
 import { auth, db } from './firebase-config.js';
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
 // --- Éléments de la barre de navigation ---
 const profileLink = document.getElementById('profile-link');
@@ -44,25 +44,42 @@ function updateNavbarForGuest() {
 function initializeAuth() {
     onAuthStateChanged(auth, async (user) => {
         const currentPage = window.location.pathname.split('/').pop();
+        const path = (page) => window.location.pathname.includes('/pages/') ? page : `pages/${page}`;
         
         if (user) {
             const userDocRef = doc(db, 'users', user.uid);
-            const docSnap = await getDoc(userDocRef);
+            let docSnap = await getDoc(userDocRef);
 
-            if (docSnap.exists() && docSnap.data().onboardingComplete) {
-                updateNavbarForUser(user, docSnap.data());
+            // Si le document n'existe pas, on le crée (cas d'une première connexion)
+            if (!docSnap.exists()) {
+                await setDoc(userDocRef, {
+                    email: user.email,
+                    displayName: user.displayName || user.email.split('@')[0],
+                    avatar: user.photoURL || null,
+                    createdAt: new Date().toISOString(),
+                    onboardingComplete: false,
+                    role: 'Visiteur'
+                });
+                docSnap = await getDoc(userDocRef); // On relit le document qu'on vient de créer
+            }
+
+            const userData = docSnap.data();
+
+            if (userData.onboardingComplete) {
+                updateNavbarForUser(user, userData);
+                if (['login.html', 'register.html', 'onboarding.html'].includes(currentPage)) {
+                    window.location.href = '../index.html';
+                }
             } else {
-                const path = window.location.pathname.includes('/pages/') ? 'onboarding.html' : 'pages/onboarding.html';
-                if (currentPage !== 'onboarding.html' && currentPage !== 'register.html' && currentPage !== 'login.html') {
-                    window.location.href = path;
+                if (currentPage !== 'onboarding.html') {
+                    window.location.href = path('onboarding.html');
                 }
             }
         } else {
             updateNavbarForGuest();
             const protectedPages = ['profile.html', 'admin.html', 'orders.html', 'checkout.html'];
             if (protectedPages.includes(currentPage)) {
-                const path = window.location.pathname.includes('/pages/') ? 'login.html' : 'pages/login.html';
-                window.location.href = path;
+                window.location.href = path('login.html');
             }
         }
     });

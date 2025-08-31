@@ -125,30 +125,30 @@
             <form id="recruitment-form" class="form-container">
                 <div class="form-section">
                     <h2>Informations personnelles</h2>
-<div class="form-group">
-  <label for="discord-account">Compte Discord <span style="color:red">*</span></label>
-  <input type="text" id="discord-account" placeholder="Ex: MonPseudo#1234" required>
-</div>
-<div class="form-group">
-  <label for="discord-id">Identifiant Discord (optionnel)</label>
-  <input type="text" id="discord-id" placeholder="Ex: 123456789012345678">
-</div>
-                    <div class="form-group"><label for="age">Âge</label><input type="number" id="age" required></div>
-                    <div class="form-group"><label for="qualities">3 Qualités</label><input type="text" id="qualities" placeholder="Ex: Stratège, Calme, Organisé" required></div>
-                    <div class="form-group"><label for="defects">3 Défauts</label><input type="text" id="defects" placeholder="Ex: Bavard, Impatient, Têtu" required></div>
+                    <div class="form-group">
+                      <label for="discord-account">Compte Discord <span style="color:red">*</span></label>
+                      <input type="text" id="discord-account" placeholder="Ex: MonPseudo#1234" required>
+                    </div>
+                    <div class="form-group">
+                      <label for="discord-id">Identifiant Discord (optionnel)</label>
+                      <input type="text" id="discord-id" placeholder="Ex: 123456789012345678">
+                    </div>
+                    <div class="form-group"><label for="age">Âge <span style="color:red">*</span></label><input type="number" id="age" required></div>
+                    <div class="form-group"><label for="qualities">3 Qualités <span style="color:red">*</span></label><input type="text" id="qualities" placeholder="Ex: Stratège, Calme, Organisé" required></div>
+                    <div class="form-group"><label for="defects">3 Défauts <span style="color:red">*</span></label><input type="text" id="defects" placeholder="Ex: Bavard, Impatient, Têtu" required></div>
                 </div>
                 <div class="form-section">
                     <h2>Informations en jeu</h2>
-                    <div class="form-group"><label for="pseudo">Pseudo</label><input type="text" id="pseudo" required></div>
-                    <div class="form-group"><label for="version">Depuis quelle version jouez-vous ?</label><input type="text" id="version" placeholder="Ex: V6, V7..." required></div>
-                    <div class="form-group"><label for="knowledge">Connaissez-vous bien le serveur ?</label><textarea id="knowledge" required></textarea></div>
-                    <div class="form-group"><label for="speciality">Quelle est votre spécialité ?</label><input type="text" id="speciality" placeholder="Ex: PvP, Build, Farm..." required></div>
+                    <div class="form-group"><label for="pseudo">Pseudo <span style="color:red">*</span></label><input type="text" id="pseudo" required></div>
+                    <div class="form-group"><label for="version">Depuis quelle version jouez-vous ? <span style="color:red">*</span></label><input type="text" id="version" placeholder="Ex: V6, V7..." required></div>
+                    <div class="form-group"><label for="knowledge">Connaissez-vous bien le serveur ? <span style="color:red">*</span></label><textarea id="knowledge" required></textarea></div>
+                    <div class="form-group"><label for="speciality">Quelle est votre spécialité ? <span style="color:red">*</span></label><input type="text" id="speciality" placeholder="Ex: PvP, Build, Farm..." required></div>
                 </div>
                 <div class="form-section">
                     <h2>Informations de Faction</h2>
-                    <div class="form-group"><label for="why-you">Pourquoi vous et pas un autre ?</label><textarea id="why-you" required></textarea></div>
-                    <div class="form-group"><label for="why-us">Pourquoi notre faction ?</label><textarea id="why-us" required></textarea></div>
-                    <div class="form-group"><label for="past-factions">Avez-vous déjà été dans d’autres factions ? Si oui, lesquelles ?</label><textarea id="past-factions" required></textarea></div>
+                    <div class="form-group"><label for="why-you">Pourquoi vous et pas un autre ? <span style="color:red">*</span></label><textarea id="why-you" required></textarea></div>
+                    <div class="form-group"><label for="why-us">Pourquoi notre faction ? <span style="color:red">*</span></label><textarea id="why-us" required></textarea></div>
+                    <div class="form-group"><label for="past-factions">Avez-vous déjà été dans d’autres factions ? Si oui, lesquelles ? <span style="color:red">*</span></label><textarea id="past-factions" required></textarea></div>
                 </div>
                 <button type="submit" class="submit-btn" id="submit-application-btn">Soumettre ma candidature</button>
             </form>
@@ -242,7 +242,11 @@
                 else showView('pending');
             } else {
                 showView('info');
-                if(recruitmentForm) { recruitmentForm.querySelector('#pseudo').value = currentUserData.minecraftUsername || ''; }
+                if(recruitmentForm) { 
+                    recruitmentForm.querySelector('#pseudo').value = currentUserData.minecraftUsername || ''; 
+                    recruitmentForm.querySelector('#discord-account').value = currentUserData.discordUsername || ''; 
+                    recruitmentForm.querySelector('#discord-id').value = currentUserData.discordId || ''; 
+                }
             }
         }
 
@@ -253,96 +257,12 @@
                 submitBtn.disabled = true;
                 submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Envoi...`;
                 
+                // MODIFICATION 2 : Ajout des champs discord dans l'objet de données
                 const applicationData = {
-                    userId: currentUserData.id, applicantUsername: currentUserData.minecraftUsername, applicantAvatar: currentUserData.avatar,
-                    age: recruitmentForm.querySelector('#age').value, qualities: recruitmentForm.querySelector('#qualities').value, defects: recruitmentForm.querySelector('#defects').value,
-                    pseudo: recruitmentForm.querySelector('#pseudo').value, version: recruitmentForm.querySelector('#version').value, knowledge: recruitmentForm.querySelector('#knowledge').value,
-                    speciality: recruitmentForm.querySelector('#speciality').value, whyYou: recruitmentForm.querySelector('#why-you').value, whyUs: recruitmentForm.querySelector('#why-us').value,
-                    pastFactions: recruitmentForm.querySelector('#past-factions').value, status: APP_STATUS.PENDING, submittedAt: new Date().toISOString()
-                };
-
-                try {
-                    await setDoc(doc(db, 'candidatures', currentUserData.id), applicationData);
-                    await updateDoc(doc(db, 'users', currentUserData.id), { role: ROLES.CANDIDATE });
-                    showView('pending');
-                } catch (error) {
-                    console.error("Erreur lors de la soumission :", error);
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'Soumettre ma candidature';
-                }
-            });
-        }
-
-        async function loadAllApplications() {
-            Object.values(lists).forEach(list => list.innerHTML = '');
-            let pendingCount = 0, approvedCount = 0, deniedCount = 0;
-            try {
-                const querySnapshot = await getDocs(collection(db, "candidatures"));
-                if (querySnapshot.empty) {
-                    lists.pending.innerHTML = '<p>Aucune nouvelle candidature.</p>';
-                } else {
-                    querySnapshot.docs.forEach(appDoc => {
-                        const appData = appDoc.data();
-                        const card = createApplicationCard(appData);
-                        if (appData.status === APP_STATUS.APPROVED) { lists.approved.appendChild(card); approvedCount++; }
-                        else if (appData.status === APP_STATUS.DENIED) { lists.denied.appendChild(card); deniedCount++; }
-                        else { lists.pending.appendChild(card); pendingCount++; }
-                    });
-                }
-            } catch (error) {
-                console.error("Erreur de chargement des candidatures:", error);
-                lists.pending.innerHTML = '<p>Erreur de chargement.</p>';
-            }
-            counts.pending.textContent = pendingCount;
-            counts.approved.textContent = approvedCount;
-            counts.denied.textContent = deniedCount;
-        }
-
-        function createApplicationCard(app) {
-            const card = document.createElement('div');
-            card.className = 'application-card';
-            if(app.status === APP_STATUS.APPROVED) card.classList.add('approved');
-            if(app.status === APP_STATUS.DENIED) card.classList.add('denied');
-            const avatar = app.applicantAvatar || `https://corsproxy.io/?https://mc-heads.net/avatar/${app.applicantUsername || 'Steve'}/40`;
-            const submittedDate = new Date(app.submittedAt).toLocaleDateString('fr-FR');
-            card.innerHTML = `
-                <div class="application-header">
-                    <img src="${avatar}" alt="avatar" class="applicant-avatar" onerror="this.src='https://corsproxy.io/?https://mc-heads.net/avatar/Steve/40'">
-                    <div class="applicant-info"><h3>${app.applicantUsername || 'N/A'}</h3><span>Candidature du ${submittedDate}</span></div>
-                    <i class="fas fa-chevron-down expand-icon"></i>
-                </div>
-                <div class="application-body">
-                    <p><strong>Âge :</strong> ${app.age || 'N/A'}</p><p><strong>Qualités :</strong> ${app.qualities || 'N/A'}</p><p><strong>Défauts :</strong> ${app.defects || 'N/A'}</p>
-                    <hr class="details-divider">
-                    <p><strong>Spécialité(s) :</strong> ${app.speciality || 'N/A'}</p><p><strong>Anciennes factions :</strong> ${app.pastFactions || 'N/A'}</p>
-                    <hr class="details-divider">
-                    <p><strong>Pourquoi lui ?</strong> ${app.whyYou || 'N/A'}</p><p><strong>Pourquoi nous ?</strong> ${app.whyUs || 'N/A'}</p>
-                    <div class="application-actions">
-                        <button class="action-btn approve-btn">Approuver</button><button class="action-btn deny-btn">Refuser</button>
-                    </div>
-                </div>`;
-            card.querySelector('.application-header').addEventListener('click', () => card.classList.toggle('open'));
-            card.querySelector('.approve-btn').addEventListener('click', (e) => handleDecision(e, app.userId, APP_STATUS.APPROVED, ROLES.MEMBER));
-            card.querySelector('.deny-btn').addEventListener('click', (e) => handleDecision(e, app.userId, APP_STATUS.DENIED, ROLES.VISITOR));
-            return card;
-        }
-
-        async function handleDecision(event, applicantId, newStatus, newRole) {
-            event.stopPropagation();
-            const button = event.target;
-            button.disabled = true;
-            button.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
-            const originalText = newStatus === APP_STATUS.APPROVED ? 'Approuver' : 'Refuser';
-            try {
-                await updateDoc(doc(db, 'candidatures', applicantId), { status: newStatus });
-                await updateDoc(doc(db, 'users', applicantId), { role: newRole });
-                await loadAllApplications();
-            } catch (error) {
-                console.error("Erreur lors de la décision :", error);
-                button.disabled = false;
-                button.textContent = originalText;
-            }
-        }
-    </script>
-</body>
-</html>
+                    userId: currentUserData.id, 
+                    applicantUsername: currentUserData.minecraftUsername, 
+                    applicantAvatar: currentUserData.avatar,
+                    discordAccount: recruitmentForm.querySelector('#discord-account').value,
+                    discordId: recruitmentForm.querySelector('#discord-id').value,
+                    age: recruitmentForm.querySelector('#age').value, 
+                    qualities: recruitmentForm.querySelector('#qualities')

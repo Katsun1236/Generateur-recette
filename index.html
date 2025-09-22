@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -34,8 +33,7 @@
             image-rendering: pixelated;
         }
 
-        h1,
-        h2 {
+        h1, h2 {
             color: var(--font-color);
             text-shadow: 3px 3px var(--shadow-color);
         }
@@ -66,10 +64,7 @@
             width: 100%;
             box-sizing: border-box;
         }
-
-        #search-bar::placeholder {
-            color: #dddddd;
-        }
+        #search-bar::placeholder { color: #dddddd; }
 
         #item-list {
             background-color: var(--container-bg);
@@ -81,7 +76,7 @@
             overflow-y: auto;
             flex-grow: 1;
         }
-
+        
         #item-list .item {
             width: 48px;
             height: 48px;
@@ -93,10 +88,8 @@
             cursor: grab;
             display: inline-block;
         }
-
-        .item:active {
-            cursor: grabbing;
-        }
+        
+        .item:active { cursor: grabbing; }
 
         .right-panel {
             display: flex;
@@ -104,12 +97,9 @@
             gap: 20px;
         }
 
-        .mode-selector {
-            text-align: center;
-        }
+        .mode-selector { text-align: center; }
 
-        .mode-btn,
-        .action-btn {
+        .mode-btn, .action-btn {
             background-color: var(--slot-bg);
             font-family: var(--pixel-font);
             font-size: 14px;
@@ -119,15 +109,11 @@
             cursor: pointer;
             text-shadow: 2px 2px var(--shadow-color);
         }
-
         .mode-btn.active {
             background-color: var(--green-button);
             border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
         }
-
-        .action-btn {
-            background-color: var(--blue-button);
-        }
+        .action-btn { background-color: var(--blue-button); }
 
         .interface-container {
             background-color: var(--container-bg);
@@ -140,13 +126,10 @@
             align-items: center;
             gap: 15px;
         }
+        
+        #furnace-interface { display: none; }
 
-        #furnace-interface {
-            display: none;
-        }
-
-        .crafting-area,
-        #furnace-interface {
+        .crafting-area {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -173,33 +156,16 @@
             box-sizing: border-box;
             position: relative;
         }
+        
+        .grid-slot.drag-over { border: 2px solid var(--green-button); }
+        .grid-slot[draggable="true"] { cursor: grab; }
+        .grid-slot[draggable="true"]:active { cursor: grabbing; }
 
-        .grid-slot.drag-over {
-            border: 2px solid var(--green-button);
-        }
-
-        .grid-slot img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-
-        .arrow,
-        .plus {
-            font-size: 40px;
-            text-shadow: 3px 3px var(--shadow-color);
-        }
-
-        .furnace-slots {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            align-items: center;
-        }
-
+        .grid-slot img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+        .arrow { font-size: 40px; text-shadow: 3px 3px var(--shadow-color); }
+        .furnace-slots { display: flex; flex-direction: column; gap: 10px; align-items: center; }
         .flame-icon {
-            width: 32px;
-            height: 32px;
+            width: 32px; height: 32px;
             background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ff9800'%3E%3Cpath d='M13.04 2.21C12.03 2.76 11.33 3.75 11.33 4.88c0 .54.19 1.05.5 1.48-.52 2.63-2.43 4.54-5.07 5.07C6.22 11.52 5.71 11.33 5.18 11.33c-1.13 0-2.12.7-2.67 1.71C2.21 13.56 2 14.28 2 15c0 2.21 1.79 4 4 4 .72 0 1.44-.21 2.05-.56 1.01.55 2 .84 3 .84s1.99-.29 3-.84c.61.35 1.33.56 2.05.56 2.21 0 4-1.79 4-4 0-.72-.21-1.44-.56-2.05-.55-1.01-.84-2-1.39-3.04.63-.44 1.15-1.01 1.48-1.71.55-1.01.28-2.28-.73-2.79-1.01-.52-2.28-.24-2.79.77-.32.6-.45 1.28-.4 1.96-1.85-1.28-3.08-3.23-3.41-5.43.32-.23.54-.6.54-1.02 0-1.13-.7-2.12-1.71-2.67z'/%3E%3C/svg%3E") no-repeat center center;
         }
 
@@ -209,7 +175,7 @@
             right: 2px;
             width: 15px;
             height: 15px;
-            background-color: var(--green-button);
+            background-color: var(--blue-button);
             color: white;
             font-size: 10px;
             line-height: 15px;
@@ -217,9 +183,10 @@
             border-radius: 50%;
             border: 1px solid var(--border-dark);
             text-shadow: none;
-            pointer-events: none;
+            cursor: pointer;
+            z-index: 2;
         }
-
+        
         .controls {
             display: flex;
             align-items: center;
@@ -227,32 +194,15 @@
             gap: 15px;
             margin-top: 10px;
         }
-
-        .control-group {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .control-group label {
-            font-size: 12px;
-            text-shadow: 2px 2px var(--shadow-color);
-        }
-
+        
+        .control-group { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .control-group label { font-size: 12px; text-shadow: 2px 2px var(--shadow-color); }
         .control-group input {
-            font-family: var(--pixel-font);
-            font-size: 12px;
-            padding: 8px;
-            border: 3px inset #525252;
-            background-color: var(--slot-bg);
-            color: var(--font-color);
-            text-align: center;
+            font-family: var(--pixel-font); font-size: 12px; padding: 8px;
+            border: 3px inset #525252; background-color: var(--slot-bg);
+            color: var(--font-color); text-align: center;
         }
-
-        input[type=number] {
-            width: 80px;
-        }
+        input[type=number] { width: 80px; }
 
         .main-actions {
             display: flex;
@@ -263,42 +213,73 @@
         #download-btn {
             background-color: var(--green-button);
             font-family: var(--pixel-font);
-            color: white;
-            font-size: 16px;
+            color: white; font-size: 16px;
             border: 4px solid var(--border-dark);
             border-right-color: var(--border-light);
             border-bottom-color: var(--border-light);
-            padding: 15px 25px;
-            cursor: pointer;
+            padding: 15px 25px; cursor: pointer;
             text-shadow: 2px 2px var(--shadow-color);
         }
+        #download-btn:active { border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light); }
 
-        #download-btn:active {
-            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
-        }
-
-        #output-container {
-            width: 100%;
-            max-width: 950px;
-            text-align: center;
-        }
-
+        #output-container { width: 100%; max-width: 950px; text-align: center; }
         #output-code {
-            background-color: #2a2a2a;
-            border: 4px solid var(--border-dark);
-            padding: 15px;
-            width: 100%;
-            min-height: 200px;
-            white-space: pre-wrap;
-            word-break: break-all;
-            color: #e0e0e0;
-            text-align: left;
-            font-size: 14px;
-            box-sizing: border-box;
+            background-color: #2a2a2a; border: 4px solid var(--border-dark); padding: 15px;
+            width: 100%; min-height: 200px; white-space: pre-wrap; word-break: break-all;
+            color: #e0e0e0; text-align: left; font-size: 14px; box-sizing: border-box;
         }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.6);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: var(--container-bg);
+            padding: 20px;
+            border: 4px solid var(--border-dark);
+            border-right-color: var(--border-light);
+            border-bottom-color: var(--border-light);
+            min-width: 300px;
+            max-width: 500px;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .modal-header h2 { margin: 0; font-size: 16px; }
+
+        .close-btn {
+            font-family: var(--pixel-font);
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            background: var(--slot-bg);
+            padding: 10px;
+            border: 2px inset #525252;
+        }
+        .modal-item { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+        .modal-item img { width: 32px; height: 32px; }
+
     </style>
 </head>
-
 <body>
 
     <h1>Générateur de Recettes</h1>
@@ -311,43 +292,35 @@
 
         <div class="right-panel">
             <div class="mode-selector">
-                <button id="crafting-btn" class="mode-btn active">Établi</button>
+                <button id="crafting-btn" class="mode-btn">Établi</button>
                 <button id="furnace-btn" class="mode-btn">Four</button>
             </div>
 
             <div id="crafting-interface" class="interface-container">
                 <div class="crafting-area">
                     <div id="crafting-grid">
-                        <div class="grid-slot" data-index="0"></div>
-                        <div class="grid-slot" data-index="1"></div>
-                        <div class="grid-slot" data-index="2"></div>
-                        <div class="grid-slot" data-index="3"></div>
-                        <div class="grid-slot" data-index="4"></div>
-                        <div class="grid-slot" data-index="5"></div>
-                        <div class="grid-slot" data-index="6"></div>
-                        <div class="grid-slot" data-index="7"></div>
-                        <div class="grid-slot" data-index="8"></div>
+                        <div class="grid-slot" data-index="0"></div><div class="grid-slot" data-index="1"></div><div class="grid-slot" data-index="2"></div>
+                        <div class="grid-slot" data-index="3"></div><div class="grid-slot" data-index="4"></div><div class="grid-slot" data-index="5"></div>
+                        <div class="grid-slot" data-index="6"></div><div class="grid-slot" data-index="7"></div><div class="grid-slot" data-index="8"></div>
                     </div>
                     <div class="arrow">→</div>
                     <div id="result-slot-crafting" class="grid-slot"></div>
                 </div>
-                <button id="clear-grid-btn" class="action-btn">Vider la Grille</button>
+                 <button id="clear-grid-btn" class="action-btn">Vider la Grille</button>
             </div>
 
             <div id="furnace-interface" class="interface-container">
                 <div class="crafting-area">
                     <div class="furnace-slots">
                         <div id="input-slot-furnace" class="grid-slot"></div>
-                        <div class="plus">+</div>
                         <div class="flame-icon"></div>
-                        <div id="fuel-slot-furnace" class="grid-slot" title="Non utilisé dans la recette"></div>
                     </div>
                     <div class="arrow">→</div>
                     <div id="result-slot-furnace" class="grid-slot"></div>
                 </div>
             </div>
-
-            <div class="controls">
+            
+             <div class="controls">
                 <div class="control-group">
                     <label for="result-count">Quantité</label>
                     <input type="number" id="result-count" value="1" min="1" max="64">
@@ -359,14 +332,24 @@
             </div>
 
             <div class="main-actions">
-                <button id="download-btn">Télécharger le Fichier</button>
+                 <button id="download-btn">Télécharger le Fichier</button>
             </div>
         </div>
     </div>
-
+    
     <div id="output-container">
         <h2>Aperçu du Code</h2>
         <pre id="output-code"></pre>
+    </div>
+
+    <div id="variant-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Items dans la case</h2>
+                <span class="close-btn">&times;</span>
+            </div>
+            <div class="modal-body"></div>
+        </div>
     </div>
 
     <script>
@@ -384,8 +367,12 @@
             const searchBar = document.getElementById('search-bar');
             const experienceControl = document.getElementById('experience-control');
             const experienceInput = document.getElementById('furnace-experience');
+            const variantModal = document.getElementById('variant-modal');
+            const modalBody = variantModal.querySelector('.modal-body');
+            const closeModalBtn = variantModal.querySelector('.close-btn');
 
             let currentMode = 'crafting';
+            let draggedSlotElement = null;
 
             const itemFileNames = [
                 'minecraft_acacia_boat',
@@ -1805,69 +1792,122 @@
                 'minecraft_zombie_villager_spawn_egg',
                 'minecraft_zombified_piglin_spawn_egg',
             ];
-
-            const items = itemFileNames.map(fileName => {
+            
+            const items = new Map(itemFileNames.map(fileName => {
                 const itemName = fileName.replace('minecraft_', '').replace('.png', '');
-                return { id: `minecraft:${itemName}`, img: `items/${fileName}.png` };
-            });
-
+                const itemId = `minecraft:${itemName}`;
+                return [itemId, { id: itemId, img: `items/${fileName}.png` }];
+            }));
+            
             function renderItemList(filter = '') {
                 itemListContainer.innerHTML = '';
-                const filteredItems = items.filter(item => item.id.toLowerCase().includes(filter.toLowerCase()));
-
-                filteredItems.forEach(item => {
-                    const img = document.createElement('img');
-                    img.src = item.img;
-                    img.alt = item.id.split(':')[1];
-                    img.className = 'item';
-                    img.draggable = true;
-                    img.setAttribute('data-item-id', item.id);
-                    img.addEventListener('dragstart', (e) => {
-                        e.dataTransfer.setData('text/plain', img.getAttribute('data-item-id'));
-                        e.dataTransfer.setData('image/src', img.src);
-                    });
-                    itemListContainer.appendChild(img);
+                items.forEach((item, id) => {
+                    if (id.toLowerCase().includes(filter.toLowerCase())) {
+                        const img = document.createElement('img');
+                        img.src = item.img;
+                        img.alt = id.split(':')[1];
+                        img.className = 'item';
+                        img.draggable = true;
+                        img.setAttribute('data-item-id', id);
+                        img.addEventListener('dragstart', (e) => {
+                            e.dataTransfer.setData('source', 'list');
+                            e.dataTransfer.setData('itemId', id);
+                        });
+                        itemListContainer.appendChild(img);
+                    }
                 });
             }
 
             renderItemList();
-
             searchBar.addEventListener('input', (e) => renderItemList(e.target.value));
 
             allSlots.forEach(slot => {
                 slot.addEventListener('dragover', (e) => { e.preventDefault(); slot.classList.add('drag-over'); });
                 slot.addEventListener('dragleave', () => { slot.classList.remove('drag-over'); });
+                
+                slot.addEventListener('dragstart', (e) => {
+                    if (slot.querySelector('img')) {
+                        draggedSlotElement = slot;
+                        e.dataTransfer.setData('source', 'slot');
+                        e.dataTransfer.setData('variants', slot.dataset.variants || '[]');
+                    } else {
+                        e.preventDefault();
+                    }
+                });
+
                 slot.addEventListener('drop', (e) => {
                     e.preventDefault();
                     slot.classList.remove('drag-over');
-                    const itemId = e.dataTransfer.getData('text/plain');
-                    const itemSrc = e.dataTransfer.getData('image/src');
+                    const source = e.dataTransfer.getData('source');
 
-                    if (itemId && itemSrc) {
-                        const existingImg = slot.querySelector('img');
-                        let variants = slot.dataset.variants ? JSON.parse(slot.dataset.variants) : [];
-
-                        if (existingImg && !variants.includes(itemId)) {
-                            variants.push(itemId);
-                        } else if (!existingImg) {
-                            slot.innerHTML = '';
-                            const img = document.createElement('img');
-                            img.src = itemSrc;
-                            img.setAttribute('data-item-id', itemId);
-                            slot.appendChild(img);
-                            variants = [itemId];
-                        }
-
-                        slot.dataset.variants = JSON.stringify(variants);
-                        updateSlotVisuals(slot);
+                    if (source === 'list') {
+                        const itemId = e.dataTransfer.getData('itemId');
+                        handleItemDropFromList(slot, itemId);
+                    } else if (source === 'slot' && draggedSlotElement) {
+                        handleItemDropFromSlot(slot);
                     }
                 });
+                
                 slot.addEventListener('dblclick', () => {
-                    slot.innerHTML = '';
-                    delete slot.dataset.variants;
-                    updateSlotVisuals(slot);
+                    clearSlot(slot);
                 });
             });
+
+            function handleItemDropFromList(targetSlot, itemId) {
+                const itemData = items.get(itemId);
+                if (!itemData) return;
+
+                const existingImg = targetSlot.querySelector('img');
+                let variants = targetSlot.dataset.variants ? JSON.parse(targetSlot.dataset.variants) : [];
+                
+                if (existingImg && !variants.includes(itemId)) {
+                    variants.push(itemId);
+                } else if (!existingImg) {
+                    targetSlot.innerHTML = '';
+                    const img = document.createElement('img');
+                    img.src = itemData.img;
+                    img.setAttribute('data-item-id', itemId);
+                    targetSlot.appendChild(img);
+                    variants = [itemId];
+                }
+
+                targetSlot.dataset.variants = JSON.stringify(variants);
+                targetSlot.draggable = true;
+                updateSlotVisuals(targetSlot);
+            }
+
+            function handleItemDropFromSlot(targetSlot) {
+                if (draggedSlotElement === targetSlot) return;
+
+                const sourceVariants = draggedSlotElement.dataset.variants;
+                const sourceHTML = draggedSlotElement.innerHTML;
+                
+                const targetVariants = targetSlot.dataset.variants;
+                const targetHTML = targetSlot.innerHTML;
+
+                if (targetHTML) { // Swap
+                    draggedSlotElement.innerHTML = targetHTML;
+                    draggedSlotElement.dataset.variants = targetVariants;
+                    draggedSlotElement.draggable = true;
+                } else { // Move to empty
+                    clearSlot(draggedSlotElement);
+                }
+                
+                targetSlot.innerHTML = sourceHTML;
+                targetSlot.dataset.variants = sourceVariants;
+                targetSlot.draggable = true;
+
+                updateSlotVisuals(draggedSlotElement);
+                updateSlotVisuals(targetSlot);
+                draggedSlotElement = null;
+            }
+            
+            function clearSlot(slot) {
+                slot.innerHTML = '';
+                delete slot.dataset.variants;
+                slot.draggable = false;
+                updateSlotVisuals(slot);
+            }
 
             function updateSlotVisuals(slot) {
                 let variants = slot.dataset.variants ? JSON.parse(slot.dataset.variants) : [];
@@ -1877,6 +1917,10 @@
                         indicator = document.createElement('div');
                         indicator.className = 'variant-indicator';
                         indicator.textContent = '+';
+                        indicator.addEventListener('click', (e) => {
+                           e.stopPropagation();
+                           showVariantModal(variants);
+                        });
                         slot.appendChild(indicator);
                     }
                     slot.title = variants.join('\n');
@@ -1887,11 +1931,7 @@
             }
 
             clearGridBtn.addEventListener('click', () => {
-                document.querySelectorAll('#crafting-interface .grid-slot').forEach(slot => {
-                    slot.innerHTML = '';
-                    delete slot.dataset.variants;
-                    updateSlotVisuals(slot);
-                });
+                document.querySelectorAll('#crafting-interface .grid-slot').forEach(clearSlot);
             });
 
             function switchMode(mode) {
@@ -1920,7 +1960,6 @@
                 if (recipe && fileName) {
                     const jsonString = JSON.stringify(recipe, null, 2);
                     outputCode.textContent = jsonString;
-
                     const blob = new Blob([jsonString], { type: 'application/json' });
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
@@ -1932,7 +1971,7 @@
                     URL.revokeObjectURL(url);
                 }
             });
-
+            
             function generateCraftingRecipe() {
                 const resultItem = document.querySelector('#result-slot-crafting img');
                 if (!resultItem) { outputCode.textContent = "Erreur : Item de résultat manquant."; return {}; }
@@ -1941,18 +1980,16 @@
                 if (!Array.from(gridSlots).some(s => s.querySelector('img'))) {
                     outputCode.textContent = "Erreur : La grille de craft est vide."; return {};
                 }
-
+                
                 const resultItemId = resultItem.getAttribute('data-item-id');
                 const itemName = resultItemId.split(':')[1];
-
-                let recipe = { "format_version": "1.0.0", "minecraft:recipe_shaped": { "description": { "identifier": `minecraft:${itemName}` }, "tags": ["crafting_table"], "pattern": [], "key": {}, "result": { "item": resultItemId, "count": parseInt(resultCountInput.value, 10) || 1 } } };
-
+                
+                const recipe = { format_version: "1.0.0", "minecraft:recipe_shaped": { description: { identifier: `minecraft:${itemName}` }, tags: ["crafting_table"], pattern: [], key: {}, result: { item: resultItemId, count: parseInt(resultCountInput.value, 10) || 1 } } };
+                
                 let gridData = Array.from(gridSlots).map(slot => slot.dataset.variants ? JSON.parse(slot.dataset.variants) : null);
-
-                const keyMap = new Map();
+                
                 const charPool = '#*+S/|?@&%';
                 let charIndex = 0;
-
                 const uniqueItemGroups = new Map();
                 gridData.forEach(itemGroup => {
                     if (itemGroup) {
@@ -1965,32 +2002,38 @@
 
                 uniqueItemGroups.forEach((char, groupJson) => {
                     const group = JSON.parse(groupJson);
-                    const keyEntry = group.map(id => ({ "item": id }));
-                    recipe["minecraft:recipe_shaped"].key[char] = keyEntry.length === 1 ? keyEntry[0] : keyEntry;
+                    recipe["minecraft:recipe_shaped"].key[char] = group.map(id => ({ "item": id }));
                 });
 
                 let minRow = 2, maxRow = 0, minCol = 2, maxCol = 0;
                 let patternGrid = Array(3).fill(null).map(() => Array(3).fill(' '));
-
+                
                 for (let i = 0; i < 3; i++) {
                     for (let j = 0; j < 3; j++) {
                         const itemGroup = gridData[i * 3 + j];
                         if (itemGroup) {
-                            minRow = Math.min(minRow, i);
-                            maxRow = Math.max(maxRow, i);
-                            minCol = Math.min(minCol, j);
-                            maxCol = Math.max(maxCol, j);
-                            const sortedGroup = JSON.stringify([...itemGroup].sort());
-                            patternGrid[i][j] = uniqueItemGroups.get(sortedGroup);
+                           minRow = Math.min(minRow, i);
+                           maxRow = Math.max(maxRow, i);
+                           minCol = Math.min(minCol, j);
+                           maxCol = Math.max(maxCol, j);
+                           const sortedGroup = JSON.stringify([...itemGroup].sort());
+                           patternGrid[i][j] = uniqueItemGroups.get(sortedGroup);
                         }
                     }
                 }
-
+                
                 const finalPattern = [];
                 for (let i = minRow; i <= maxRow; i++) {
                     finalPattern.push(patternGrid[i].slice(minCol, maxCol + 1).join(""));
                 }
                 recipe["minecraft:recipe_shaped"].pattern = finalPattern;
+                
+                const usedChars = new Set(finalPattern.join(''));
+                 for (const key in recipe["minecraft:recipe_shaped"].key) {
+                    if (!usedChars.has(key)) {
+                        delete recipe["minecraft:recipe_shaped"].key[key];
+                    }
+                }
 
                 return { recipe, fileName: `${itemName}.json` };
             }
@@ -1998,31 +2041,45 @@
             function generateFurnaceRecipe() {
                 const inputItem = document.querySelector('#input-slot-furnace img');
                 const resultItem = document.querySelector('#result-slot-furnace img');
-
+                
                 if (!inputItem || !resultItem) { outputCode.textContent = "Erreur : Ingrédient et résultat requis."; return {}; }
 
                 const inputItemId = inputItem.getAttribute('data-item-id');
                 const resultItemId = resultItem.getAttribute('data-item-id');
                 const resultItemName = resultItemId.split(':')[1];
                 const experience = parseFloat(experienceInput.value) || 0;
-
-                const recipe = {
-                    "format_version": "1.0.0",
-                    "minecraft:recipe_furnace": {
-                        "description": {
-                            "identifier": `minecraft:furnace_${resultItemName}`
-                        },
-                        "tags": ["furnace"],
-                        "experience": experience,
-                        "input": { "item": inputItemId },
-                        "output": { "item": resultItemId }
-                    }
-                };
-
+                
+                const recipe = { "format_version": "1.0.0", "minecraft:recipe_furnace": { description: { identifier: `minecraft:furnace_${resultItemName}` }, tags: [ "furnace" ], experience: experience, input: { "item": inputItemId }, output: { "item": resultItemId } } };
+                
                 return { recipe, fileName: `furnace_${resultItemName}.json` };
             }
+            
+            function showVariantModal(variants) {
+                modalBody.innerHTML = '';
+                variants.forEach(itemId => {
+                    const itemData = items.get(itemId);
+                    if (itemData) {
+                        const itemEl = document.createElement('div');
+                        itemEl.className = 'modal-item';
+                        const img = document.createElement('img');
+                        img.src = itemData.img;
+                        const name = document.createTextNode(itemId.split(':')[1]);
+                        itemEl.appendChild(img);
+                        itemEl.appendChild(name);
+                        modalBody.appendChild(itemEl);
+                    }
+                });
+                variantModal.style.display = 'flex';
+            }
+
+            closeModalBtn.addEventListener('click', () => { variantModal.style.display = 'none'; });
+            variantModal.addEventListener('click', (e) => {
+                if (e.target === variantModal) {
+                    variantModal.style.display = 'none';
+                }
+            });
+
         });
     </script>
 </body>
-
 </html>

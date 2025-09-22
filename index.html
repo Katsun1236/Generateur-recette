@@ -18,7 +18,7 @@
             --shadow-color: #3c3c3c;
             --pixel-font: 'Press Start 2P', cursive;
             --green-button: #5a9d43;
-            --green-button-hover: #76c24f;
+            --blue-button: #4a75d1;
         }
 
         body {
@@ -58,11 +58,13 @@
             padding: 8px;
             border: 3px inset #525252;
             background-color: var(--slot-bg);
-            color: var(--font-color);
+            color: #FFFFFF;
+            text-shadow: 1px 1px #3c3c3c;
             text-align: center;
             width: 100%;
             box-sizing: border-box;
         }
+        #search-bar::placeholder { color: #dddddd; }
 
         #item-list {
             background-color: var(--container-bg);
@@ -97,7 +99,7 @@
 
         .mode-selector { text-align: center; }
 
-        .mode-btn {
+        .mode-btn, .action-btn {
             background-color: var(--slot-bg);
             font-family: var(--pixel-font);
             font-size: 14px;
@@ -111,6 +113,7 @@
             background-color: var(--green-button);
             border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
         }
+        .action-btn { background-color: var(--blue-button); }
 
         .interface-container {
             background-color: var(--container-bg);
@@ -151,6 +154,7 @@
             background-color: var(--slot-bg);
             border: 2px inset #525252;
             box-sizing: border-box;
+            position: relative;
         }
         
         .grid-slot.drag-over { border: 2px solid var(--green-button); }
@@ -160,6 +164,23 @@
         .flame-icon {
             width: 32px; height: 32px;
             background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ff9800'%3E%3Cpath d='M13.04 2.21C12.03 2.76 11.33 3.75 11.33 4.88c0 .54.19 1.05.5 1.48-.52 2.63-2.43 4.54-5.07 5.07C6.22 11.52 5.71 11.33 5.18 11.33c-1.13 0-2.12.7-2.67 1.71C2.21 13.56 2 14.28 2 15c0 2.21 1.79 4 4 4 .72 0 1.44-.21 2.05-.56 1.01.55 2 .84 3 .84s1.99-.29 3-.84c.61.35 1.33.56 2.05.56 2.21 0 4-1.79 4-4 0-.72-.21-1.44-.56-2.05-.55-1.01-.84-2-1.39-3.04.63-.44 1.15-1.01 1.48-1.71.55-1.01.28-2.28-.73-2.79-1.01-.52-2.28-.24-2.79.77-.32.6-.45 1.28-.4 1.96-1.85-1.28-3.08-3.23-3.41-5.43.32-.23.54-.6.54-1.02 0-1.13-.7-2.12-1.71-2.67z'/%3E%3C/svg%3E") no-repeat center center;
+        }
+
+        .variant-indicator {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 15px;
+            height: 15px;
+            background-color: var(--green-button);
+            color: white;
+            font-size: 10px;
+            line-height: 15px;
+            text-align: center;
+            border-radius: 50%;
+            border: 1px solid var(--border-dark);
+            text-shadow: none;
+            pointer-events: none;
         }
         
         .controls {
@@ -178,6 +199,12 @@
             color: var(--font-color); text-align: center;
         }
         input[type=number] { width: 80px; }
+
+        .main-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
 
         #download-btn {
             background-color: var(--green-button);
@@ -218,24 +245,27 @@
             <div id="crafting-interface" class="interface-container">
                 <div class="crafting-area">
                     <div id="crafting-grid">
-                        <div class="grid-slot"></div><div class="grid-slot"></div><div class="grid-slot"></div>
-                        <div class="grid-slot"></div><div class="grid-slot"></div><div class="grid-slot"></div>
-                        <div class="grid-slot"></div><div class="grid-slot"></div><div class="grid-slot"></div>
+                        <div class="grid-slot" data-index="0"></div><div class="grid-slot" data-index="1"></div><div class="grid-slot" data-index="2"></div>
+                        <div class="grid-slot" data-index="3"></div><div class="grid-slot" data-index="4"></div><div class="grid-slot" data-index="5"></div>
+                        <div class="grid-slot" data-index="6"></div><div class="grid-slot" data-index="7"></div><div class="grid-slot" data-index="8"></div>
                     </div>
                     <div class="arrow">→</div>
                     <div id="result-slot-crafting" class="grid-slot"></div>
                 </div>
+                 <button id="clear-grid-btn" class="action-btn">Vider la Grille</button>
             </div>
 
             <div id="furnace-interface" class="interface-container">
-                <div class="furnace-slots">
-                    <div id="input-slot-furnace" class="grid-slot"></div>
-                    <div class="plus">+</div>
-                    <div class="flame-icon"></div>
-                    <div id="fuel-slot-furnace" class="grid-slot" title="Non utilisé dans la recette"></div>
+                <div class="crafting-area">
+                    <div class="furnace-slots">
+                        <div id="input-slot-furnace" class="grid-slot"></div>
+                        <div class="plus">+</div>
+                        <div class="flame-icon"></div>
+                        <div id="fuel-slot-furnace" class="grid-slot" title="Non utilisé dans la recette"></div>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div id="result-slot-furnace" class="grid-slot"></div>
                 </div>
-                <div class="arrow">→</div>
-                <div id="result-slot-furnace" class="grid-slot"></div>
             </div>
             
              <div class="controls">
@@ -249,7 +279,7 @@
                 </div>
             </div>
 
-            <div style="text-align: center;">
+            <div class="main-actions">
                  <button id="download-btn">Télécharger le Fichier</button>
             </div>
         </div>
@@ -269,6 +299,7 @@
             const furnaceInterface = document.getElementById('furnace-interface');
             const allSlots = document.querySelectorAll('.grid-slot');
             const downloadBtn = document.getElementById('download-btn');
+            const clearGridBtn = document.getElementById('clear-grid-btn');
             const outputCode = document.getElementById('output-code');
             const resultCountInput = document.getElementById('result-count');
             const searchBar = document.getElementById('search-bar');
@@ -277,12 +308,8 @@
 
             let currentMode = 'crafting';
             
-            // ===================================================================================
-            // IMPORTANT : Collez ici la liste de tous vos noms de fichiers .png (sans l'extension .png)
-            // Exemple : 'minecraft_stone', 'minecraft_stick', 'minecraft_acacia_boat', etc.
-            // ===================================================================================
             const itemFileNames = [
-                                'minecraft_acacia_boat', 'minecraft_acacia_button', 'minecraft_acacia_chest_boat', 'minecraft_acacia_door', 'minecraft_acacia_fence_gate', 
+                'minecraft_acacia_boat', 'minecraft_acacia_button', 'minecraft_acacia_chest_boat', 'minecraft_acacia_door', 'minecraft_acacia_fence_gate', 
                 'minecraft_acacia_fence', 'minecraft_acacia_hanging_sign', 'minecraft_acacia_leaves', 'minecraft_acacia_log', 'minecraft_acacia_planks', 
                 'minecraft_acacia_pressure_plate', 'minecraft_acacia_sapling', 'minecraft_acacia_sign', 'minecraft_acacia_slab', 'minecraft_acacia_stairs', 
                 'minecraft_acacia_trapdoor', 'minecraft_acacia_wood', 'minecraft_activator_rail', 'minecraft_air', 'minecraft_allay_spawn_egg', 'minecraft_allium', 
@@ -518,43 +545,32 @@
             ];
             
             const items = itemFileNames.map(fileName => {
-                const itemName = fileName.replace('minecraft_', '');
-                return {
-                    id: `minecraft:${itemName}`,
-                    img: `items/${fileName}.png`
-                };
+                const itemName = fileName.replace('minecraft_', '').replace('.png', '');
+                return { id: `minecraft:${itemName}`, img: `items/${fileName}.png` };
             });
             
-            items.forEach(item => {
-                const img = document.createElement('img');
-                img.src = item.img;
-                img.alt = item.id.split(':')[1];
-                img.className = 'item';
-                img.draggable = true;
-                img.setAttribute('data-item-id', item.id);
-                itemListContainer.appendChild(img);
-            });
+            function renderItemList(filter = '') {
+                itemListContainer.innerHTML = '';
+                const filteredItems = items.filter(item => item.id.toLowerCase().includes(filter.toLowerCase()));
+                
+                filteredItems.forEach(item => {
+                    const img = document.createElement('img');
+                    img.src = item.img;
+                    img.alt = item.id.split(':')[1];
+                    img.className = 'item';
+                    img.draggable = true;
+                    img.setAttribute('data-item-id', item.id);
+                    img.addEventListener('dragstart', (e) => {
+                        e.dataTransfer.setData('text/plain', img.getAttribute('data-item-id'));
+                        e.dataTransfer.setData('image/src', img.src);
+                    });
+                    itemListContainer.appendChild(img);
+                });
+            }
 
-            const allItemsInList = document.querySelectorAll('#item-list .item');
+            renderItemList();
             
-            searchBar.addEventListener('input', (e) => {
-                const searchTerm = e.target.value.toLowerCase();
-                allItemsInList.forEach(item => {
-                    const itemId = item.getAttribute('data-item-id').toLowerCase();
-                    if (itemId.includes(searchTerm)) {
-                        item.style.display = 'inline-block';
-                    } else {
-                        item.style.display = 'none';
-                    }
-                });
-            });
-
-            allItemsInList.forEach(item => {
-                item.addEventListener('dragstart', (e) => {
-                    e.dataTransfer.setData('text/plain', item.getAttribute('data-item-id'));
-                    e.dataTransfer.setData('image/src', item.src);
-                });
-            });
+            searchBar.addEventListener('input', (e) => renderItemList(e.target.value));
 
             allSlots.forEach(slot => {
                 slot.addEventListener('dragover', (e) => { e.preventDefault(); slot.classList.add('drag-over'); });
@@ -564,15 +580,56 @@
                     slot.classList.remove('drag-over');
                     const itemId = e.dataTransfer.getData('text/plain');
                     const itemSrc = e.dataTransfer.getData('image/src');
+
                     if (itemId && itemSrc) {
-                        slot.innerHTML = '';
-                        const img = document.createElement('img');
-                        img.src = itemSrc;
-                        img.setAttribute('data-item-id', itemId);
-                        slot.appendChild(img);
+                        const existingImg = slot.querySelector('img');
+                        let variants = slot.dataset.variants ? JSON.parse(slot.dataset.variants) : [];
+                        
+                        if (existingImg && !variants.includes(itemId)) {
+                            variants.push(itemId);
+                        } else if (!existingImg) {
+                            slot.innerHTML = '';
+                            const img = document.createElement('img');
+                            img.src = itemSrc;
+                            img.setAttribute('data-item-id', itemId);
+                            slot.appendChild(img);
+                            variants = [itemId];
+                        }
+
+                        slot.dataset.variants = JSON.stringify(variants);
+                        updateSlotVisuals(slot);
                     }
                 });
-                slot.addEventListener('dblclick', () => { slot.innerHTML = ''; });
+                slot.addEventListener('dblclick', () => {
+                    slot.innerHTML = '';
+                    delete slot.dataset.variants;
+                    updateSlotVisuals(slot);
+                });
+            });
+
+            function updateSlotVisuals(slot) {
+                let variants = slot.dataset.variants ? JSON.parse(slot.dataset.variants) : [];
+                let indicator = slot.querySelector('.variant-indicator');
+                if (variants.length > 1) {
+                    if (!indicator) {
+                        indicator = document.createElement('div');
+                        indicator.className = 'variant-indicator';
+                        indicator.textContent = '+';
+                        slot.appendChild(indicator);
+                    }
+                    slot.title = variants.join('\n');
+                } else {
+                    if (indicator) slot.removeChild(indicator);
+                    slot.title = '';
+                }
+            }
+
+            clearGridBtn.addEventListener('click', () => {
+                document.querySelectorAll('#crafting-interface .grid-slot').forEach(slot => {
+                    slot.innerHTML = '';
+                    delete slot.dataset.variants;
+                    updateSlotVisuals(slot);
+                });
             });
 
             function switchMode(mode) {
@@ -594,7 +651,6 @@
 
             craftingBtn.addEventListener('click', () => switchMode('crafting'));
             furnaceBtn.addEventListener('click', () => switchMode('furnace'));
-            
             switchMode('crafting');
 
             downloadBtn.addEventListener('click', () => {
@@ -627,58 +683,53 @@
                 const resultItemId = resultItem.getAttribute('data-item-id');
                 const itemName = resultItemId.split(':')[1];
                 
-                const recipe = { "format_version": "1.0.0", "minecraft:recipe_shaped": { "description": { "identifier": `minecraft:${itemName}` }, "tags": ["crafting_table"], "pattern": [], "key": {}, "result": { "item": resultItemId, "count": parseInt(resultCountInput.value, 10) || 1 } } };
+                let recipe = { "format_version": "1.0.0", "minecraft:recipe_shaped": { "description": { "identifier": `minecraft:${itemName}` }, "tags": ["crafting_table"], "pattern": [], "key": {}, "result": { "item": resultItemId, "count": parseInt(resultCountInput.value, 10) || 1 } } };
                 
-                const keyMap = {}; let keyChar = 'A';
-                let patternRows = ["", "", ""];
-                for(let i=0; i < 3; i++) {
-                    for (let j=0; j < 3; j++) {
-                        const itemInSlot = gridSlots[i * 3 + j].querySelector('img');
-                        if (itemInSlot) {
-                            const itemId = itemInSlot.getAttribute('data-item-id');
-                            if (!keyMap[itemId]) {
-                                keyMap[itemId] = keyChar;
-                                recipe["minecraft:recipe_shaped"].key[keyChar] = { "item": itemId };
-                                keyChar = String.fromCharCode(keyChar.charCodeAt(0) + 1);
-                            }
-                            patternRows[i] += keyMap[itemId];
-                        } else { patternRows[i] += " "; }
+                let gridData = Array.from(gridSlots).map(slot => slot.dataset.variants ? JSON.parse(slot.dataset.variants) : null);
+                
+                const keyMap = new Map();
+                const charPool = '#*+S/|?@&%';
+                let charIndex = 0;
+
+                const uniqueItemGroups = new Map();
+                gridData.forEach(itemGroup => {
+                    if (itemGroup) {
+                        const sortedGroup = JSON.stringify([...itemGroup].sort());
+                        if (!uniqueItemGroups.has(sortedGroup)) {
+                            uniqueItemGroups.set(sortedGroup, charPool[charIndex++ % charPool.length]);
+                        }
+                    }
+                });
+
+                uniqueItemGroups.forEach((char, groupJson) => {
+                    const group = JSON.parse(groupJson);
+                    const keyEntry = group.map(id => ({ "item": id }));
+                    recipe["minecraft:recipe_shaped"].key[char] = keyEntry.length === 1 ? keyEntry[0] : keyEntry;
+                });
+
+                let minRow = 2, maxRow = 0, minCol = 2, maxCol = 0;
+                let patternGrid = Array(3).fill(null).map(() => Array(3).fill(' '));
+                
+                for (let i = 0; i < 3; i++) {
+                    for (let j = 0; j < 3; j++) {
+                        const itemGroup = gridData[i * 3 + j];
+                        if (itemGroup) {
+                           minRow = Math.min(minRow, i);
+                           maxRow = Math.max(maxRow, i);
+                           minCol = Math.min(minCol, j);
+                           maxCol = Math.max(maxCol, j);
+                           const sortedGroup = JSON.stringify([...itemGroup].sort());
+                           patternGrid[i][j] = uniqueItemGroups.get(sortedGroup);
+                        }
                     }
                 }
-
-                const trimmedPattern = patternRows.filter(row => row.trim() !== '');
-                if(trimmedPattern.length === 0 && patternRows.some(row => row.trim() !== '')) {
-                     recipe["minecraft:recipe_shaped"].pattern = patternRows.filter(row => row.trim() !== '');
-                } else {
-                     recipe["minecraft:recipe_shaped"].pattern = trimmedPattern;
+                
+                const finalPattern = [];
+                for (let i = minRow; i <= maxRow; i++) {
+                    finalPattern.push(patternGrid[i].slice(minCol, maxCol + 1).join(""));
                 }
-
-                if (recipe["minecraft:recipe_shaped"].pattern.length === 0) {
-                     const shapelessItems = [];
-                     const keyMapShapeless = {};
-                     gridSlots.forEach(slot => {
-                        const itemInSlot = slot.querySelector('img');
-                        if(itemInSlot) {
-                            const itemId = itemInSlot.getAttribute('data-item-id');
-                            if(!keyMapShapeless[itemId]) {
-                                keyMapShapeless[itemId] = 0;
-                            }
-                            keyMapShapeless[itemId]++;
-                        }
-                     });
-                     for (const [key, value] of Object.entries(keyMapShapeless)) {
-                        shapelessItems.push({ "item": key, "count": value });
-                     }
-                    delete recipe["minecraft:recipe_shaped"];
-                    recipe["minecraft:recipe_shapeless"] = {
-                        "description": { "identifier": `minecraft:${itemName}` },
-                        "tags": ["crafting_table"],
-                        "ingredients": shapelessItems,
-                        "result": { "item": resultItemId, "count": parseInt(resultCountInput.value, 10) || 1 }
-                    };
-                }
-
-
+                recipe["minecraft:recipe_shaped"].pattern = finalPattern;
+                
                 return { recipe, fileName: `${itemName}.json` };
             }
 
@@ -701,12 +752,8 @@
                         },
                         "tags": [ "furnace" ],
                         "experience": experience,
-                        "input": {
-                            "item": inputItemId
-                        },
-                        "output": {
-                            "item": resultItemId
-                        }
+                        "input": { "item": inputItemId },
+                        "output": { "item": resultItemId }
                     }
                 };
                 

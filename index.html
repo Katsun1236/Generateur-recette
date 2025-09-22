@@ -282,7 +282,7 @@
             // Exemple : 'minecraft_stone', 'minecraft_stick', 'minecraft_acacia_boat', etc.
             // ===================================================================================
             const itemFileNames = [
-                'minecraft_acacia_boat', 'minecraft_acacia_button', 'minecraft_acacia_chest_boat', 'minecraft_acacia_door', 'minecraft_acacia_fence_gate', 
+                                'minecraft_acacia_boat', 'minecraft_acacia_button', 'minecraft_acacia_chest_boat', 'minecraft_acacia_door', 'minecraft_acacia_fence_gate', 
                 'minecraft_acacia_fence', 'minecraft_acacia_hanging_sign', 'minecraft_acacia_leaves', 'minecraft_acacia_log', 'minecraft_acacia_planks', 
                 'minecraft_acacia_pressure_plate', 'minecraft_acacia_sapling', 'minecraft_acacia_sign', 'minecraft_acacia_slab', 'minecraft_acacia_stairs', 
                 'minecraft_acacia_trapdoor', 'minecraft_acacia_wood', 'minecraft_activator_rail', 'minecraft_air', 'minecraft_allay_spawn_egg', 'minecraft_allium', 
@@ -645,7 +645,40 @@
                         } else { patternRows[i] += " "; }
                     }
                 }
-                recipe["minecraft:recipe_shaped"].pattern = patternRows;
+
+                const trimmedPattern = patternRows.filter(row => row.trim() !== '');
+                if(trimmedPattern.length === 0 && patternRows.some(row => row.trim() !== '')) {
+                     recipe["minecraft:recipe_shaped"].pattern = patternRows.filter(row => row.trim() !== '');
+                } else {
+                     recipe["minecraft:recipe_shaped"].pattern = trimmedPattern;
+                }
+
+                if (recipe["minecraft:recipe_shaped"].pattern.length === 0) {
+                     const shapelessItems = [];
+                     const keyMapShapeless = {};
+                     gridSlots.forEach(slot => {
+                        const itemInSlot = slot.querySelector('img');
+                        if(itemInSlot) {
+                            const itemId = itemInSlot.getAttribute('data-item-id');
+                            if(!keyMapShapeless[itemId]) {
+                                keyMapShapeless[itemId] = 0;
+                            }
+                            keyMapShapeless[itemId]++;
+                        }
+                     });
+                     for (const [key, value] of Object.entries(keyMapShapeless)) {
+                        shapelessItems.push({ "item": key, "count": value });
+                     }
+                    delete recipe["minecraft:recipe_shaped"];
+                    recipe["minecraft:recipe_shapeless"] = {
+                        "description": { "identifier": `minecraft:${itemName}` },
+                        "tags": ["crafting_table"],
+                        "ingredients": shapelessItems,
+                        "result": { "item": resultItemId, "count": parseInt(resultCountInput.value, 10) || 1 }
+                    };
+                }
+
+
                 return { recipe, fileName: `${itemName}.json` };
             }
 

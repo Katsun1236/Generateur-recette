@@ -3,50 +3,436 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Générateur de Recette Minecraft</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Générateur de Recettes Minecraft</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --background-color: #585858;
+            --container-bg: #C6C6C6;
+            --slot-bg: #8B8B8B;
+            --border-dark: #3c3c3c;
+            --border-light: #a0a0a0;
+            --font-color: #FFFFFF;
+            --shadow-color: #3c3c3c;
+            --pixel-font: 'Press Start 2P', cursive;
+            --green-button: #5a9d43;
+            --green-button-hover: #76c24f;
+        }
+
+        body {
+            font-family: var(--pixel-font);
+            background-color: var(--background-color);
+            background-image: url('https://www.transparenttextures.com/patterns/rocky-wall.png');
+            color: var(--font-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            image-rendering: pixelated;
+        }
+
+        h1, h2 {
+            color: var(--font-color);
+            text-shadow: 3px 3px var(--shadow-color);
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            gap: 20px;
+            width: 100%;
+            max-width: 950px;
+        }
+
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        #search-bar {
+            font-family: var(--pixel-font);
+            font-size: 12px;
+            padding: 8px;
+            border: 3px inset #525252;
+            background-color: var(--slot-bg);
+            color: var(--font-color);
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        #item-list {
+            background-color: var(--container-bg);
+            border: 4px solid var(--border-dark);
+            border-right-color: var(--border-light);
+            border-bottom-color: var(--border-light);
+            padding: 10px;
+            height: 550px;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+        
+        #item-list .item {
+            width: 48px;
+            height: 48px;
+            padding: 4px;
+            margin: 2px;
+            box-sizing: border-box;
+            border: 2px solid var(--border-dark);
+            background-color: var(--slot-bg);
+            cursor: grab;
+            display: inline-block;
+        }
+        
+        .item:active { cursor: grabbing; }
+
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .mode-selector { text-align: center; }
+
+        .mode-btn {
+            background-color: var(--slot-bg);
+            font-family: var(--pixel-font);
+            font-size: 14px;
+            color: var(--font-color);
+            border: 4px solid var(--border-dark);
+            padding: 10px 15px;
+            cursor: pointer;
+            text-shadow: 2px 2px var(--shadow-color);
+        }
+        .mode-btn.active {
+            background-color: var(--green-button);
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+        }
+
+        .interface-container {
+            background-color: var(--container-bg);
+            border: 4px solid var(--border-dark);
+            border-right-color: var(--border-light);
+            border-bottom-color: var(--border-light);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        #furnace-interface { display: none; }
+
+        .crafting-area, #furnace-interface {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        #crafting-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 60px);
+            grid-template-rows: repeat(3, 60px);
+            gap: 4px;
+            background-color: var(--border-dark);
+            border: 4px solid var(--border-light);
+            border-right-color: var(--border-dark);
+            border-bottom-color: var(--border-dark);
+            padding: 4px;
+        }
+
+        .grid-slot {
+            width: 60px;
+            height: 60px;
+            background-color: var(--slot-bg);
+            border: 2px inset #525252;
+            box-sizing: border-box;
+        }
+        
+        .grid-slot.drag-over { border: 2px solid var(--green-button); }
+        .grid-slot img { width: 100%; height: 100%; object-fit: contain; }
+        .arrow, .plus { font-size: 40px; text-shadow: 3px 3px var(--shadow-color); }
+        .furnace-slots { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+        .flame-icon {
+            width: 32px; height: 32px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ff9800'%3E%3Cpath d='M13.04 2.21C12.03 2.76 11.33 3.75 11.33 4.88c0 .54.19 1.05.5 1.48-.52 2.63-2.43 4.54-5.07 5.07C6.22 11.52 5.71 11.33 5.18 11.33c-1.13 0-2.12.7-2.67 1.71C2.21 13.56 2 14.28 2 15c0 2.21 1.79 4 4 4 .72 0 1.44-.21 2.05-.56 1.01.55 2 .84 3 .84s1.99-.29 3-.84c.61.35 1.33.56 2.05.56 2.21 0 4-1.79 4-4 0-.72-.21-1.44-.56-2.05-.55-1.01-.84-2-1.39-3.04.63-.44 1.15-1.01 1.48-1.71.55-1.01.28-2.28-.73-2.79-1.01-.52-2.28-.24-2.79.77-.32.6-.45 1.28-.4 1.96-1.85-1.28-3.08-3.23-3.41-5.43.32-.23.54-.6.54-1.02 0-1.13-.7-2.12-1.71-2.67z'/%3E%3C/svg%3E") no-repeat center center;
+        }
+        
+        .controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .control-group { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .control-group label { font-size: 12px; text-shadow: 2px 2px var(--shadow-color); }
+        .control-group input {
+            font-family: var(--pixel-font); font-size: 12px; padding: 8px;
+            border: 3px inset #525252; background-color: var(--slot-bg);
+            color: var(--font-color); text-align: center;
+        }
+        input[type=number] { width: 80px; }
+
+        #download-btn {
+            background-color: var(--green-button);
+            font-family: var(--pixel-font);
+            color: white; font-size: 16px;
+            border: 4px solid var(--border-dark);
+            border-right-color: var(--border-light);
+            border-bottom-color: var(--border-light);
+            padding: 15px 25px; cursor: pointer;
+            text-shadow: 2px 2px var(--shadow-color);
+        }
+        #download-btn:active { border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light); }
+
+        #output-container { width: 100%; max-width: 950px; text-align: center; }
+        #output-code {
+            background-color: #2a2a2a; border: 4px solid var(--border-dark); padding: 15px;
+            width: 100%; min-height: 200px; white-space: pre-wrap; word-break: break-all;
+            color: #e0e0e0; text-align: left; font-size: 14px; box-sizing: border-box;
+        }
+    </style>
 </head>
 <body>
 
-    <h1>Générateur de Recette Minecraft pour pala</h1>
+    <h1>Générateur de Recettes</h1>
 
-    <div class="interface">
-        
-        <div id="item-list">
-            <h2>Items disponibles</h2>
-            <div class="item" draggable="true" data-item-id="minecraft:planks">Planches</div>
-            <div class="item" draggable="true" data-item-id="minecraft:stick">Bâton</div>
-            <div class="item" draggable="true" data-item-id="minecraft:book">Livre</div>
-            <div class="item" draggable="true" data-item-id="minecraft:diamond">Diamant</div>
+    <div class="main-container">
+        <div class="left-panel">
+            <input type="text" id="search-bar" placeholder="Rechercher un item...">
+            <div id="item-list"></div>
         </div>
 
-        <div class="crafting-area">
-            <h2>Table de Craft</h2>
-            <div id="crafting-grid">
-                <div class="grid-slot" data-slot="0"></div>
-                <div class="grid-slot" data-slot="1"></div>
-                <div class="grid-slot" data-slot="2"></div>
-                <div class="grid-slot" data-slot="3"></div>
-                <div class="grid-slot" data-slot="4"></div>
-                <div class="grid-slot" data-slot="5"></div>
-                <div class="grid-slot" data-slot="6"></div>
-                <div class="grid-slot" data-slot="7"></div>
-                <div class="grid-slot" data-slot="8"></div>
+        <div class="right-panel">
+            <div class="mode-selector">
+                <button id="crafting-btn" class="mode-btn active">Établi</button>
+                <button id="furnace-btn" class="mode-btn">Four</button>
+            </div>
+
+            <div id="crafting-interface" class="interface-container">
+                <div class="crafting-area">
+                    <div id="crafting-grid">
+                        <div class="grid-slot"></div><div class="grid-slot"></div><div class="grid-slot"></div>
+                        <div class="grid-slot"></div><div class="grid-slot"></div><div class="grid-slot"></div>
+                        <div class="grid-slot"></div><div class="grid-slot"></div><div class="grid-slot"></div>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div id="result-slot-crafting" class="grid-slot"></div>
+                </div>
+            </div>
+
+            <div id="furnace-interface" class="interface-container">
+                <div class="furnace-slots">
+                    <div id="input-slot-furnace" class="grid-slot"></div>
+                    <div class="plus">+</div>
+                    <div class="flame-icon"></div>
+                    <div id="fuel-slot-furnace" class="grid-slot" title="Non utilisé dans la recette"></div>
+                </div>
+                <div class="arrow">→</div>
+                <div id="result-slot-furnace" class="grid-slot"></div>
             </div>
             
-            <div class="arrow">→</div>
+             <div class="controls">
+                <div class="control-group">
+                    <label for="result-count">Quantité</label>
+                    <input type="number" id="result-count" value="1" min="1" max="64">
+                </div>
+                <div class="control-group" id="experience-control" style="display: none;">
+                    <label for="furnace-experience">Expérience</label>
+                    <input type="number" id="furnace-experience" value="0.15" step="0.05" min="0">
+                </div>
+            </div>
 
-            <div id="result-slot" class="grid-slot"></div>
+            <div style="text-align: center;">
+                 <button id="download-btn">Télécharger le Fichier</button>
+            </div>
         </div>
-
+    </div>
+    
+    <div id="output-container">
+        <h2>Aperçu du Code</h2>
+        <pre id="output-code"></pre>
     </div>
 
-    <button id="generate-btn">Générer le Code</button>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const itemListContainer = document.getElementById('item-list');
+            const craftingBtn = document.getElementById('crafting-btn');
+            const furnaceBtn = document.getElementById('furnace-btn');
+            const craftingInterface = document.getElementById('crafting-interface');
+            const furnaceInterface = document.getElementById('furnace-interface');
+            const allSlots = document.querySelectorAll('.grid-slot');
+            const downloadBtn = document.getElementById('download-btn');
+            const outputCode = document.getElementById('output-code');
+            const resultCountInput = document.getElementById('result-count');
+            const searchBar = document.getElementById('search-bar');
+            const experienceControl = document.getElementById('experience-control');
+            const experienceInput = document.getElementById('furnace-experience');
 
-    <h2>Code JSON Généré</h2>
-    <pre id="output-code">
-        </pre>
+            let currentMode = 'crafting';
+            
+            const itemFileNames = [
+                'minecraft_acacia_boat', 'minecraft_acacia_button', 'minecraft_acacia_chest_boat',
+                'minecraft_acacia_door', 'minecraft_acacia_fence_gate', 'minecraft_acacia_fence',
+                'minecraft_acacia_hanging_sign', 'minecraft_acacia_leaves', 'minecraft_acacia_log',
+                'minecraft_acacia_planks', 'minecraft_acacia_pressure_plate', 'minecraft_acacia_sapling',
+                'minecraft_acacia_sign', 'minecraft_stick', 'minecraft_coal', 'minecraft_iron_ingot',
+                'minecraft_gold_ingot', 'minecraft_diamond', 'minecraft_cobblestone', 'minecraft_charcoal',
+                'minecraft_oak_log'
+            ];
+            
+            const items = itemFileNames.map(fileName => {
+                const itemName = fileName.replace('minecraft_', '');
+                return {
+                    id: `minecraft:${itemName}`,
+                    img: `items/${fileName}.png`
+                };
+            });
+            
+            items.forEach(item => {
+                const img = document.createElement('img');
+                img.src = item.img;
+                img.alt = item.id.split(':')[1];
+                img.className = 'item';
+                img.draggable = true;
+                img.setAttribute('data-item-id', item.id);
+                itemListContainer.appendChild(img);
+            });
 
-    <script src="script.js"></script>
+            const allItemsInList = document.querySelectorAll('#item-list .item');
+            
+            searchBar.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                allItemsInList.forEach(item => {
+                    const itemId = item.getAttribute('data-item-id').toLowerCase();
+                    if (itemId.includes(searchTerm)) {
+                        item.style.display = 'inline-block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+
+            allItemsInList.forEach(item => {
+                item.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', item.getAttribute('data-item-id'));
+                    e.dataTransfer.setData('image/src', item.src);
+                });
+            });
+
+            allSlots.forEach(slot => {
+                slot.addEventListener('dragover', (e) => { e.preventDefault(); slot.classList.add('drag-over'); });
+                slot.addEventListener('dragleave', () => { slot.classList.remove('drag-over'); });
+                slot.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    slot.classList.remove('drag-over');
+                    const itemId = e.dataTransfer.getData('text/plain');
+                    const itemSrc = e.dataTransfer.getData('image/src');
+                    if (itemId && itemSrc) {
+                        slot.innerHTML = '';
+                        const img = document.createElement('img');
+                        img.src = itemSrc;
+                        img.setAttribute('data-item-id', itemId);
+                        slot.appendChild(img);
+                    }
+                });
+                slot.addEventListener('dblclick', () => { slot.innerHTML = ''; });
+            });
+
+            function switchMode(mode) {
+                currentMode = mode;
+                if (mode === 'crafting') {
+                    craftingBtn.classList.add('active');
+                    furnaceBtn.classList.remove('active');
+                    craftingInterface.style.display = 'flex';
+                    furnaceInterface.style.display = 'none';
+                    experienceControl.style.display = 'none';
+                } else {
+                    furnaceBtn.classList.add('active');
+                    craftingBtn.classList.remove('active');
+                    furnaceInterface.style.display = 'flex';
+                    craftingInterface.style.display = 'none';
+                    experienceControl.style.display = 'flex';
+                }
+            }
+
+            craftingBtn.addEventListener('click', () => switchMode('crafting'));
+            furnaceBtn.addEventListener('click', () => switchMode('furnace'));
+            
+            downloadBtn.addEventListener('click', () => {
+                const { recipe, fileName } = currentMode === 'crafting' ? generateCraftingRecipe() : generateFurnaceRecipe();
+                if (recipe && fileName) {
+                    const jsonString = JSON.stringify(recipe, null, 2);
+                    outputCode.textContent = jsonString;
+                    
+                    const blob = new Blob([jsonString], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = fileName;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }
+            });
+            
+            function generateCraftingRecipe() {
+                const resultItem = document.querySelector('#result-slot-crafting img');
+                if (!resultItem) { outputCode.textContent = "Erreur : Item de résultat manquant."; return {}; }
+
+                const gridSlots = document.querySelectorAll('#crafting-grid .grid-slot');
+                if (!Array.from(gridSlots).some(s => s.querySelector('img'))) {
+                    outputCode.textContent = "Erreur : La grille de craft est vide."; return {};
+                }
+                
+                const resultItemId = resultItem.getAttribute('data-item-id');
+                const itemName = resultItemId.split(':')[1];
+                
+                const recipe = { "format_version": "1.20.0", "minecraft:recipe_shaped": { "description": { "identifier": `minecraft:${itemName}` }, "tags": ["crafting_table"], "pattern": [], "key": {}, "result": { "item": resultItemId, "count": parseInt(resultCountInput.value, 10) || 1 } } };
+                
+                const keyMap = {}; let keyChar = 'A';
+                let patternRows = ["", "", ""];
+                for(let i=0; i < 3; i++) {
+                    for (let j=0; j < 3; j++) {
+                        const itemInSlot = gridSlots[i * 3 + j].querySelector('img');
+                        if (itemInSlot) {
+                            const itemId = itemInSlot.getAttribute('data-item-id');
+                            if (!keyMap[itemId]) {
+                                keyMap[itemId] = keyChar;
+                                recipe["minecraft:recipe_shaped"].key[keyChar] = { "item": itemId };
+                                keyChar = String.fromCharCode(keyChar.charCodeAt(0) + 1);
+                            }
+                            patternRows[i] += keyMap[itemId];
+                        } else { patternRows[i] += " "; }
+                    }
+                }
+                recipe["minecraft:recipe_shaped"].pattern = patternRows;
+                return { recipe, fileName: `${itemName}.json` };
+            }
+
+            function generateFurnaceRecipe() {
+                const inputItem = document.querySelector('#input-slot-furnace img');
+                const resultItem = document.querySelector('#result-slot-furnace img');
+                
+                if (!inputItem || !resultItem) { outputCode.textContent = "Erreur : Ingrédient et résultat requis."; return {}; }
+
+                const inputItemId = inputItem.getAttribute('data-item-id');
+                const inputItemName = inputItemId.split(':')[1];
+                const resultItemId = resultItem.getAttribute('data-item-id');
+                const experience = parseFloat(experienceInput.value) || 0;
+                
+                const recipe = { "format_version": "1.20.0", "minecraft:recipe_furnace": { "description": { "identifier": `minecraft:furnace_${inputItemName}` }, "tags": ["furnace"], "experience": experience, "input": { "item": inputItemId }, "output": { "item": resultItemId } } };
+                
+                return { recipe, fileName: `furnace_${inputItemName}.json` };
+            }
+        });
+    </script>
 </body>
 </html>

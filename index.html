@@ -277,6 +277,10 @@
 
             let currentMode = 'crafting';
             
+            // ===================================================================================
+            // IMPORTANT : Collez ici la liste de tous vos noms de fichiers .png (sans l'extension .png)
+            // Exemple : 'minecraft_stone', 'minecraft_stick', 'minecraft_acacia_boat', etc.
+            // ===================================================================================
             const itemFileNames = [
                 'minecraft_acacia_boat', 'minecraft_acacia_button', 'minecraft_acacia_chest_boat', 'minecraft_acacia_door', 'minecraft_acacia_fence_gate', 
                 'minecraft_acacia_fence', 'minecraft_acacia_hanging_sign', 'minecraft_acacia_leaves', 'minecraft_acacia_log', 'minecraft_acacia_planks', 
@@ -513,9 +517,8 @@
                 'minecraft_zombie_villager_spawn_egg', 'minecraft_zombified_piglin_spawn_egg'
             ];
             
-            // Le script génère la liste complète des items à partir de la liste ci-dessus
             const items = itemFileNames.map(fileName => {
-                const itemName = fileName.replace('minecraft_', '').replace('.png', '');
+                const itemName = fileName.replace('minecraft_', '');
                 return {
                     id: `minecraft:${itemName}`,
                     img: `items/${fileName}.png`
@@ -592,7 +595,6 @@
             craftingBtn.addEventListener('click', () => switchMode('crafting'));
             furnaceBtn.addEventListener('click', () => switchMode('furnace'));
             
-            // S'assurer que le mode par défaut est bien 'crafting' au chargement
             switchMode('crafting');
 
             downloadBtn.addEventListener('click', () => {
@@ -625,7 +627,7 @@
                 const resultItemId = resultItem.getAttribute('data-item-id');
                 const itemName = resultItemId.split(':')[1];
                 
-                const recipe = { "format_version": "1.20.0", "minecraft:recipe_shaped": { "description": { "identifier": `minecraft:${itemName}` }, "tags": ["crafting_table"], "pattern": [], "key": {}, "result": { "item": resultItemId, "count": parseInt(resultCountInput.value, 10) || 1 } } };
+                const recipe = { "format_version": "1.0.0", "minecraft:recipe_shaped": { "description": { "identifier": `minecraft:${itemName}` }, "tags": ["crafting_table"], "pattern": [], "key": {}, "result": { "item": resultItemId, "count": parseInt(resultCountInput.value, 10) || 1 } } };
                 
                 const keyMap = {}; let keyChar = 'A';
                 let patternRows = ["", "", ""];
@@ -654,16 +656,15 @@
                 if (!inputItem || !resultItem) { outputCode.textContent = "Erreur : Ingrédient et résultat requis."; return {}; }
 
                 const inputItemId = inputItem.getAttribute('data-item-id');
-                const inputItemName = inputItemId.split(':')[1];
                 const resultItemId = resultItem.getAttribute('data-item-id');
                 const resultItemName = resultItemId.split(':')[1];
                 const experience = parseFloat(experienceInput.value) || 0;
                 
                 const recipe = {
-                    "format_version": "1.20.0",
+                    "format_version": "1.0.0",
                     "minecraft:recipe_furnace": {
                         "description": {
-                            "identifier": `minecraft:furnace_${inputItemName}_to_${resultItemName}`
+                            "identifier": `minecraft:furnace_${resultItemName}`
                         },
                         "tags": [ "furnace" ],
                         "experience": experience,
@@ -676,7 +677,7 @@
                     }
                 };
                 
-                return { recipe, fileName: `furnace_${inputItemName}.json` };
+                return { recipe, fileName: `furnace_${resultItemName}.json` };
             }
         });
     </script>

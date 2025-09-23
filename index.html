@@ -354,14 +354,14 @@
             </div>
             
              <div class="controls">
-                  <div class="control-group">
-                       <label for="result-count">Quantité</label>
-                       <input type="number" id="result-count" value="1" min="1" max="64">
-                  </div>
-                  <div class="control-group" id="experience-control" style="display: none;">
-                       <label for="furnace-experience">Expérience</label>
-                       <input type="number" id="furnace-experience" value="0.15" step="0.05" min="0">
-                  </div>
+                   <div class="control-group">
+                         <label for="result-count">Quantité</label>
+                         <input type="number" id="result-count" value="1" min="1" max="64">
+                   </div>
+                   <div class="control-group" id="experience-control" style="display: none;">
+                         <label for="furnace-experience">Expérience</label>
+                         <input type="number" id="furnace-experience" value="0.15" step="0.05" min="0">
+                   </div>
              </div>
 
             <div class="main-actions">
@@ -658,7 +658,8 @@
 
                 uniqueItemGroups.forEach((char, groupJson) => {
                     const group = JSON.parse(groupJson);
-                    recipe["minecraft:recipe_shaped"].key[char] = group.length === 1 ? { "item": group[0] } : group.map(id => ({ "item": id }));
+                    // MODIFICATION: 'key' contient maintenant toujours un tableau
+                    recipe["minecraft:recipe_shaped"].key[char] = group.map(id => ({ "item": id }));
                 });
 
                 let minRow = 2, maxRow = 0, minCol = 2, maxCol = 0;

@@ -256,6 +256,51 @@
             margin-top: -10px;
             padding-bottom: 10px;
         }
+
+        /* Mobile Friendliness */
+        @media (max-width: 800px) {
+            body {
+                padding: 10px;
+            }
+            .main-container {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            .left-panel {
+                order: 2;
+            }
+            .right-panel {
+                order: 1;
+            }
+            #item-list {
+                height: 180px;
+                display: flex;
+                flex-wrap: wrap;
+                align-content: flex-start;
+            }
+             h1 {
+                font-size: 1.5em;
+                text-align: center;
+            }
+            .grid-slot {
+                width: 50px;
+                height: 50px;
+            }
+            #crafting-grid {
+                grid-template-columns: repeat(3, 50px);
+                grid-template-rows: repeat(3, 50px);
+            }
+            .arrow {
+                font-size: 30px;
+            }
+            .mode-btn, .action-btn, #download-btn {
+                font-size: 12px;
+                padding: 8px 12px;
+            }
+            #output-container h2 {
+                font-size: 1.2em;
+            }
+        }
     </style>
 </head>
 <body>
@@ -713,6 +758,109 @@
                     variantModal.style.display = 'none';
                 }
             });
+
+            // --- Touch Drag and Drop Logic ---
+            let touchDragGhost = null;
+            let touchDragOriginalSlot = null;
+            let currentTouchTarget = null;
+
+            function handleTouchStart(e) {
+                const target = e.target;
+                const isItemInList = target.classList.contains('item');
+                const slotElement = target.closest('.grid-slot');
+                const isItemInSlot = slotElement && slotElement.querySelector('img');
+
+                if (!isItemInList && !isItemInSlot) return;
+                
+                e.preventDefault();
+
+                touchDragOriginalSlot = isItemInSlot ? slotElement : null;
+                const originalImg = isItemInList ? target : slotElement.querySelector('img');
+
+                touchDragGhost = originalImg.cloneNode(true);
+                touchDragGhost.style.position = 'absolute';
+                touchDragGhost.style.zIndex = '1000';
+                touchDragGhost.style.pointerEvents = 'none';
+                touchDragGhost.style.width = '60px';
+                touchDragGhost.style.height = '60px';
+                touchDragGhost.style.opacity = '0.7';
+                document.body.appendChild(touchDragGhost);
+                
+                if (isItemInList) {
+                    touchDragGhost.dataset.itemId = target.dataset.itemId;
+                    touchDragGhost.dataset.source = 'list';
+                } else {
+                    touchDragGhost.dataset.variants = slotElement.dataset.variants || '[]';
+                    touchDragGhost.dataset.source = 'slot';
+                    originalImg.style.opacity = '0.4';
+                }
+                
+                const touch = e.touches[0];
+                moveGhost(touch.clientX, touch.clientY);
+
+                document.addEventListener('touchmove', handleTouchMove, { passive: false });
+                document.addEventListener('touchend', handleTouchEnd, { once: true });
+            }
+
+            function moveGhost(x, y) {
+                if (!touchDragGhost) return;
+                touchDragGhost.style.left = `${x - 30}px`;
+                touchDragGhost.style.top = `${y - 30}px`;
+            }
+
+            function handleTouchMove(e) {
+                if (!touchDragGhost) return;
+                e.preventDefault();
+                const touch = e.touches[0];
+                moveGhost(touch.clientX, touch.clientY);
+
+                touchDragGhost.style.display = 'none';
+                const elementUnder = document.elementFromPoint(touch.clientX, touch.clientY);
+                touchDragGhost.style.display = '';
+
+                const newTarget = elementUnder ? elementUnder.closest('.grid-slot') : null;
+
+                if (currentTouchTarget !== newTarget) {
+                    if (currentTouchTarget) {
+                        currentTouchTarget.classList.remove('drag-over');
+                    }
+                    if (newTarget) {
+                        newTarget.classList.add('drag-over');
+                    }
+                    currentTouchTarget = newTarget;
+                }
+            }
+
+            function handleTouchEnd(e) {
+                document.removeEventListener('touchmove', handleTouchMove);
+                if (!touchDragGhost) return;
+
+                if (currentTouchTarget) {
+                    const source = touchDragGhost.dataset.source;
+                    if (source === 'list') {
+                        handleItemDropFromList(currentTouchTarget, touchDragGhost.dataset.itemId);
+                    } else if (source === 'slot') {
+                        draggedSlotElement = touchDragOriginalSlot;
+                        handleItemDropFromSlot(currentTouchTarget);
+                    }
+                }
+
+                if (touchDragOriginalSlot) {
+                    const originalImg = touchDragOriginalSlot.querySelector('img');
+                    if (originalImg) originalImg.style.opacity = '1';
+                }
+                if (currentTouchTarget) {
+                    currentTouchTarget.classList.remove('drag-over');
+                }
+                document.body.removeChild(touchDragGhost);
+
+                touchDragGhost = null;
+                touchDragOriginalSlot = null;
+                currentTouchTarget = null;
+                draggedSlotElement = null;
+            }
+
+            document.addEventListener('touchstart', handleTouchStart, { passive: false });
         });
     </script>
 </body>

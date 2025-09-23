@@ -641,7 +641,7 @@
             }
 
             function generateShapedRecipe(itemName, resultItemId, gridSlots) {
-                const recipe = { "format_version": "1.00.0", "minecraft:recipe_shaped": { description: { identifier: `minecraft:${itemName}` }, tags: ["crafting_table"], pattern: [], key: {}, result: { item: resultItemId, count: parseInt(resultCountInput.value, 10) || 1 } } };
+                const recipe = { "format_version": "1.0.0", "minecraft:recipe_shaped": { description: { identifier: `minecraft:${itemName}` }, tags: ["crafting_table"], pattern: [], key: {}, result: { item: resultItemId, count: parseInt(resultCountInput.value, 10) || 1 } } };
                 let gridData = Array.from(gridSlots).map(slot => slot.dataset.variants ? JSON.parse(slot.dataset.variants) : null);
                 const charPool = '#*+S/|?@&%';
                 let charIndex = 0;

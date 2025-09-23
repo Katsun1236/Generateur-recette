@@ -1,0 +1,35 @@
+Minecraft Recipe Generator
+Bienvenue dans le Générateur et Encyclopédie de Recettes Paladium ! Cet outil web a été conçu pour simplifier la création et la visualisation de fichiers de recettes .json pour Minecraft, en offrant une interface interactive et intuitive.
+
+✨ Fonctionnalités Principales
+Liste Interactive : Cliquez sur n'importe quel item dans la liste pour afficher valider votre recette.
+
+Générateur Visuel : Modifiez les recettes existantes ou créez les vôtres de A à Z en glissant-déposant des items.
+
+Support Complet : L'outil gère les recettes shaped (avec forme), shapeless (sans forme) et furnace (four).
+
+Gestion des Variantes : Ajoutez plusieurs types d'ingrédients (comme différents types de planches) pour une même case.
+
+Exportation Facile : Téléchargez vos créations en un clic pour obtenir un fichier .json parfaitement formaté et prêt à l'emploi.
+
+🚀 Comment l'utiliser
+Ce projet est composé de deux fichiers principaux et d'un dossier pour vos images.
+
+🗿 Comment ajouter un item 
+Cherchez le dans listall et copié collé le dans la liste des items de list_item_use, index.html et list.html
+
+1. Structure des Fichiers
+Assurez-vous que vos fichiers sont organisés de la manière suivante :
+
+/Generator-Recettes
+|-- /item_list/
+|   |--list_item_use      
+|   |--listall   
+|-- /items/
+|   |-- minecraft_stone.png
+|   |-- minecraft_stick.png
+|   |-- ... (toutes les autres images d'items)   
+|-- index.html
+|-- list.css
+|-- list.html
+|-- README

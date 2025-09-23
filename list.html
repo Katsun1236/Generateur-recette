@@ -3,14 +3,37 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Liste des Items à Faire</title>
+  <title>Liste des Items</title>
 
-  <!-- Ton CSS Pokédex -->
+  <!-- Ton CSS -->
   <link rel="stylesheet" href="list.css">
 
-  <!-- Styles additionnels (si tu veux, tu peux bouger ces règles dans list.css) -->
   <style>
-    /* Colonne checkbox */
+    /* --- Barre de recherche --- */
+    .search-bar {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .search-bar input {
+      width: 60%;
+      max-width: 400px;
+      padding: 10px 15px;
+      border: 3px solid #444;
+      border-radius: 6px;
+      font-size: 12px;
+      font-family: 'Press Start 2P', monospace;
+      background: #2b2b2b;
+      color: #fff;
+      outline: none;
+      box-shadow: 3px 3px rgba(0,0,0,0.5);
+    }
+
+    .search-bar input:focus {
+      border-color: #ff4040;
+    }
+
+    /* --- Colonne checkbox --- */
     table td.checkbox-cell {
       width: 64px;
       text-align: center;
@@ -23,7 +46,7 @@
       cursor: pointer;
     }
 
-    /* Etat "fait" : moins visible + barré + effet pixel */
+    /* --- Etat "fait" --- */
     tbody tr.done td {
       opacity: 0.45;
       text-decoration: line-through;
@@ -31,21 +54,36 @@
       transition: opacity 180ms ease, transform 120ms ease;
     }
 
-    tbody tr {
-      transition: background 150ms ease;
+    /* --- Bouton retour --- */
+    .back-btn {
+      margin-top: 25px;
+      padding: 12px 20px;
+      background: #ff4040;
+      border: 3px solid #444;
+      border-radius: 6px;
+      color: #fff;
+      text-decoration: none;
+      font-size: 10px;
+      font-family: 'Press Start 2P', monospace;
+      box-shadow: 4px 4px rgba(0,0,0,0.7);
+      transition: background 0.2s ease, transform 0.15s ease;
+      display: inline-block;
     }
 
-    /* Small responsive tweak */
-    @media (max-width: 640px) {
-      thead th:nth-child(2), tbody td:nth-child(2) { display: none; } /* masque la colonne "Nom" si écran petit */
-      table td.checkbox-cell { width: 48px; }
-      td img { width: 40px; height: 40px; }
+    .back-btn:hover {
+      background: #e63232;
+      transform: translateY(-2px);
     }
   </style>
 </head>
 <body>
 
-  <h1>Liste des Items – Pokédex</h1>
+  <h1>Liste des Items</h1>
+
+  <!-- Barre de recherche -->
+  <div class="search-bar">
+    <input type="text" id="search" placeholder="🔍 Rechercher un item...">
+  </div>
 
   <div class="table-container">
     <table>
@@ -57,7 +95,7 @@
         </tr>
       </thead>
       <tbody id="item-table">
-        <!-- Rempli par JS -->
+        <!-- rempli par JS -->
       </tbody>
     </table>
   </div>
@@ -65,7 +103,7 @@
   <a href="index.html" class="back-btn">⬅ Retour</a>
 
   <script>
-    // ---- Mets ici ta liste complète (ou conserve quelques items pour tester) ----
+    // --- Liste des items ---
     const items = [
 'minecraft_acacia_boat',
 'minecraft_acacia_button',
@@ -760,21 +798,22 @@
 'minecraft_yellow_wool'
     ];
 
-    // ---- stockage local pour conserver l'état 'fait' entre les reloads ----
     const STORAGE_KEY = 'mc_item_done_states_v1';
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-    const doneStates = { ...saved }; // { itemName: true/false }
+    const doneStates = { ...saved };
 
     const tbody = document.getElementById('item-table');
+    const searchInput = document.getElementById('search');
 
     function saveStates() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(doneStates));
     }
 
     function renderList() {
-      // On sépare non-fait / fait pour garder l'ordre demandé
-      const notDone = items.filter(i => !doneStates[i]);
-      const done = items.filter(i => !!doneStates[i]);
+      const filter = searchInput.value.toLowerCase();
+
+      const notDone = items.filter(i => !doneStates[i] && i.includes(filter));
+      const done = items.filter(i => !!doneStates[i] && i.includes(filter));
       const ordered = [...notDone, ...done];
 
       tbody.innerHTML = '';
@@ -782,50 +821,41 @@
         const tr = document.createElement('tr');
         if (doneStates[itemId]) tr.classList.add('done');
 
-        // checkbox cell
+        // checkbox
         const cbCell = document.createElement('td');
         cbCell.className = 'checkbox-cell';
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
         checkbox.checked = !!doneStates[itemId];
-        checkbox.title = checkbox.checked ? "Marqué comme fait" : "Marquer comme fait";
         cbCell.appendChild(checkbox);
 
-        // icon cell
+        // image
         const iconCell = document.createElement('td');
         const img = document.createElement('img');
-        img.src = `items/${itemId}.png`; // appelle les images dans ton dossier items/
+        img.src = `items/${itemId}.png`;
         img.alt = itemId;
         img.width = 48;
         img.height = 48;
         img.style.imageRendering = 'pixelated';
-        // fallback si l'image n'existe pas
-        img.onerror = () => {
-          img.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48"><rect width="100%" height="100%" fill="%232a2a2a"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%23fff" font-size="8">no-img</text></svg>';
-        };
         iconCell.appendChild(img);
 
-        // name cell
+        // nom
         const nameCell = document.createElement('td');
         nameCell.textContent = itemId;
 
-        // Append cells
         tr.appendChild(cbCell);
         tr.appendChild(iconCell);
         tr.appendChild(nameCell);
         tbody.appendChild(tr);
 
-        // interaction : toggle et re-render
-        checkbox.addEventListener('change', (e) => {
-          doneStates[itemId] = !!e.target.checked;
+        // gestion du clic
+        checkbox.addEventListener('change', () => {
+          doneStates[itemId] = checkbox.checked;
           saveStates();
-          // réafficher : on ré-render pour remettre l'item en bas si coché
           renderList();
         });
 
-        // interaction rapide : cliquer sur la ligne change la checkbox
-        tr.addEventListener('click', (e) => {
-          // ignore si on clique sur le checkbox lui-même (double event)
+        tr.addEventListener('click', e => {
           if (e.target.tagName.toLowerCase() === 'input') return;
           checkbox.checked = !checkbox.checked;
           doneStates[itemId] = checkbox.checked;
@@ -835,7 +865,10 @@
       });
     }
 
-    // initial render
+    // Mise à jour live quand on tape
+    searchInput.addEventListener('input', renderList);
+
+    // Initial render
     renderList();
   </script>
 </body>

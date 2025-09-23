@@ -576,7 +576,12 @@
                 const resultItem = document.querySelector('#result-slot-crafting img');
                 if (!resultItem) { outputCode.textContent = "Erreur : Item de résultat manquant."; return {}; }
                 const resultItemId = resultItem.getAttribute('data-item-id');
-                const itemName = resultItemId.replace("minecraft:", "");
+                
+                let itemName = resultItemId.split(':').pop() || '';
+                if (itemName.startsWith('minecraft_')) {
+                    itemName = itemName.substring('minecraft_'.length);
+                }
+
                 const gridSlots = document.querySelectorAll('#crafting-grid .grid-slot');
 
                 if (!Array.from(gridSlots).some(s => s.querySelector('img'))) {
@@ -608,7 +613,6 @@
 
                 uniqueItemGroups.forEach((char, groupJson) => {
                     const group = JSON.parse(groupJson);
-                    // FIX: Coquille corrigée ici (minecrat -> minecraft)
                     recipe["minecraft:recipe_shaped"].key[char] = group.length === 1 ? { "item": group[0] } : group.map(id => ({ "item": id }));
                 });
 
@@ -663,7 +667,12 @@
                 if (!inputItem || !resultItem) { outputCode.textContent = "Erreur : Ingrédient et résultat requis."; return {}; }
                 const inputItemId = inputItem.getAttribute('data-item-id');
                 const resultItemId = resultItem.getAttribute('data-item-id');
-                const resultItemName = resultItemId.replace("minecraft:", "");
+                
+                let resultItemName = resultItemId.split(':').pop() || '';
+                if (resultItemName.startsWith('minecraft_')) {
+                    resultItemName = resultItemName.substring('minecraft_'.length);
+                }
+
                 const experience = parseFloat(experienceInput.value) || 0;
                 
                 const recipe = { 

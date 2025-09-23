@@ -118,29 +118,23 @@
     <textarea id="clipboard-helper" style="position: absolute; left: -9999px;"></textarea>
 
     <script type="module">
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-            
-        const firebaseConfig = {
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, query } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+
+        // IMPORTANT : Remplacez cet objet vide par votre propre configuration Firebase
+        const firebaseConfig = {  
             apiKey: "AIzaSyAWaC4hPT0JWsEWKpSsUVznX_6q0hkOEbM",
             authDomain: "generateur-recettes-mc.firebaseapp.com",
             projectId: "generateur-recettes-mc",
             storageBucket: "generateur-recettes-mc.firebasestorage.app",
             messagingSenderId: "275358159239",
-            appId: "1:275358159239:web:f534a69d9db0c495f84322"
-    };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-</script>;
+            appId: "1:275358159239:web:f534a69d9db0c495f84322"};
         
-        let app, auth, db;
-
-        const recipesContainer = document.getElementById('recipes-container');
-        const clipboardHelper = document.getElementById('clipboard-helper');
-
-        const itemFileNames = [
+        document.addEventListener('DOMContentLoaded', () => {
+            const recipesContainer = document.getElementById('recipes-container');
+            const clipboardHelper = document.getElementById('clipboard-helper');
+            const itemFileNames = [
                 'minecraft_acacia_boat',
                 'minecraft_acacia_button',
                 'minecraft_acacia_chest_boat',
@@ -1557,163 +1551,165 @@
                 'minecraft_zombie_spawn_egg',
                 'minecraft_zombie_villager_spawn_egg',
                 'minecraft_zombified_piglin_spawn_egg',
-        ];
-        
-        const items = new Map(itemFileNames.map(fileName => {
-            const itemName = fileName.replace('minecraft_', '').replace('.png', '');
-            const itemId = `minecraft:${itemName}`;
-            return [itemId, { id: itemId, img: `items/${fileName}.png` }];
-        }));
+    
+            ];
+            
+            const items = new Map(itemFileNames.map(fileName => {
+                const itemName = fileName.replace('minecraft_', '').replace('.png', '');
+                const itemId = `minecraft:${itemName}`;
+                return [itemId, { id: itemId, img: `items/${fileName}.png` }];
+            }));
 
-        function displayRecipe(recipeData) {
-            const card = document.createElement('div');
-            card.className = 'recipe-card';
-            const display = document.createElement('div');
-            display.className = 'recipe-display';
-            const recipeType = Object.keys(recipeData)[1];
-            const recipeInfo = recipeData[recipeType];
-            let resultInfo, resultItemId, resultCount = 1;
+            function displayRecipe(recipeData) {
+                const card = document.createElement('div');
+                card.className = 'recipe-card';
+                const display = document.createElement('div');
+                display.className = 'recipe-display';
+                const recipeType = Object.keys(recipeData)[1];
+                const recipeInfo = recipeData[recipeType];
+                let resultInfo, resultItemId, resultCount = 1;
 
-            if(recipeType === 'minecraft:recipe_furnace') {
-                resultInfo = recipeInfo.output;
-                resultItemId = typeof resultInfo === 'string' ? resultInfo : resultInfo.item;
-            } else {
-                 resultInfo = recipeInfo.result;
-                 resultItemId = resultInfo.item;
-                 resultCount = resultInfo.count || 1;
-            }
-           
-            if (recipeType === 'minecraft:recipe_shaped') {
-                const grid = document.createElement('div');
-                grid.className = 'crafting-grid-display';
-                
-                const pattern = recipeInfo.pattern;
-                const key = recipeInfo.key;
-                const patternHeight = pattern.length;
-                const patternWidth = pattern[0].length;
+                if(recipeType === 'minecraft:recipe_furnace') {
+                    resultInfo = recipeInfo.output;
+                    resultItemId = typeof resultInfo === 'string' ? resultInfo : resultInfo.item;
+                } else {
+                     resultInfo = recipeInfo.result;
+                     resultItemId = resultInfo.item;
+                     resultCount = resultInfo.count || 1;
+                }
+            
+                if (recipeType === 'minecraft:recipe_shaped') {
+                    const grid = document.createElement('div');
+                    grid.className = 'crafting-grid-display';
+                    
+                    const pattern = recipeInfo.pattern;
+                    const key = recipeInfo.key;
+                    const patternHeight = pattern.length;
+                    const patternWidth = pattern[0].length;
 
-                grid.style.gridTemplateColumns = `repeat(${patternWidth}, 40px)`;
+                    grid.style.gridTemplateColumns = `repeat(${patternWidth}, 40px)`;
 
-                for (let r = 0; r < patternHeight; r++) {
-                    for (let c = 0; c < patternWidth; c++) {
-                        const char = pattern[r][c];
+                    for (let r = 0; r < patternHeight; r++) {
+                        for (let c = 0; c < patternWidth; c++) {
+                            const char = pattern[r][c];
+                            const slot = document.createElement('div');
+                            slot.className = 'slot-display';
+                            if (char !== ' ' && key[char]) {
+                                const itemInfo = Array.isArray(key[char]) ? key[char][0] : key[char];
+                                const itemId = itemInfo.item;
+                                if (itemId && items.has(itemId)) {
+                                    const img = document.createElement('img');
+                                    img.src = items.get(itemId).img;
+                                    slot.appendChild(img);
+                                }
+                            }
+                            grid.appendChild(slot);
+                        }
+                    }
+                    display.appendChild(grid);
+
+                } else if (recipeType === 'minecraft:recipe_shapeless') {
+                    const ingredientsContainer = document.createElement('div');
+                    ingredientsContainer.style.display = 'flex';
+                    ingredientsContainer.style.flexWrap = 'wrap';
+                    ingredientsContainer.style.gap = '5px';
+                    ingredientsContainer.style.maxWidth = '150px';
+
+                    recipeInfo.ingredients.forEach(ingredient => {
                         const slot = document.createElement('div');
                         slot.className = 'slot-display';
-                        if (char !== ' ' && key[char]) {
-                            const itemInfo = Array.isArray(key[char]) ? key[char][0] : key[char];
-                            const itemId = itemInfo.item;
-                             if (itemId && items.has(itemId)) {
-                                const img = document.createElement('img');
-                                img.src = items.get(itemId).img;
-                                slot.appendChild(img);
-                            }
+                        if (ingredient.item && items.has(ingredient.item)) {
+                            const img = document.createElement('img');
+                            img.src = items.get(ingredient.item).img;
+                            slot.appendChild(img);
                         }
-                        grid.appendChild(slot);
+                        ingredientsContainer.appendChild(slot);
+                    });
+                    display.appendChild(ingredientsContainer);
+
+                } else if (recipeType === 'minecraft:recipe_furnace') {
+                    const inputSlot = document.createElement('div');
+                    inputSlot.className = 'slot-display';
+                    if (recipeInfo.input.item && items.has(recipeInfo.input.item)) {
+                        const img = document.createElement('img');
+                        img.src = items.get(recipeInfo.input.item).img;
+                        inputSlot.appendChild(img);
                     }
+                    display.appendChild(inputSlot);
                 }
-                display.appendChild(grid);
 
-            } else if (recipeType === 'minecraft:recipe_shapeless') {
-                 const ingredientsContainer = document.createElement('div');
-                 ingredientsContainer.style.display = 'flex';
-                 ingredientsContainer.style.flexWrap = 'wrap';
-                 ingredientsContainer.style.gap = '5px';
-                 ingredientsContainer.style.maxWidth = '150px';
-
-                 recipeInfo.ingredients.forEach(ingredient => {
-                     const slot = document.createElement('div');
-                     slot.className = 'slot-display';
-                     if (ingredient.item && items.has(ingredient.item)) {
-                         const img = document.createElement('img');
-                         img.src = items.get(ingredient.item).img;
-                         slot.appendChild(img);
-                     }
-                     ingredientsContainer.appendChild(slot);
-                 });
-                 display.appendChild(ingredientsContainer);
-
-            } else if (recipeType === 'minecraft:recipe_furnace') {
-                 const inputSlot = document.createElement('div');
-                 inputSlot.className = 'slot-display';
-                 if (recipeInfo.input.item && items.has(recipeInfo.input.item)) {
-                    const img = document.createElement('img');
-                    img.src = items.get(recipeInfo.input.item).img;
-                    inputSlot.appendChild(img);
-                 }
-                 display.appendChild(inputSlot);
-            }
-
-            const arrow = document.createElement('div');
-            arrow.className = 'arrow';
-            arrow.textContent = '→';
-            display.appendChild(arrow);
-            
-            const resultDiv = document.createElement('div');
-            resultDiv.className = 'result-display';
-            const resultSlot = document.createElement('div');
-            resultSlot.className = 'slot-display';
-             if (resultItemId && items.has(resultItemId)) {
-                const img = document.createElement('img');
-                img.src = items.get(resultItemId).img;
-                resultSlot.appendChild(img);
-            }
-            const resultName = document.createElement('p');
-            resultName.textContent = `${resultCount} ${resultItemId.split(':')[1]}`;
-            resultDiv.appendChild(resultSlot);
-            resultDiv.appendChild(resultName);
-            display.appendChild(resultDiv);
-
-            const copyBtn = document.createElement('button');
-            copyBtn.className = 'copy-btn';
-            copyBtn.textContent = 'Copier le Code';
-            copyBtn.addEventListener('click', () => {
-                clipboardHelper.value = JSON.stringify(recipeData, null, 2);
-                clipboardHelper.select();
-                document.execCommand('copy');
-                copyBtn.textContent = 'Copié !';
-                setTimeout(() => { copyBtn.textContent = 'Copier le Code'; }, 1500);
-            });
-
-            card.appendChild(display);
-            card.appendChild(copyBtn);
-            recipesContainer.appendChild(card);
-        }
-
-        async function init() {
-             if (Object.keys(firebaseConfig).length === 0) {
-                console.warn("Firebase n'est pas configuré. Impossible de charger les recettes.");
-                recipesContainer.innerHTML = "<p>Firebase n'est pas configuré. Suivez le guide de configuration.</p>";
-                return;
-            }
-            try {
-                app = initializeApp(firebaseConfig);
-                auth = getAuth(app);
-                db = getFirestore(app);
+                const arrow = document.createElement('div');
+                arrow.className = 'arrow';
+                arrow.textContent = '→';
+                display.appendChild(arrow);
                 
-                onAuthStateChanged(auth, user => {
-                    if (user) {
-                        loadRecipes();
-                    }
-                });
-                await signInAnonymously(auth);
-            } catch (error) {
-                console.error("Erreur d'initialisation Firebase:", error);
-                recipesContainer.innerHTML = "<p>Impossible de charger les recettes. Vérifiez la console pour les erreurs.</p>";
-            }
-        }
-        
-        function loadRecipes() {
-            const recipesRef = collection(db, 'public_recipes');
-            const q = query(recipesRef);
-            onSnapshot(q, (snapshot) => {
-                recipesContainer.innerHTML = '';
-                snapshot.forEach((doc) => {
-                    displayRecipe(doc.data());
-                });
-            });
-        }
+                const resultDiv = document.createElement('div');
+                resultDiv.className = 'result-display';
+                const resultSlot = document.createElement('div');
+                resultSlot.className = 'slot-display';
+                if (resultItemId && items.has(resultItemId)) {
+                    const img = document.createElement('img');
+                    img.src = items.get(resultItemId).img;
+                    resultSlot.appendChild(img);
+                }
+                const resultName = document.createElement('p');
+                resultName.textContent = `${resultCount} ${resultItemId.split(':')[1]}`;
+                resultDiv.appendChild(resultSlot);
+                resultDiv.appendChild(resultName);
+                display.appendChild(resultDiv);
 
-        init();
+                const copyBtn = document.createElement('button');
+                copyBtn.className = 'copy-btn';
+                copyBtn.textContent = 'Copier le Code';
+                copyBtn.addEventListener('click', () => {
+                    clipboardHelper.value = JSON.stringify(recipeData, null, 2);
+                    clipboardHelper.select();
+                    document.execCommand('copy');
+                    copyBtn.textContent = 'Copié !';
+                    setTimeout(() => { copyBtn.textContent = 'Copier le Code'; }, 1500);
+                });
+
+                card.appendChild(display);
+                card.appendChild(copyBtn);
+                recipesContainer.appendChild(card);
+            }
+
+            async function initFirebase() {
+                if (Object.keys(firebaseConfig).length === 0) {
+                    console.warn("Firebase n'est pas configuré. Impossible de charger les recettes.");
+                    recipesContainer.innerHTML = "<p>Firebase n'est pas configuré. Suivez le guide de configuration.</p>";
+                    return;
+                }
+                try {
+                    const app = initializeApp(firebaseConfig);
+                    const auth = getAuth(app);
+                    const db = getFirestore(app);
+                    
+                    onAuthStateChanged(auth, user => {
+                        if (user) {
+                            loadRecipes(db);
+                        }
+                    });
+                    await signInAnonymously(auth);
+                } catch (error) {
+                    console.error("Erreur d'initialisation Firebase:", error);
+                    recipesContainer.innerHTML = "<p>Impossible de charger les recettes. Vérifiez la console pour les erreurs.</p>";
+                }
+            }
+            
+            function loadRecipes(db) {
+                const recipesRef = collection(db, 'public_recipes');
+                const q = query(recipesRef);
+                onSnapshot(q, (snapshot) => {
+                    recipesContainer.innerHTML = '';
+                    snapshot.forEach((doc) => {
+                        displayRecipe(doc.data());
+                    });
+                });
+            }
+
+            initFirebase();
+        });
     </script>
 </body>
 </html>

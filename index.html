@@ -335,45 +335,44 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
         import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
-        
+
         const firebaseConfig = {
             apiKey: "AIzaSyAWaC4hPT0JWsEWKpSsUVznX_6q0hkOEbM",
             authDomain: "generateur-recettes-mc.firebaseapp.com",
             projectId: "generateur-recettes-mc",
             storageBucket: "generateur-recettes-mc.firebasestorage.app",
             messagingSenderId: "275358159239",
-            appId: "1:275358159239:web:f534a69d9db0c495f84322"
-        };
+            appId: "1:275358159239:web:f534a69d9db0c495f84322"};
 
-        app = initializeApp(firebaseConfig);
+        let db;
+        let userLoggedIn = false;
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const itemListContainer = document.getElementById('item-list');
+            const craftingBtn = document.getElementById('crafting-btn');
+            const furnaceBtn = document.getElementById('furnace-btn');
+            const shapedBtn = document.getElementById('shaped-btn');
+            const shapelessBtn = document.getElementById('shapeless-btn');
+            const craftingInterface = document.getElementById('crafting-interface');
+            const furnaceInterface = document.getElementById('furnace-interface');
+            const allSlots = document.querySelectorAll('.grid-slot');
+            const downloadBtn = document.getElementById('download-btn');
+            const clearGridBtn = document.getElementById('clear-grid-btn');
+            const outputCode = document.getElementById('output-code');
+            const resultCountInput = document.getElementById('result-count');
+            const searchBar = document.getElementById('search-bar');
+            const experienceControl = document.getElementById('experience-control');
+            const experienceInput = document.getElementById('furnace-experience');
+            const variantModal = document.getElementById('variant-modal');
+            const modalBody = variantModal.querySelector('.modal-body');
+            const closeModalBtn = variantModal.querySelector('.close-btn');
 
-        let app, auth, db, userLoggedIn = false;
+            let currentMode = 'crafting';
+            let currentCraftingType = 'shaped';
+            let draggedSlotElement = null;
 
-        const itemListContainer = document.getElementById('item-list');
-        const craftingBtn = document.getElementById('crafting-btn');
-        const furnaceBtn = document.getElementById('furnace-btn');
-        const shapedBtn = document.getElementById('shaped-btn');
-        const shapelessBtn = document.getElementById('shapeless-btn');
-        const craftingInterface = document.getElementById('crafting-interface');
-        const furnaceInterface = document.getElementById('furnace-interface');
-        const allSlots = document.querySelectorAll('.grid-slot');
-        const downloadBtn = document.getElementById('download-btn');
-        const clearGridBtn = document.getElementById('clear-grid-btn');
-        const outputCode = document.getElementById('output-code');
-        const resultCountInput = document.getElementById('result-count');
-        const searchBar = document.getElementById('search-bar');
-        const experienceControl = document.getElementById('experience-control');
-        const experienceInput = document.getElementById('furnace-experience');
-        const variantModal = document.getElementById('variant-modal');
-        const modalBody = variantModal.querySelector('.modal-body');
-        const closeModalBtn = variantModal.querySelector('.close-btn');
-
-        let currentMode = 'crafting';
-        let currentCraftingType = 'shaped';
-        let draggedSlotElement = null;
-
-        const itemFileNames = [
-                            'minecraft_acacia_boat',
+            const itemFileNames = [
+                'minecraft_acacia_boat',
                 'minecraft_acacia_button',
                 'minecraft_acacia_chest_boat',
                 'minecraft_acacia_door',
@@ -1789,331 +1788,331 @@
                 'minecraft_zombie_spawn_egg',
                 'minecraft_zombie_villager_spawn_egg',
                 'minecraft_zombified_piglin_spawn_egg',
-        ];
+            ];
             
-        const items = new Map(itemFileNames.map(fileName => {
-            const itemName = fileName.replace('minecraft_', '').replace('.png', '');
-            const itemId = `minecraft:${itemName}`;
-            return [itemId, { id: itemId, img: `items/${fileName}.png` }];
-        }));
+            const items = new Map(itemFileNames.map(fileName => {
+                const itemName = fileName.replace('minecraft_', '').replace('.png', '');
+                const itemId = `minecraft:${itemName}`;
+                return [itemId, { id: itemId, img: `items/${fileName}.png` }];
+            }));
             
-        function renderItemList(filter = '') {
-            itemListContainer.innerHTML = '';
-            items.forEach((item, id) => {
-                if (id.toLowerCase().includes(filter.toLowerCase())) {
-                    const img = document.createElement('img');
-                    img.src = item.img;
-                    img.alt = id.split(':')[1];
-                    img.className = 'item';
-                    img.draggable = true;
-                    img.setAttribute('data-item-id', id);
-                    img.addEventListener('dragstart', (e) => {
-                        e.dataTransfer.setData('source', 'list');
-                        e.dataTransfer.setData('itemId', id);
-                    });
-                    itemListContainer.appendChild(img);
-                }
-            });
-        }
+            function renderItemList(filter = '') {
+                itemListContainer.innerHTML = '';
+                items.forEach((item, id) => {
+                    if (id.toLowerCase().includes(filter.toLowerCase())) {
+                        const img = document.createElement('img');
+                        img.src = item.img;
+                        img.alt = id.split(':')[1];
+                        img.className = 'item';
+                        img.draggable = true;
+                        img.setAttribute('data-item-id', id);
+                        img.addEventListener('dragstart', (e) => {
+                            e.dataTransfer.setData('source', 'list');
+                            e.dataTransfer.setData('itemId', id);
+                        });
+                        itemListContainer.appendChild(img);
+                    }
+                });
+            }
 
-        renderItemList();
-        searchBar.addEventListener('input', (e) => renderItemList(e.target.value));
+            renderItemList();
+            searchBar.addEventListener('input', (e) => renderItemList(e.target.value));
 
-        allSlots.forEach(slot => {
-            slot.addEventListener('dragover', (e) => { e.preventDefault(); slot.classList.add('drag-over'); });
-            slot.addEventListener('dragleave', () => { slot.classList.remove('drag-over'); });
-            
-            slot.addEventListener('dragstart', (e) => {
-                if (slot.querySelector('img')) {
-                    draggedSlotElement = slot;
-                    e.dataTransfer.setData('source', 'slot');
-                    e.dataTransfer.setData('variants', slot.dataset.variants || '[]');
-                } else {
+            allSlots.forEach(slot => {
+                slot.addEventListener('dragover', (e) => { e.preventDefault(); slot.classList.add('drag-over'); });
+                slot.addEventListener('dragleave', () => { slot.classList.remove('drag-over'); });
+                
+                slot.addEventListener('dragstart', (e) => {
+                    if (slot.querySelector('img')) {
+                        draggedSlotElement = slot;
+                        e.dataTransfer.setData('source', 'slot');
+                        e.dataTransfer.setData('variants', slot.dataset.variants || '[]');
+                    } else {
+                        e.preventDefault();
+                    }
+                });
+
+                slot.addEventListener('drop', (e) => {
                     e.preventDefault();
-                }
+                    slot.classList.remove('drag-over');
+                    const source = e.dataTransfer.getData('source');
+                    if (source === 'list') {
+                        const itemId = e.dataTransfer.getData('itemId');
+                        handleItemDropFromList(slot, itemId);
+                    } else if (source === 'slot' && draggedSlotElement) {
+                        handleItemDropFromSlot(slot);
+                    }
+                });
+                
+                slot.addEventListener('dblclick', () => { clearSlot(slot); });
             });
 
-            slot.addEventListener('drop', (e) => {
-                e.preventDefault();
-                slot.classList.remove('drag-over');
-                const source = e.dataTransfer.getData('source');
-                if (source === 'list') {
-                    const itemId = e.dataTransfer.getData('itemId');
-                    handleItemDropFromList(slot, itemId);
-                } else if (source === 'slot' && draggedSlotElement) {
-                    handleItemDropFromSlot(slot);
+            function handleItemDropFromList(targetSlot, itemId) {
+                const itemData = items.get(itemId);
+                if (!itemData) return;
+                const existingImg = targetSlot.querySelector('img');
+                let variants = targetSlot.dataset.variants ? JSON.parse(targetSlot.dataset.variants) : [];
+                
+                if (existingImg && currentCraftingType === 'shaped' && !variants.includes(itemId)) {
+                    variants.push(itemId);
+                } else if (!existingImg) {
+                    targetSlot.innerHTML = '';
+                    const img = document.createElement('img');
+                    img.src = itemData.img;
+                    img.setAttribute('data-item-id', itemId);
+                    targetSlot.appendChild(img);
+                    variants = [itemId];
                 }
+                targetSlot.dataset.variants = JSON.stringify(variants);
+                targetSlot.draggable = true;
+                updateSlotVisuals(targetSlot);
+            }
+
+            function handleItemDropFromSlot(targetSlot) {
+                if (draggedSlotElement === targetSlot) return;
+                const sourceVariants = draggedSlotElement.dataset.variants;
+                const sourceHTML = draggedSlotElement.innerHTML;
+                const targetVariants = targetSlot.dataset.variants;
+                const targetHTML = targetSlot.innerHTML;
+
+                if (targetHTML) { 
+                    draggedSlotElement.innerHTML = targetHTML;
+                    draggedSlotElement.dataset.variants = targetVariants;
+                    draggedSlotElement.draggable = true;
+                } else { 
+                    clearSlot(draggedSlotElement);
+                }
+                targetSlot.innerHTML = sourceHTML;
+                targetSlot.dataset.variants = sourceVariants;
+                targetSlot.draggable = true;
+                updateSlotVisuals(draggedSlotElement);
+                updateSlotVisuals(targetSlot);
+                draggedSlotElement = null;
+            }
+                
+            function clearSlot(slot) {
+                slot.innerHTML = '';
+                delete slot.dataset.variants;
+                slot.draggable = false;
+                updateSlotVisuals(slot);
+            }
+
+            function updateSlotVisuals(slot) {
+                let variants = slot.dataset.variants ? JSON.parse(slot.dataset.variants) : [];
+                let indicator = slot.querySelector('.variant-indicator');
+                if (variants.length > 1 && currentCraftingType === 'shaped') {
+                    if (!indicator) {
+                        indicator = document.createElement('div');
+                        indicator.className = 'variant-indicator';
+                        indicator.textContent = '+';
+                        indicator.addEventListener('click', (e) => {
+                           e.stopPropagation();
+                           showVariantModal(variants);
+                        });
+                        slot.appendChild(indicator);
+                    }
+                    slot.title = variants.join('\n');
+                } else {
+                    if (indicator) slot.removeChild(indicator);
+                    slot.title = '';
+                }
+            }
+
+            clearGridBtn.addEventListener('click', () => {
+                document.querySelectorAll('#crafting-interface .grid-slot').forEach(clearSlot);
             });
-            
-            slot.addEventListener('dblclick', () => { clearSlot(slot); });
-        });
 
-        function handleItemDropFromList(targetSlot, itemId) {
-            const itemData = items.get(itemId);
-            if (!itemData) return;
-            const existingImg = targetSlot.querySelector('img');
-            let variants = targetSlot.dataset.variants ? JSON.parse(targetSlot.dataset.variants) : [];
-            
-            if (existingImg && currentCraftingType === 'shaped' && !variants.includes(itemId)) {
-                variants.push(itemId);
-            } else if (!existingImg) {
-                targetSlot.innerHTML = '';
-                const img = document.createElement('img');
-                img.src = itemData.img;
-                img.setAttribute('data-item-id', itemId);
-                targetSlot.appendChild(img);
-                variants = [itemId];
+            function switchMode(mode) {
+                currentMode = mode;
+                document.getElementById('crafting-type-selector').style.display = (mode === 'crafting') ? 'flex' : 'none';
+                craftingInterface.style.display = (mode === 'crafting') ? 'flex' : 'none';
+                furnaceInterface.style.display = (mode === 'furnace') ? 'flex' : 'none';
+                experienceControl.style.display = (mode === 'furnace') ? 'flex' : 'none';
+                craftingBtn.classList.toggle('active', mode === 'crafting');
+                furnaceBtn.classList.toggle('active', mode === 'furnace');
             }
-            targetSlot.dataset.variants = JSON.stringify(variants);
-            targetSlot.draggable = true;
-            updateSlotVisuals(targetSlot);
-        }
 
-        function handleItemDropFromSlot(targetSlot) {
-            if (draggedSlotElement === targetSlot) return;
-            const sourceVariants = draggedSlotElement.dataset.variants;
-            const sourceHTML = draggedSlotElement.innerHTML;
-            const targetVariants = targetSlot.dataset.variants;
-            const targetHTML = targetSlot.innerHTML;
-
-            if (targetHTML) { 
-                draggedSlotElement.innerHTML = targetHTML;
-                draggedSlotElement.dataset.variants = targetVariants;
-                draggedSlotElement.draggable = true;
-            } else { 
-                clearSlot(draggedSlotElement);
+            function switchCraftingType(type) {
+                currentCraftingType = type;
+                shapedBtn.classList.toggle('active', type === 'shaped');
+                shapelessBtn.classList.toggle('active', type === 'shapeless');
             }
-            targetSlot.innerHTML = sourceHTML;
-            targetSlot.dataset.variants = sourceVariants;
-            targetSlot.draggable = true;
-            updateSlotVisuals(draggedSlotElement);
-            updateSlotVisuals(targetSlot);
-            draggedSlotElement = null;
-        }
-            
-        function clearSlot(slot) {
-            slot.innerHTML = '';
-            delete slot.dataset.variants;
-            slot.draggable = false;
-            updateSlotVisuals(slot);
-        }
 
-        function updateSlotVisuals(slot) {
-            let variants = slot.dataset.variants ? JSON.parse(slot.dataset.variants) : [];
-            let indicator = slot.querySelector('.variant-indicator');
-            if (variants.length > 1 && currentCraftingType === 'shaped') {
-                if (!indicator) {
-                    indicator = document.createElement('div');
-                    indicator.className = 'variant-indicator';
-                    indicator.textContent = '+';
-                    indicator.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        showVariantModal(variants);
-                    });
-                    slot.appendChild(indicator);
+            craftingBtn.addEventListener('click', () => switchMode('crafting'));
+            furnaceBtn.addEventListener('click', () => switchMode('furnace'));
+            shapedBtn.addEventListener('click', () => switchCraftingType('shaped'));
+            shapelessBtn.addEventListener('click', () => switchCraftingType('shapeless'));
+            switchMode('crafting');
+
+            async function saveAndDownload() {
+                const { recipe, fileName } = currentMode === 'crafting' ? generateCraftingRecipe() : generateFurnaceRecipe();
+                if (recipe && fileName) {
+                    const jsonString = JSON.stringify(recipe, null, 2);
+                    outputCode.textContent = jsonString;
+
+                    if (userLoggedIn && db) {
+                        try {
+                            await addDoc(collection(db, "public_recipes"), recipe);
+                            console.log("Recette sauvegardée !");
+                        } catch (e) {
+                            console.error("Erreur lors de la sauvegarde : ", e);
+                        }
+                    }
+                    
+                    const blob = new Blob([jsonString], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = fileName;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
                 }
-                slot.title = variants.join('\n');
-            } else {
-                if (indicator) slot.removeChild(indicator);
-                slot.title = '';
             }
-        }
+            
+            downloadBtn.addEventListener('click', saveAndDownload);
+                
+            function generateCraftingRecipe() {
+                const resultItem = document.querySelector('#result-slot-crafting img');
+                if (!resultItem) { outputCode.textContent = "Erreur : Item de résultat manquant."; return {}; }
+                const resultItemId = resultItem.getAttribute('data-item-id');
+                const itemName = resultItemId.split(':')[1];
+                const gridSlots = document.querySelectorAll('#crafting-grid .grid-slot');
 
-        clearGridBtn.addEventListener('click', () => {
-            document.querySelectorAll('#crafting-interface .grid-slot').forEach(clearSlot);
-        });
+                if (!Array.from(gridSlots).some(s => s.querySelector('img'))) {
+                    outputCode.textContent = "Erreur : La grille de craft est vide."; return {};
+                }
 
-        function switchMode(mode) {
-            currentMode = mode;
-            document.getElementById('crafting-type-selector').style.display = (mode === 'crafting') ? 'flex' : 'none';
-            craftingInterface.style.display = (mode === 'crafting') ? 'flex' : 'none';
-            furnaceInterface.style.display = (mode === 'furnace') ? 'flex' : 'none';
-            experienceControl.style.display = (mode === 'furnace') ? 'flex' : 'none';
-            craftingBtn.classList.toggle('active', mode === 'crafting');
-            furnaceBtn.classList.toggle('active', mode === 'furnace');
-        }
+                if (currentCraftingType === 'shaped') {
+                    return generateShapedRecipe(itemName, resultItemId, gridSlots);
+                } else {
+                    return generateShapelessRecipe(itemName, resultItemId, gridSlots);
+                }
+            }
 
-        function switchCraftingType(type) {
-            currentCraftingType = type;
-            shapedBtn.classList.toggle('active', type === 'shaped');
-            shapelessBtn.classList.toggle('active', type === 'shapeless');
-        }
+            function generateShapedRecipe(itemName, resultItemId, gridSlots) {
+                const recipe = { format_version: "1.0.0", "minecraft:recipe_shaped": { description: { identifier: `minecraft:${itemName}` }, tags: ["crafting_table"], pattern: [], key: {}, result: { item: resultItemId, count: parseInt(resultCountInput.value, 10) || 1 } } };
+                let gridData = Array.from(gridSlots).map(slot => slot.dataset.variants ? JSON.parse(slot.dataset.variants) : null);
+                const charPool = '#*+S/|?@&%';
+                let charIndex = 0;
+                const uniqueItemGroups = new Map();
 
-        craftingBtn.addEventListener('click', () => switchMode('crafting'));
-        furnaceBtn.addEventListener('click', () => switchMode('furnace'));
-        shapedBtn.addEventListener('click', () => switchCraftingType('shaped'));
-        shapelessBtn.addEventListener('click', () => switchCraftingType('shapeless'));
-        switchMode('crafting');
+                gridData.forEach(itemGroup => {
+                    if (itemGroup) {
+                        const sortedGroup = JSON.stringify([...itemGroup].sort());
+                        if (!uniqueItemGroups.has(sortedGroup)) {
+                            uniqueItemGroups.set(sortedGroup, charPool[charIndex++ % charPool.length]);
+                        }
+                    }
+                });
 
-        async function saveAndDownload() {
-            const { recipe, fileName } = currentMode === 'crafting' ? generateCraftingRecipe() : generateFurnaceRecipe();
-            if (recipe && fileName) {
-                const jsonString = JSON.stringify(recipe, null, 2);
-                outputCode.textContent = jsonString;
+                uniqueItemGroups.forEach((char, groupJson) => {
+                    const group = JSON.parse(groupJson);
+                    recipe["minecraft:recipe_shaped"].key[char] = group.map(id => ({ "item": id }));
+                });
 
-                if (userLoggedIn) {
-                    try {
-                        await addDoc(collection(db, "public_recipes"), recipe);
-                        console.log("Recette sauvegardée !");
-                    } catch (e) {
-                        console.error("Erreur lors de la sauvegarde : ", e);
+                let minRow = 2, maxRow = 0, minCol = 2, maxCol = 0;
+                let patternGrid = Array(3).fill(null).map(() => Array(3).fill(' '));
+                
+                for (let i = 0; i < 3; i++) {
+                    for (let j = 0; j < 3; j++) {
+                        const itemGroup = gridData[i * 3 + j];
+                        if (itemGroup) {
+                            minRow = Math.min(minRow, i);
+                            maxRow = Math.max(maxRow, i);
+                            minCol = Math.min(minCol, j);
+                            maxCol = Math.max(maxCol, j);
+                            const sortedGroup = JSON.stringify([...itemGroup].sort());
+                            patternGrid[i][j] = uniqueItemGroups.get(sortedGroup);
+                        }
                     }
                 }
                 
-                const blob = new Blob([jsonString], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = fileName;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            }
-        }
-        
-        downloadBtn.addEventListener('click', saveAndDownload);
-            
-        function generateCraftingRecipe() {
-            const resultItem = document.querySelector('#result-slot-crafting img');
-            if (!resultItem) { outputCode.textContent = "Erreur : Item de résultat manquant."; return {}; }
-            const resultItemId = resultItem.getAttribute('data-item-id');
-            const itemName = resultItemId.split(':')[1];
-            const gridSlots = document.querySelectorAll('#crafting-grid .grid-slot');
-
-            if (!Array.from(gridSlots).some(s => s.querySelector('img'))) {
-                outputCode.textContent = "Erreur : La grille de craft est vide."; return {};
-            }
-
-            if (currentCraftingType === 'shaped') {
-                return generateShapedRecipe(itemName, resultItemId, gridSlots);
-            } else {
-                return generateShapelessRecipe(itemName, resultItemId, gridSlots);
-            }
-        }
-
-        function generateShapedRecipe(itemName, resultItemId, gridSlots) {
-            const recipe = { format_version: "1.0.0", "minecraft:recipe_shaped": { description: { identifier: `minecraft:${itemName}` }, tags: ["crafting_table"], pattern: [], key: {}, result: { item: resultItemId, count: parseInt(resultCountInput.value, 10) || 1 } } };
-            let gridData = Array.from(gridSlots).map(slot => slot.dataset.variants ? JSON.parse(slot.dataset.variants) : null);
-            const charPool = '#*+S/|?@&%';
-            let charIndex = 0;
-            const uniqueItemGroups = new Map();
-
-            gridData.forEach(itemGroup => {
-                if (itemGroup) {
-                    const sortedGroup = JSON.stringify([...itemGroup].sort());
-                    if (!uniqueItemGroups.has(sortedGroup)) {
-                        uniqueItemGroups.set(sortedGroup, charPool[charIndex++ % charPool.length]);
+                const finalPattern = [];
+                for (let i = minRow; i <= maxRow; i++) {
+                    finalPattern.push(patternGrid[i].slice(minCol, maxCol + 1).join(""));
+                }
+                recipe["minecraft:recipe_shaped"].pattern = finalPattern;
+                
+                const usedChars = new Set(finalPattern.join(''));
+                for (const key in recipe["minecraft:recipe_shaped"].key) {
+                    if (!usedChars.has(key)) {
+                        delete recipe["minecraft:recipe_shaped"].key[key];
                     }
                 }
-            });
+                return { recipe, fileName: `${itemName}.json` };
+            }
 
-            uniqueItemGroups.forEach((char, groupJson) => {
-                const group = JSON.parse(groupJson);
-                recipe["minecraft:recipe_shaped"].key[char] = group.map(id => ({ "item": id }));
-            });
-
-            let minRow = 2, maxRow = 0, minCol = 2, maxCol = 0;
-            let patternGrid = Array(3).fill(null).map(() => Array(3).fill(' '));
-            
-            for (let i = 0; i < 3; i++) {
-                for (let j = 0; j < 3; j++) {
-                    const itemGroup = gridData[i * 3 + j];
-                    if (itemGroup) {
-                        minRow = Math.min(minRow, i);
-                        maxRow = Math.max(maxRow, i);
-                        minCol = Math.min(minCol, j);
-                        maxCol = Math.max(maxCol, j);
-                        const sortedGroup = JSON.stringify([...itemGroup].sort());
-                        patternGrid[i][j] = uniqueItemGroups.get(sortedGroup);
+            function generateShapelessRecipe(itemName, resultItemId, gridSlots) {
+                const ingredients = [];
+                gridSlots.forEach(slot => {
+                    const itemImg = slot.querySelector('img');
+                    if(itemImg) {
+                        ingredients.push({ "item": itemImg.getAttribute('data-item-id') });
                     }
-                }
+                });
+                if (ingredients.length === 0) { outputCode.textContent = "Erreur : Aucun ingrédient."; return {}; }
+                const recipe = { "format_version": "1.0.0", "minecraft:recipe_shapeless": { description: { identifier: `minecraft:${itemName}` }, tags: [ "crafting_table" ], ingredients: ingredients, result: { item: resultItemId, count: parseInt(resultCountInput.value, 10) || 1 } } };
+                return { recipe, fileName: `${itemName}.json` };
             }
-            
-            const finalPattern = [];
-            for (let i = minRow; i <= maxRow; i++) {
-                finalPattern.push(patternGrid[i].slice(minCol, maxCol + 1).join(""));
-            }
-            recipe["minecraft:recipe_shaped"].pattern = finalPattern;
-            
-            const usedChars = new Set(finalPattern.join(''));
-            for (const key in recipe["minecraft:recipe_shaped"].key) {
-                if (!usedChars.has(key)) {
-                    delete recipe["minecraft:recipe_shaped"].key[key];
-                }
-            }
-            return { recipe, fileName: `${itemName}.json` };
-        }
 
-        function generateShapelessRecipe(itemName, resultItemId, gridSlots) {
-            const ingredients = [];
-            gridSlots.forEach(slot => {
-                const itemImg = slot.querySelector('img');
-                if(itemImg) {
-                    ingredients.push({ "item": itemImg.getAttribute('data-item-id') });
+            function generateFurnaceRecipe() {
+                const inputItem = document.querySelector('#input-slot-furnace img');
+                const resultItem = document.querySelector('#result-slot-furnace img');
+                if (!inputItem || !resultItem) { outputCode.textContent = "Erreur : Ingrédient et résultat requis."; return {}; }
+                const inputItemId = inputItem.getAttribute('data-item-id');
+                const resultItemId = resultItem.getAttribute('data-item-id');
+                const resultItemName = resultItemId.split(':')[1];
+                const experience = parseFloat(experienceInput.value) || 0;
+                const recipe = { "format_version": "1.0.0", "minecraft:recipe_furnace": { description: { identifier: `minecraft:furnace_${resultItemName}` }, tags: [ "furnace" ], experience: experience, input: { "item": inputItemId }, output: { "item": resultItemId } } };
+                return { recipe, fileName: `furnace_${resultItemName}.json` };
+            }
+                
+            function showVariantModal(variants) {
+                modalBody.innerHTML = '';
+                variants.forEach(itemId => {
+                    const itemData = items.get(itemId);
+                    if (itemData) {
+                        const itemEl = document.createElement('div');
+                        itemEl.className = 'modal-item';
+                        const img = document.createElement('img');
+                        img.src = itemData.img;
+                        const name = document.createTextNode(itemId.split(':')[1]);
+                        itemEl.appendChild(img);
+                        itemEl.appendChild(name);
+                        modalBody.appendChild(itemEl);
+                    }
+                });
+                variantModal.style.display = 'flex';
+            }
+
+            closeModalBtn.addEventListener('click', () => { variantModal.style.display = 'none'; });
+            variantModal.addEventListener('click', (e) => {
+                if (e.target === variantModal) {
+                    variantModal.style.display = 'none';
                 }
             });
-            if (ingredients.length === 0) { outputCode.textContent = "Erreur : Aucun ingrédient."; return {}; }
-            const recipe = { "format_version": "1.0.0", "minecraft:recipe_shapeless": { description: { identifier: `minecraft:${itemName}` }, tags: [ "crafting_table" ], ingredients: ingredients, result: { item: resultItemId, count: parseInt(resultCountInput.value, 10) || 1 } } };
-            return { recipe, fileName: `${itemName}.json` };
-        }
 
-        function generateFurnaceRecipe() {
-            const inputItem = document.querySelector('#input-slot-furnace img');
-            const resultItem = document.querySelector('#result-slot-furnace img');
-            if (!inputItem || !resultItem) { outputCode.textContent = "Erreur : Ingrédient et résultat requis."; return {}; }
-            const inputItemId = inputItem.getAttribute('data-item-id');
-            const resultItemId = resultItem.getAttribute('data-item-id');
-            const resultItemName = resultItemId.split(':')[1];
-            const experience = parseFloat(experienceInput.value) || 0;
-            const recipe = { "format_version": "1.0.0", "minecraft:recipe_furnace": { description: { identifier: `minecraft:furnace_${resultItemName}` }, tags: [ "furnace" ], experience: experience, input: { "item": inputItemId }, output: { "item": resultItemId } } };
-            return { recipe, fileName: `furnace_${resultItemName}.json` };
-        }
-            
-        function showVariantModal(variants) {
-            modalBody.innerHTML = '';
-            variants.forEach(itemId => {
-                const itemData = items.get(itemId);
-                if (itemData) {
-                    const itemEl = document.createElement('div');
-                    itemEl.className = 'modal-item';
-                    const img = document.createElement('img');
-                    img.src = itemData.img;
-                    const name = document.createTextNode(itemId.split(':')[1]);
-                    itemEl.appendChild(img);
-                    itemEl.appendChild(name);
-                    modalBody.appendChild(itemEl);
+            async function initFirebase() {
+                if (Object.keys(firebaseConfig).length === 0) {
+                    console.warn("Firebase n'est pas configuré. Le partage est désactivé.");
+                    downloadBtn.textContent = 'Télécharger Fichier';
+                    return;
                 }
-            });
-            variantModal.style.display = 'flex';
-        }
-
-        closeModalBtn.addEventListener('click', () => { variantModal.style.display = 'none'; });
-        variantModal.addEventListener('click', (e) => {
-            if (e.target === variantModal) {
-                variantModal.style.display = 'none';
+                try {
+                    const app = initializeApp(firebaseConfig);
+                    const auth = getAuth(app);
+                    db = getFirestore(app);
+                    onAuthStateChanged(auth, user => { userLoggedIn = !!user; });
+                    await signInAnonymously(auth);
+                } catch (error) {
+                    console.error("Erreur d'initialisation Firebase:", error);
+                    downloadBtn.textContent = 'Télécharger (Erreur DB)';
+                }
             }
+            initFirebase();
         });
-
-        async function initFirebase() {
-            if (Object.keys(firebaseConfig).length === 0) {
-                console.warn("Firebase n'est pas configuré. Le partage est désactivé.");
-                downloadBtn.textContent = 'Télécharger Fichier';
-                return;
-            }
-            try {
-                app = initializeApp(firebaseConfig);
-                auth = getAuth(app);
-                db = getFirestore(app);
-                onAuthStateChanged(auth, user => { userLoggedIn = !!user; });
-                await signInAnonymously(auth);
-            } catch (error) {
-                console.error("Erreur d'initialisation Firebase:", error);
-                downloadBtn.textContent = 'Télécharger (Erreur DB)';
-            }
-        }
-        initFirebase();
-
     </script>
 </body>
 </html>

@@ -233,12 +233,29 @@
         }
         .modal-item { display: flex; align-items: center; gap: 8px; font-size: 12px; }
         .modal-item img { width: 32px; height: 32px; }
+        #list-btn {
+    display: inline-block;
+    margin-bottom: 20px;
+    background-color: var(--green-button);
+    padding: 15px 25px;
+    font-size: 16px;
+    text-align: center;
+    border: 4px solid var(--border-dark);
+    border-right-color: var(--border-light);
+    border-bottom-color: var(--border-light);
+    text-shadow: 2px 2px var(--shadow-color);
+}
+#list-btn:active {
+    border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+}
+
     </style>
 </head>
 <body>
 
     <h1>Générateur de Recettes</h1>
-    
+    <a href="list.html" class="action-btn" id="list-btn">Voir la Liste des Items</a>
+
     <div class="main-container">
         <div class="left-panel">
             <input type="text" id="search-bar" placeholder="Rechercher un item...">

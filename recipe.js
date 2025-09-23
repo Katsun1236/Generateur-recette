@@ -1,82 +1,79 @@
-// Ce fichier contient les recettes de craft.
-// Pour ajouter une recette, suivez le format existant.
-// Pour les ingrédients acceptant plusieurs variantes (ex: tous les types de planches),
-// listez-les dans le tableau de la clé correspondante.
+// ===================================================================================
+// BASE DE DONNÉES DES RECETTES
+// C'est ici que tu ajoutes toutes les recettes.
+//
+// FORMATS À SUIVRE :
+//
+// --- Pour une recette SHAPED ---
+// 'minecraft:nom_item_resultat': {
+//   type: 'shaped',
+//   grid: [
+//     'item1', 'item2', 'item3',
+//     'item4', 'item5', 'item6',
+//     'item7', 'item8', 'item9'
+//   ],
+//   result: { item: 'minecraft:nom_item_resultat', count: 1 }
+// },
+// PS : Pour les cases vides, utilise `null`. Pour les variantes (ex: planches),
+//      mets un nom de groupe comme 'planks' et définis-le dans `itemGroups`.
+//
+// --- Pour une recette SHAPELESS ---
+// 'minecraft:nom_item_resultat': {
+//   type: 'shapeless',
+//   ingredients: ['minecraft:item1', 'minecraft:item2'],
+//   result: { item: 'minecraft:nom_item_resultat', count: 2 }
+// },
+//
+// --- Pour une recette de FOUR ---
+// 'minecraft:nom_item_resultat': {
+//   type: 'furnace',
+//   input: 'minecraft:item_a_cuire',
+//   output: 'minecraft:nom_item_resultat',
+//   experience: 0.7,
+//   tags: ["furnace", "smoker"]
+// },
+// ===================================================================================
 
 export const recipes = {
     // --- RECETTES SHAPED ---
     'minecraft:crafting_table': {
         type: 'shaped',
-        pattern: [
-            "##",
-            "##"
+        grid: [
+            'planks', 'planks', null,
+            'planks', 'planks', null,
+            null, null, null
         ],
-        key: {
-            '#': [
-                { item: 'minecraft:oak_planks' },
-                { item: 'minecraft:spruce_planks' },
-                { item: 'minecraft:birch_planks' },
-                { item: 'minecraft:jungle_planks' },
-                { item: 'minecraft:acacia_planks' },
-                { item: 'minecraft:dark_oak_planks' },
-                { item: 'minecraft:mangrove_planks' },
-                { item: 'minecraft:cherry_planks' },
-                { item: 'minecraft:bamboo_planks' },
-                { item: 'minecraft:crimson_planks' },
-                { item: 'minecraft:warped_planks' }
-            ]
-        },
         result: { item: 'minecraft:crafting_table', count: 1 }
     },
     'minecraft:stick': {
         type: 'shaped',
-        pattern: [
-            "#",
-            "#"
+        grid: [
+            'planks', null, null,
+            'planks', null, null,
+            null, null, null
         ],
-        key: {
-            '#': [
-                { item: 'minecraft:oak_planks' },
-                { item: 'minecraft:spruce_planks' },
-                 // ... et toutes les autres planches
-            ]
-        },
         result: { item: 'minecraft:stick', count: 4 }
     },
      'minecraft:torch': {
         type: 'shaped',
-        pattern: [
-            "C",
-            "S"
+        grid: [
+            'coal_or_charcoal', null, null,
+            'minecraft:stick', null, null,
+            null, null, null
         ],
-        key: {
-            'C': [
-                { item: 'minecraft:coal' },
-                { item: 'minecraft:charcoal' }
-            ],
-            'S': [
-                { item: 'minecraft:stick' }
-            ]
-        },
         result: { item: 'minecraft:torch', count: 4 }
     },
 
     // --- RECETTES SHAPELESS ---
     'minecraft:blaze_powder': {
         type: 'shapeless',
-        ingredients: [
-            { "item": "minecraft:blaze_rod" }
-        ],
-        result: { "item": "minecraft:blaze_powder", "count": 2 }
+        ingredients: ['minecraft:blaze_rod'],
+        result: { item: 'minecraft:blaze_powder', count: 2 }
     },
     'minecraft:writable_book': {
         type: 'shapeless',
-        ingredients: [
-            { "item": "minecraft:book" },
-            { "item": "minecraft:ink_sac" },
-            { "item": "minecraft:feather" }
-        ],
-        result: { "item": "minecraft:writable_book", "count": 1 }
+        ingredients: ['minecraft:book', 'minecraft:ink_sac', 'minecraft:feather'],
+        result: { item: 'minecraft:writable_book', count: 1 }
     },
 
     // --- RECETTES DE FOUR ---
@@ -101,4 +98,18 @@ export const recipes = {
       experience: 0.7,
       tags: ["furnace", "blast_furnace"]
     }
+};
+
+// Définit les groupes d'items pour les variantes
+export const itemGroups = {
+    'planks': [
+        'minecraft:oak_planks', 'minecraft:spruce_planks', 'minecraft:birch_planks',
+        'minecraft:jungle_planks', 'minecraft:acacia_planks', 'minecraft:dark_oak_planks',
+        'minecraft:mangrove_planks', 'minecraft:cherry_planks', 'minecraft:bamboo_planks',
+        'minecraft:crimson_planks', 'minecraft:warped_planks'
+    ],
+    'coal_or_charcoal': [
+        'minecraft:coal',
+        'minecraft:charcoal'
+    ]
 };

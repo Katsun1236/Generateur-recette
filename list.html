@@ -1,9 +1,47 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Liste des Items</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Liste des Items à Faire</title>
+
+  <!-- Ton CSS Pokédex -->
   <link rel="stylesheet" href="list.css">
+
+  <!-- Styles additionnels (si tu veux, tu peux bouger ces règles dans list.css) -->
+  <style>
+    /* Colonne checkbox */
+    table td.checkbox-cell {
+      width: 64px;
+      text-align: center;
+    }
+
+    table input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      transform: scale(1.1);
+      cursor: pointer;
+    }
+
+    /* Etat "fait" : moins visible + barré + effet pixel */
+    tbody tr.done td {
+      opacity: 0.45;
+      text-decoration: line-through;
+      filter: grayscale(60%);
+      transition: opacity 180ms ease, transform 120ms ease;
+    }
+
+    tbody tr {
+      transition: background 150ms ease;
+    }
+
+    /* Small responsive tweak */
+    @media (max-width: 640px) {
+      thead th:nth-child(2), tbody td:nth-child(2) { display: none; } /* masque la colonne "Nom" si écran petit */
+      table td.checkbox-cell { width: 48px; }
+      td img { width: 40px; height: 40px; }
+    }
+  </style>
 </head>
 <body>
 
@@ -13,12 +51,13 @@
     <table>
       <thead>
         <tr>
+          <th>Fait</th>
           <th>Icône</th>
           <th>Nom</th>
         </tr>
       </thead>
       <tbody id="item-table">
-        <!-- Les items seront insérés ici -->
+        <!-- Rempli par JS -->
       </tbody>
     </table>
   </div>
@@ -26,9 +65,9 @@
   <a href="index.html" class="back-btn">⬅ Retour</a>
 
   <script>
-    // Liste des items (juste leurs noms)
+    // ---- Mets ici ta liste complète (ou conserve quelques items pour tester) ----
     const items = [
-   'minecraft_acacia_boat',
+'minecraft_acacia_boat',
 'minecraft_acacia_button',
 'minecraft_acacia_chest_boat',
 'minecraft_acacia_door',
@@ -721,27 +760,83 @@
 'minecraft_yellow_wool'
     ];
 
-    const table = document.getElementById("item-table");
+    // ---- stockage local pour conserver l'état 'fait' entre les reloads ----
+    const STORAGE_KEY = 'mc_item_done_states_v1';
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    const doneStates = { ...saved }; // { itemName: true/false }
 
-    items.forEach(item => {
-      const row = document.createElement("tr");
+    const tbody = document.getElementById('item-table');
 
-      // cellule image
-      const imgCell = document.createElement("td");
-      const img = document.createElement("img");
-      img.src = `items/${item}.png`; // appelle les images dans ton dossier items/
-      img.alt = item;
-      imgCell.appendChild(img);
+    function saveStates() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(doneStates));
+    }
 
-      // cellule nom
-      const nameCell = document.createElement("td");
-      nameCell.textContent = item;
+    function renderList() {
+      // On sépare non-fait / fait pour garder l'ordre demandé
+      const notDone = items.filter(i => !doneStates[i]);
+      const done = items.filter(i => !!doneStates[i]);
+      const ordered = [...notDone, ...done];
 
-      row.appendChild(imgCell);
-      row.appendChild(nameCell);
-      table.appendChild(row);
-    });
+      tbody.innerHTML = '';
+      ordered.forEach(itemId => {
+        const tr = document.createElement('tr');
+        if (doneStates[itemId]) tr.classList.add('done');
+
+        // checkbox cell
+        const cbCell = document.createElement('td');
+        cbCell.className = 'checkbox-cell';
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = !!doneStates[itemId];
+        checkbox.title = checkbox.checked ? "Marqué comme fait" : "Marquer comme fait";
+        cbCell.appendChild(checkbox);
+
+        // icon cell
+        const iconCell = document.createElement('td');
+        const img = document.createElement('img');
+        img.src = `items/${itemId}.png`; // appelle les images dans ton dossier items/
+        img.alt = itemId;
+        img.width = 48;
+        img.height = 48;
+        img.style.imageRendering = 'pixelated';
+        // fallback si l'image n'existe pas
+        img.onerror = () => {
+          img.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48"><rect width="100%" height="100%" fill="%232a2a2a"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%23fff" font-size="8">no-img</text></svg>';
+        };
+        iconCell.appendChild(img);
+
+        // name cell
+        const nameCell = document.createElement('td');
+        nameCell.textContent = itemId;
+
+        // Append cells
+        tr.appendChild(cbCell);
+        tr.appendChild(iconCell);
+        tr.appendChild(nameCell);
+        tbody.appendChild(tr);
+
+        // interaction : toggle et re-render
+        checkbox.addEventListener('change', (e) => {
+          doneStates[itemId] = !!e.target.checked;
+          saveStates();
+          // réafficher : on ré-render pour remettre l'item en bas si coché
+          renderList();
+        });
+
+        // interaction rapide : cliquer sur la ligne change la checkbox
+        tr.addEventListener('click', (e) => {
+          // ignore si on clique sur le checkbox lui-même (double event)
+          if (e.target.tagName.toLowerCase() === 'input') return;
+          checkbox.checked = !checkbox.checked;
+          doneStates[itemId] = checkbox.checked;
+          saveStates();
+          renderList();
+        });
+      });
+    }
+
+    // initial render
+    renderList();
   </script>
-
 </body>
 </html>

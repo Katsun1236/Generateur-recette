@@ -641,7 +641,7 @@
             }
 
             function generateShapedRecipe(itemName, resultItemId, gridSlots) {
-                const recipe = { "format_version": "1.12.0", "minecraft:recipe_shaped": { description: { identifier: `minecraft:${itemName}` }, tags: ["crafting_table"], pattern: [], key: {}, result: { item: resultItemId, count: parseInt(resultCountInput.value, 10) || 1 } } };
+                const recipe = { "format_version": "1.00.0", "minecraft:recipe_shaped": { description: { identifier: `minecraft:${itemName}` }, tags: ["crafting_table"], pattern: [], key: {}, result: { item: resultItemId, count: parseInt(resultCountInput.value, 10) || 1 } } };
                 let gridData = Array.from(gridSlots).map(slot => slot.dataset.variants ? JSON.parse(slot.dataset.variants) : null);
                 const charPool = '#*+S/|?@&%';
                 let charIndex = 0;
@@ -702,7 +702,7 @@
                     }
                 });
                 if (ingredients.length === 0) { outputCode.textContent = "Erreur : Aucun ingrédient."; return {}; }
-                const recipe = { "format_version": "1.12.0", "minecraft:recipe_shapeless": { description: { identifier: `minecraft:${itemName}` }, tags: [ "crafting_table" ], ingredients: ingredients, result: { item: resultItemId, count: parseInt(resultCountInput.value, 10) || 1 } } };
+                const recipe = { "format_version": "1.0.0", "minecraft:recipe_shapeless": { description: { identifier: `minecraft:${itemName}` }, tags: [ "crafting_table" ], ingredients: ingredients, result: { item: resultItemId, count: parseInt(resultCountInput.value, 10) || 1 } } };
                 return { recipe, fileName: `${itemName}.json` };
             }
 
@@ -721,7 +721,7 @@
                 const experience = parseFloat(experienceInput.value) || 0;
                 
                 const recipe = { 
-                    "format_version": "1.12.0", 
+                    "format_version": "1.0.0", 
                     "minecraft:recipe_furnace": { 
                         description: { identifier: `minecraft:furnace_${resultItemName}` }, 
                         tags: [ "furnace", ...activeFurnaceTags ],

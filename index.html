@@ -608,7 +608,7 @@
 
                 uniqueItemGroups.forEach((char, groupJson) => {
                     const group = JSON.parse(groupJson);
-                    recipe["minecraft:recipe_shaped"].key[char] = group.map(id => ({ "item": id }));
+                    recipe["recipe_shaped"].key[char] = group.map(id => ({ "item": id }));
                 });
 
                 let minRow = 2, maxRow = 0, minCol = 2, maxCol = 0;

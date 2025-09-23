@@ -118,21 +118,22 @@
     <textarea id="clipboard-helper" style="position: absolute; left: -9999px;"></textarea>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, onSnapshot, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        /* La configuration Firebase sera injectée ici */
-        const firebaseConfig = 
-       
-       {
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+            
+        const firebaseConfig = {
             apiKey: "AIzaSyAWaC4hPT0JWsEWKpSsUVznX_6q0hkOEbM",
             authDomain: "generateur-recettes-mc.firebaseapp.com",
             projectId: "generateur-recettes-mc",
             storageBucket: "generateur-recettes-mc.firebasestorage.app",
             messagingSenderId: "275358159239",
             appId: "1:275358159239:web:f534a69d9db0c495f84322"
-        };
+    };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+</script>;
         
         let app, auth, db;
 

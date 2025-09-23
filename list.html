@@ -2,48 +2,33 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Liste Minecraft</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      background: #f4f4f4;
-    }
-    h2 {
-      margin-top: 30px;
-    }
-    ul {
-      list-style-type: none;
-      padding: 0;
-    }
-    li {
-      background: #fff;
-      margin: 5px 0;
-      padding: 8px 12px;
-      border-radius: 5px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-    .done {
-      text-decoration: line-through;
-      color: gray;
-    }
-  </style>
+  <title>Liste des Items</title>
+  <link rel="stylesheet" href="list.css">
 </head>
 <body>
-  <h1>Liste d'items Minecraft</h1>
 
-  <h2>À faire</h2>
-  <ul id="todoList"></ul>
+  <h1>Liste des Items – Pokédex</h1>
 
-  <h2>Fait</h2>
-  <ul id="doneList"></ul>
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Icône</th>
+          <th>Nom</th>
+        </tr>
+      </thead>
+      <tbody id="item-table">
+        <!-- Les items seront insérés ici -->
+      </tbody>
+    </table>
+  </div>
+
+  <a href="index.html" class="back-btn">⬅ Retour</a>
 
   <script>
+    // Liste des items (juste leurs noms)
     const items = [
-     'minecraft_acacia_boat',
+   'minecraft_acacia_boat',
 'minecraft_acacia_button',
 'minecraft_acacia_chest_boat',
 'minecraft_acacia_door',
@@ -736,33 +721,27 @@
 'minecraft_yellow_wool'
     ];
 
-    const todoList = document.getElementById("todoList");
-    const doneList = document.getElementById("doneList");
+    const table = document.getElementById("item-table");
 
-    function addItem(name) {
-      const li = document.createElement("li");
-      const label = document.createElement("span");
-      label.textContent = name;
+    items.forEach(item => {
+      const row = document.createElement("tr");
 
-      const checkbox = document.createElement("input");
-      checkbox.type = "checkbox";
+      // cellule image
+      const imgCell = document.createElement("td");
+      const img = document.createElement("img");
+      img.src = `items/${item}.png`; // appelle les images dans ton dossier items/
+      img.alt = item;
+      imgCell.appendChild(img);
 
-      checkbox.addEventListener("change", () => {
-        if (checkbox.checked) {
-          label.classList.add("done");
-          doneList.appendChild(li);
-        } else {
-          label.classList.remove("done");
-          todoList.appendChild(li);
-        }
-      });
+      // cellule nom
+      const nameCell = document.createElement("td");
+      nameCell.textContent = item;
 
-      li.appendChild(label);
-      li.appendChild(checkbox);
-      todoList.appendChild(li);
-    }
-
-    items.forEach(addItem);
+      row.appendChild(imgCell);
+      row.appendChild(nameCell);
+      table.appendChild(row);
+    });
   </script>
+
 </body>
 </html>

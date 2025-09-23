@@ -128,6 +128,8 @@
         }
         
         #furnace-interface { display: none; }
+        #crafting-type-selector { display: flex; gap: 10px; }
+
 
         .crafting-area {
             display: flex;
@@ -166,6 +168,8 @@
         .furnace-slots { display: flex; flex-direction: column; gap: 10px; align-items: center; }
         .flame-icon {
             width: 32px; height: 32px;
+            margin-top: 14px;
+            margin-bottom: 14px;
             background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ff9800'%3E%3Cpath d='M13.04 2.21C12.03 2.76 11.33 3.75 11.33 4.88c0 .54.19 1.05.5 1.48-.52 2.63-2.43 4.54-5.07 5.07C6.22 11.52 5.71 11.33 5.18 11.33c-1.13 0-2.12.7-2.67 1.71C2.21 13.56 2 14.28 2 15c0 2.21 1.79 4 4 4 .72 0 1.44-.21 2.05-.56 1.01.55 2 .84 3 .84s1.99-.29 3-.84c.61.35 1.33.56 2.05.56 2.21 0 4-1.79 4-4 0-.72-.21-1.44-.56-2.05-.55-1.01-.84-2-1.39-3.04.63-.44 1.15-1.01 1.48-1.71.55-1.01.28-2.28-.73-2.79-1.01-.52-2.28-.24-2.79.77-.32.6-.45 1.28-.4 1.96-1.85-1.28-3.08-3.23-3.41-5.43.32-.23.54-.6.54-1.02 0-1.13-.7-2.12-1.71-2.67z'/%3E%3C/svg%3E") no-repeat center center;
         }
 
@@ -297,6 +301,10 @@
             </div>
 
             <div id="crafting-interface" class="interface-container">
+                 <div id="crafting-type-selector">
+                    <button id="shaped-btn" class="mode-btn active">Shaped</button>
+                    <button id="shapeless-btn" class="mode-btn">Shapeless</button>
+                </div>
                 <div class="crafting-area">
                     <div id="crafting-grid">
                         <div class="grid-slot" data-index="0"></div><div class="grid-slot" data-index="1"></div><div class="grid-slot" data-index="2"></div>
@@ -357,6 +365,8 @@
             const itemListContainer = document.getElementById('item-list');
             const craftingBtn = document.getElementById('crafting-btn');
             const furnaceBtn = document.getElementById('furnace-btn');
+            const shapedBtn = document.getElementById('shaped-btn');
+            const shapelessBtn = document.getElementById('shapeless-btn');
             const craftingInterface = document.getElementById('crafting-interface');
             const furnaceInterface = document.getElementById('furnace-interface');
             const allSlots = document.querySelectorAll('.grid-slot');
@@ -372,6 +382,7 @@
             const closeModalBtn = variantModal.querySelector('.close-btn');
 
             let currentMode = 'crafting';
+            let currentCraftingType = 'shaped';
             let draggedSlotElement = null;
 
             const itemFileNames = [
@@ -1860,7 +1871,7 @@
                 const existingImg = targetSlot.querySelector('img');
                 let variants = targetSlot.dataset.variants ? JSON.parse(targetSlot.dataset.variants) : [];
                 
-                if (existingImg && !variants.includes(itemId)) {
+                if (existingImg && currentCraftingType === 'shaped' && !variants.includes(itemId)) {
                     variants.push(itemId);
                 } else if (!existingImg) {
                     targetSlot.innerHTML = '';
@@ -1885,11 +1896,11 @@
                 const targetVariants = targetSlot.dataset.variants;
                 const targetHTML = targetSlot.innerHTML;
 
-                if (targetHTML) { // Swap
+                if (targetHTML) { 
                     draggedSlotElement.innerHTML = targetHTML;
                     draggedSlotElement.dataset.variants = targetVariants;
                     draggedSlotElement.draggable = true;
-                } else { // Move to empty
+                } else { 
                     clearSlot(draggedSlotElement);
                 }
                 
@@ -1912,7 +1923,7 @@
             function updateSlotVisuals(slot) {
                 let variants = slot.dataset.variants ? JSON.parse(slot.dataset.variants) : [];
                 let indicator = slot.querySelector('.variant-indicator');
-                if (variants.length > 1) {
+                if (variants.length > 1 && currentCraftingType === 'shaped') {
                     if (!indicator) {
                         indicator = document.createElement('div');
                         indicator.className = 'variant-indicator';
@@ -1941,18 +1952,29 @@
                     furnaceBtn.classList.remove('active');
                     craftingInterface.style.display = 'flex';
                     furnaceInterface.style.display = 'none';
-                    experienceControl.style.display = 'none';
                 } else {
                     furnaceBtn.classList.add('active');
                     craftingBtn.classList.remove('active');
                     furnaceInterface.style.display = 'flex';
                     craftingInterface.style.display = 'none';
-                    experienceControl.style.display = 'flex';
+                }
+            }
+
+            function switchCraftingType(type) {
+                currentCraftingType = type;
+                if (type === 'shaped') {
+                    shapedBtn.classList.add('active');
+                    shapelessBtn.classList.remove('active');
+                } else {
+                    shapelessBtn.classList.add('active');
+                    shapedBtn.classList.remove('active');
                 }
             }
 
             craftingBtn.addEventListener('click', () => switchMode('crafting'));
             furnaceBtn.addEventListener('click', () => switchMode('furnace'));
+            shapedBtn.addEventListener('click', () => switchCraftingType('shaped'));
+            shapelessBtn.addEventListener('click', () => switchCraftingType('shapeless'));
             switchMode('crafting');
 
             downloadBtn.addEventListener('click', () => {
@@ -1975,7 +1997,7 @@
             function generateCraftingRecipe() {
                 const resultItem = document.querySelector('#result-slot-crafting img');
                 if (!resultItem) { outputCode.textContent = "Erreur : Item de résultat manquant."; return {}; }
-
+                
                 const gridSlots = document.querySelectorAll('#crafting-grid .grid-slot');
                 if (!Array.from(gridSlots).some(s => s.querySelector('img'))) {
                     outputCode.textContent = "Erreur : La grille de craft est vide."; return {};
@@ -1984,13 +2006,21 @@
                 const resultItemId = resultItem.getAttribute('data-item-id');
                 const itemName = resultItemId.split(':')[1];
                 
+                if (currentCraftingType === 'shaped') {
+                    return generateShapedRecipe(itemName, resultItemId, gridSlots);
+                } else {
+                    return generateShapelessRecipe(itemName, resultItemId, gridSlots);
+                }
+            }
+
+            function generateShapedRecipe(itemName, resultItemId, gridSlots) {
                 const recipe = { format_version: "1.0.0", "minecraft:recipe_shaped": { description: { identifier: `minecraft:${itemName}` }, tags: ["crafting_table"], pattern: [], key: {}, result: { item: resultItemId, count: parseInt(resultCountInput.value, 10) || 1 } } };
-                
                 let gridData = Array.from(gridSlots).map(slot => slot.dataset.variants ? JSON.parse(slot.dataset.variants) : null);
                 
                 const charPool = '#*+S/|?@&%';
                 let charIndex = 0;
                 const uniqueItemGroups = new Map();
+
                 gridData.forEach(itemGroup => {
                     if (itemGroup) {
                         const sortedGroup = JSON.stringify([...itemGroup].sort());
@@ -2036,6 +2066,31 @@
                 }
 
                 return { recipe, fileName: `${itemName}.json` };
+            }
+
+             function generateShapelessRecipe(itemName, resultItemId, gridSlots) {
+                const ingredients = [];
+                gridSlots.forEach(slot => {
+                    const itemImg = slot.querySelector('img');
+                    if(itemImg) {
+                        ingredients.push({ "item": itemImg.getAttribute('data-item-id') });
+                    }
+                });
+
+                if (ingredients.length === 0) {
+                     outputCode.textContent = "Erreur : Aucun ingrédient dans la grille."; return {};
+                }
+                
+                const recipe = {
+                    "format_version": "1.0.0",
+                    "minecraft:recipe_shapeless": {
+                        "description": { "identifier": `minecraft:${itemName}` },
+                        "tags": [ "crafting_table" ],
+                        "ingredients": ingredients,
+                        "result": { "item": resultItemId, "count": parseInt(resultCountInput.value, 10) || 1 }
+                    }
+                };
+                 return { recipe, fileName: `${itemName}.json` };
             }
 
             function generateFurnaceRecipe() {

@@ -1,3 +1,4 @@
+const ITEM_NAMES = [
 'minecraft_acacia_boat',
 'minecraft_acacia_button',
 'minecraft_acacia_chest_boat',
@@ -689,3 +690,4 @@
 'minecraft_yellow_stained_glass_pane',
 'minecraft_yellow_terracotta',
 'minecraft_yellow_wool'
+];

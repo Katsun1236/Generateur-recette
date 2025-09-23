@@ -16,15 +16,14 @@ Exportation Facile : Téléchargez vos créations en un clic pour obtenir un fic
 Ce projet est composé de deux fichiers principaux et d'un dossier pour vos images.
 
 🗿 Comment ajouter un item 
-Cherchez le dans listall et copié collé le dans la liste des items de list_item_use, index.html et list.html
-
+Cherchez le dans listall.json et copié collé le dans la liste des items de list_item_use.json
 1. Structure des Fichiers
 Assurez-vous que vos fichiers sont organisés de la manière suivante :
 
 /Generator-Recettes
 |-- /item_list/
-|   |--list_item_use      
-|   |--listall   
+|   |--list_item_use.json      
+|   |--listall.json 
 |-- /items/
 |   |-- minecraft_stone.png
 |   |-- minecraft_stick.png

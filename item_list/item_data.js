@@ -657,6 +657,7 @@ const ITEM_NAMES = [
 'minecraft_warped_planks',
 'minecraft_warped_pressure_plate',
 'minecraft_warped_sign',
+'minecraft_cobblestone',
 'minecraft_warped_slab',
 'minecraft_warped_stairs',
 'minecraft_warped_trapdoor',

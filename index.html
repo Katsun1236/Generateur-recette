@@ -277,17 +277,17 @@
 
             <div id="crafting-interface" class="interface-container">
                  <div id="crafting-type-selector">
-                     <button id="shaped-btn" class="mode-btn active">Shaped</button>
-                     <button id="shapeless-btn" class="mode-btn">Shapeless</button>
+                      <button id="shaped-btn" class="mode-btn active">Shaped</button>
+                      <button id="shapeless-btn" class="mode-btn">Shapeless</button>
                  </div>
                  <div class="crafting-area">
-                     <div id="crafting-grid">
-                         <div class="grid-slot" data-index="0"></div><div class="grid-slot" data-index="1"></div><div class="grid-slot" data-index="2"></div>
-                         <div class="grid-slot" data-index="3"></div><div class="grid-slot" data-index="4"></div><div class="grid-slot" data-index="5"></div>
-                         <div class="grid-slot" data-index="6"></div><div class="grid-slot" data-index="7"></div><div class="grid-slot" data-index="8"></div>
-                     </div>
-                     <div class="arrow">→</div>
-                     <div id="result-slot-crafting" class="grid-slot"></div>
+                      <div id="crafting-grid">
+                           <div class="grid-slot" data-index="0"></div><div class="grid-slot" data-index="1"></div><div class="grid-slot" data-index="2"></div>
+                           <div class="grid-slot" data-index="3"></div><div class="grid-slot" data-index="4"></div><div class="grid-slot" data-index="5"></div>
+                           <div class="grid-slot" data-index="6"></div><div class="grid-slot" data-index="7"></div><div class="grid-slot" data-index="8"></div>
+                      </div>
+                      <div class="arrow">→</div>
+                      <div id="result-slot-crafting" class="grid-slot"></div>
                  </div>
                  <button id="clear-grid-btn" class="action-btn">Vider la Grille</button>
             </div>
@@ -309,14 +309,14 @@
             </div>
             
              <div class="controls">
-                 <div class="control-group">
-                     <label for="result-count">Quantité</label>
-                     <input type="number" id="result-count" value="1" min="1" max="64">
-                 </div>
-                 <div class="control-group" id="experience-control" style="display: none;">
-                     <label for="furnace-experience">Expérience</label>
-                     <input type="number" id="furnace-experience" value="0.15" step="0.05" min="0">
-                 </div>
+                  <div class="control-group">
+                       <label for="result-count">Quantité</label>
+                       <input type="number" id="result-count" value="1" min="1" max="64">
+                  </div>
+                  <div class="control-group" id="experience-control" style="display: none;">
+                       <label for="furnace-experience">Expérience</label>
+                       <input type="number" id="furnace-experience" value="0.15" step="0.05" min="0">
+                  </div>
              </div>
 
             <div class="main-actions">
@@ -576,7 +576,7 @@
                 const resultItem = document.querySelector('#result-slot-crafting img');
                 if (!resultItem) { outputCode.textContent = "Erreur : Item de résultat manquant."; return {}; }
                 const resultItemId = resultItem.getAttribute('data-item-id');
-                const itemName = resultItemId.split(':')[1];
+                const itemName = resultItemId.replace("minecraft:", "");
                 const gridSlots = document.querySelectorAll('#crafting-grid .grid-slot');
 
                 if (!Array.from(gridSlots).some(s => s.querySelector('img'))) {
@@ -591,7 +591,7 @@
             }
 
             function generateShapedRecipe(itemName, resultItemId, gridSlots) {
-                const recipe = { format_version: "1.0.0", "minecraft:recipe_shaped": { description: { identifier: `minecraft:${itemName}` }, tags: ["crafting_table"], pattern: [], key: {}, result: { item: resultItemId, count: parseInt(resultCountInput.value, 10) || 1 } } };
+                const recipe = { "format_version": "1.12.0", "minecraft:recipe_shaped": { description: { identifier: `minecraft:${itemName}` }, tags: ["crafting_table"], pattern: [], key: {}, result: { item: resultItemId, count: parseInt(resultCountInput.value, 10) || 1 } } };
                 let gridData = Array.from(gridSlots).map(slot => slot.dataset.variants ? JSON.parse(slot.dataset.variants) : null);
                 const charPool = '#*+S/|?@&%';
                 let charIndex = 0;
@@ -608,7 +608,8 @@
 
                 uniqueItemGroups.forEach((char, groupJson) => {
                     const group = JSON.parse(groupJson);
-                    recipe["recipe_shaped"].key[char] = group.map(id => ({ "item": id }));
+                    // FIX: Coquille corrigée ici (minecrat -> minecraft)
+                    recipe["minecraft:recipe_shaped"].key[char] = group.length === 1 ? { "item": group[0] } : group.map(id => ({ "item": id }));
                 });
 
                 let minRow = 2, maxRow = 0, minCol = 2, maxCol = 0;
@@ -636,7 +637,7 @@
                 
                 const usedChars = new Set(finalPattern.join(''));
                 for (const key in recipe["minecraft:recipe_shaped"].key) {
-                    if (!usedChars.has(key)) {
+                    if (!usedChars.has(key) && key !== ' ') {
                         delete recipe["minecraft:recipe_shaped"].key[key];
                     }
                 }
@@ -652,7 +653,7 @@
                     }
                 });
                 if (ingredients.length === 0) { outputCode.textContent = "Erreur : Aucun ingrédient."; return {}; }
-                const recipe = { "format_version": "1.0.0", "minecraft:recipe_shapeless": { description: { identifier: `minecraft:${itemName}` }, tags: [ "crafting_table" ], ingredients: ingredients, result: { item: resultItemId, count: parseInt(resultCountInput.value, 10) || 1 } } };
+                const recipe = { "format_version": "1.12.0", "minecraft:recipe_shapeless": { description: { identifier: `minecraft:${itemName}` }, tags: [ "crafting_table" ], ingredients: ingredients, result: { item: resultItemId, count: parseInt(resultCountInput.value, 10) || 1 } } };
                 return { recipe, fileName: `${itemName}.json` };
             }
 
@@ -662,17 +663,17 @@
                 if (!inputItem || !resultItem) { outputCode.textContent = "Erreur : Ingrédient et résultat requis."; return {}; }
                 const inputItemId = inputItem.getAttribute('data-item-id');
                 const resultItemId = resultItem.getAttribute('data-item-id');
-                const resultItemName = resultItemId.split(':')[1];
+                const resultItemName = resultItemId.replace("minecraft:", "");
                 const experience = parseFloat(experienceInput.value) || 0;
                 
                 const recipe = { 
-                    "format_version": "1.0.0", 
+                    "format_version": "1.12.0", 
                     "minecraft:recipe_furnace": { 
                         description: { identifier: `minecraft:furnace_${resultItemName}` }, 
                         tags: [ "furnace", ...activeFurnaceTags ],
-                        experience: experience, 
-                        input: { "item": inputItemId }, 
-                        output: { "item": resultItemId } 
+                        input: inputItemId,
+                        output: resultItemId,
+                        experience: experience
                     } 
                 };
 

@@ -66,7 +66,7 @@
             border-right-color: var(--border-light);
             border-bottom-color: var(--border-light);
             padding: 10px;
-            height: 550px;
+            height: 600px;
             overflow-y: auto;
             flex-grow: 1;
         }
@@ -78,31 +78,15 @@
             box-sizing: border-box;
             border: 2px solid var(--border-dark);
             background-color: var(--slot-bg);
-            cursor: grab;
+            cursor: pointer;
             display: inline-block;
         }
-        .item:active { cursor: grabbing; }
+        .item:hover { background-color: var(--border-light); }
         .right-panel {
             display: flex;
             flex-direction: column;
             gap: 20px;
         }
-        .mode-selector { text-align: center; }
-        .mode-btn, .action-btn {
-            background-color: var(--slot-bg);
-            font-family: var(--pixel-font);
-            font-size: 14px;
-            color: var(--font-color);
-            border: 4px solid var(--border-dark);
-            padding: 10px 15px;
-            cursor: pointer;
-            text-shadow: 2px 2px var(--shadow-color);
-        }
-        .mode-btn.active {
-            background-color: var(--green-button);
-            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
-        }
-        .action-btn { background-color: var(--blue-button); }
         .interface-container {
             background-color: var(--container-bg);
             border: 4px solid var(--border-dark);
@@ -114,8 +98,8 @@
             align-items: center;
             gap: 15px;
         }
-        #furnace-interface { display: none; }
-        #crafting-type-selector { display: flex; gap: 10px; }
+        #furnace-interface, #crafting-interface { display: none; }
+        #furnace-interface.active, #crafting-interface.active { display: flex; }
         .crafting-area {
             display: flex;
             align-items: center;
@@ -141,9 +125,6 @@
             box-sizing: border-box;
             position: relative;
         }
-        .grid-slot.drag-over { border: 2px solid var(--green-button); }
-        .grid-slot[draggable="true"] { cursor: grab; }
-        .grid-slot[draggable="true"]:active { cursor: grabbing; }
         .grid-slot img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
         .arrow { font-size: 40px; text-shadow: 3px 3px var(--shadow-color); }
         .furnace-slots { display: flex; flex-direction: column; gap: 10px; align-items: center; }
@@ -153,119 +134,44 @@
             margin-bottom: 14px;
             background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ff9800'%3E%3Cpath d='M13.04 2.21C12.03 2.76 11.33 3.75 11.33 4.88c0 .54.19 1.05.5 1.48-.52 2.63-2.43 4.54-5.07 5.07C6.22 11.52 5.71 11.33 5.18 11.33c-1.13 0-2.12.7-2.67 1.71C2.21 13.56 2 14.28 2 15c0 2.21 1.79 4 4 4 .72 0 1.44-.21 2.05-.56 1.01.55 2 .84 3 .84s1.99-.29 3-.84c.61.35 1.33.56 2.05.56 2.21 0 4-1.79 4-4 0-.72-.21-1.44-.56-2.05-.55-1.01-.84-2-1.39-3.04.63-.44 1.15-1.01 1.48-1.71.55-1.01.28-2.28-.73-2.79-1.01-.52-2.28-.24-2.79.77-.32.6-.45 1.28-.4 1.96-1.85-1.28-3.08-3.23-3.41-5.43.32-.23.54-.6.54-1.02 0-1.13-.7-2.12-1.71-2.67z'/%3E%3C/svg%3E") no-repeat center center;
         }
-        .variant-indicator {
-            position: absolute;
-            top: 2px;
-            right: 2px;
-            width: 15px;
-            height: 15px;
-            background-color: var(--blue-button);
-            color: white;
-            font-size: 10px;
-            line-height: 15px;
-            text-align: center;
-            border-radius: 50%;
-            border: 1px solid var(--border-dark);
-            text-shadow: none;
-            cursor: pointer;
-            z-index: 2;
-        }
-        .controls {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 10px;
-        }
-        .control-group { display: flex; flex-direction: column; align-items: center; gap: 5px; }
-        .control-group label { font-size: 12px; text-shadow: 2px 2px var(--shadow-color); }
-        .control-group input {
-            font-family: var(--pixel-font); font-size: 12px; padding: 8px;
-            border: 3px inset #525252; background-color: var(--slot-bg);
-            color: var(--font-color); text-align: center;
-        }
-        input[type=number] { width: 80px; }
-        .main-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-        }
         #download-btn {
             background-color: var(--green-button);
             font-family: var(--pixel-font);
             color: white; font-size: 16px;
             border: 4px solid var(--border-dark);
-            border-right-color: var(--border-light);
-            border-bottom-color: var(--border-light);
             padding: 15px 25px; cursor: pointer;
             text-shadow: 2px 2px var(--shadow-color);
+            margin-top: 20px;
         }
         #download-btn:active { border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light); }
-        #output-container { width: 100%; max-width: 950px; text-align: center; }
+        #output-container { width: 100%; max-width: 950px; text-align: center; margin-top: 20px;}
         #output-code {
             background-color: #2a2a2a; border: 4px solid var(--border-dark); padding: 15px;
             width: 100%; min-height: 200px; white-space: pre-wrap; word-break: break-all;
             color: #e0e0e0; text-align: left; font-size: 14px; box-sizing: border-box;
         }
-        .modal {
-            display: none; position: fixed; z-index: 10;
-            left: 0; top: 0; width: 100%; height: 100%;
-            background-color: rgba(0,0,0,0.6);
-            align-items: center; justify-content: center;
-        }
-        .modal-content {
-            background-color: var(--container-bg); padding: 20px;
-            border: 4px solid var(--border-dark);
-            border-right-color: var(--border-light);
-            border-bottom-color: var(--border-light);
-            min-width: 300px; max-width: 500px;
-        }
-        .modal-header {
-            display: flex; justify-content: space-between;
-            align-items: center; margin-bottom: 15px;
-        }
-        .modal-header h2 { margin: 0; font-size: 16px; }
-        .close-btn { font-family: var(--pixel-font); font-size: 20px; cursor: pointer; }
-        .modal-body {
-            display: flex; flex-wrap: wrap; gap: 10px;
-            background: var(--slot-bg); padding: 10px;
-            border: 2px inset #525252;
-        }
-        .modal-item { display: flex; align-items: center; gap: 8px; font-size: 12px; }
-        .modal-item img { width: 32px; height: 32px; }
     </style>
 </head>
 <body>
 
-    <h1>Générateur de Recettes</h1>
+    <h1>Encyclopédie des Recettes</h1>
     
     <div class="main-container">
         <div class="left-panel">
-            <input type="text" id="search-bar" placeholder="Rechercher un item...">
+            <h2>Items à Crafter</h2>
+            <input type="text" id="search-bar" placeholder="Rechercher une recette...">
             <div id="item-list"></div>
         </div>
 
         <div class="right-panel">
-            <div class="mode-selector">
-                <button id="crafting-btn" class="mode-btn">Établi</button>
-                <button id="furnace-btn" class="mode-btn">Four</button>
-            </div>
-
             <div id="crafting-interface" class="interface-container">
-                 <div id="crafting-type-selector">
-                    <button id="shaped-btn" class="mode-btn active">Shaped</button>
-                    <button id="shapeless-btn" class="mode-btn">Shapeless</button>
-                </div>
                 <div class="crafting-area">
                     <div id="crafting-grid">
-                        <div class="grid-slot" data-index="0"></div><div class="grid-slot" data-index="1"></div><div class="grid-slot" data-index="2"></div>
-                        <div class="grid-slot" data-index="3"></div><div class="grid-slot" data-index="4"></div><div class="grid-slot" data-index="5"></div>
-                        <div class="grid-slot" data-index="6"></div><div class="grid-slot" data-index="7"></div><div class="grid-slot" data-index="8"></div>
+                        <!-- Slots générés par JS -->
                     </div>
                     <div class="arrow">→</div>
                     <div id="result-slot-crafting" class="grid-slot"></div>
                 </div>
-                 <button id="clear-grid-btn" class="action-btn">Vider la Grille</button>
             </div>
 
             <div id="furnace-interface" class="interface-container">
@@ -279,1067 +185,232 @@
                 </div>
             </div>
             
-             <div class="controls">
-                <div class="control-group">
-                    <label for="result-count">Quantité</label>
-                    <input type="number" id="result-count" value="1" min="1" max="64">
-                </div>
-                <div class="control-group" id="experience-control" style="display: none;">
-                    <label for="furnace-experience">Expérience</label>
-                    <input type="number" id="furnace-experience" value="0.15" step="0.05" min="0">
-                </div>
-            </div>
-
             <div class="main-actions">
-                 <button id="download-btn">Télécharger le Fichier</button>
+                 <button id="download-btn">Télécharger la Recette</button>
+            </div>
+             <div id="output-container">
+                <h2>Aperçu du Code</h2>
+                <pre id="output-code"></pre>
             </div>
         </div>
     </div>
-    
-    <div id="output-container">
-        <h2>Aperçu du Code</h2>
-        <pre id="output-code"></pre>
-    </div>
 
-    <div id="variant-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Items dans la case</h2>
-                <span class="close-btn">&times;</span>
-            </div>
-            <div class="modal-body"></div>
-        </div>
-    </div>
+    <script type="module">
+        import { recipes } from './recipes.js';
 
-    <script>
         document.addEventListener('DOMContentLoaded', () => {
             const itemListContainer = document.getElementById('item-list');
-            const craftingBtn = document.getElementById('crafting-btn');
-            const furnaceBtn = document.getElementById('furnace-btn');
-            const shapedBtn = document.getElementById('shaped-btn');
-            const shapelessBtn = document.getElementById('shapeless-btn');
+            const searchBar = document.getElementById('search-bar');
             const craftingInterface = document.getElementById('crafting-interface');
             const furnaceInterface = document.getElementById('furnace-interface');
-            const allSlots = document.querySelectorAll('.grid-slot');
+            const craftingGrid = document.getElementById('crafting-grid');
+            const resultSlotCrafting = document.getElementById('result-slot-crafting');
+            const inputSlotFurnace = document.getElementById('input-slot-furnace');
+            const resultSlotFurnace = document.getElementById('result-slot-furnace');
             const downloadBtn = document.getElementById('download-btn');
-            const clearGridBtn = document.getElementById('clear-grid-btn');
             const outputCode = document.getElementById('output-code');
-            const resultCountInput = document.getElementById('result-count');
-            const searchBar = document.getElementById('search-bar');
-            const experienceControl = document.getElementById('experience-control');
-            const experienceInput = document.getElementById('furnace-experience');
-            const variantModal = document.getElementById('variant-modal');
-            const modalBody = variantModal.querySelector('.modal-body');
-            const closeModalBtn = variantModal.querySelector('.close-btn');
 
-            let currentMode = 'crafting';
-            let currentCraftingType = 'shaped';
-            let draggedSlotElement = null;
+            let currentRecipe = null;
+            let currentFileName = '';
 
-            const itemFileNames = [
-                'minecraft_acacia_boat',
-                'minecraft_acacia_button',
-                'minecraft_acacia_chest_boat',
-                'minecraft_acacia_door',
-                'minecraft_acacia_fence_gate',
-                'minecraft_acacia_fence',
-                'minecraft_acacia_hanging_sign',
-                'minecraft_acacia_planks',
-                'minecraft_acacia_pressure_plate',
-                'minecraft_acacia_sign',
-                'minecraft_acacia_slab',
-                'minecraft_acacia_stairs',
-                'minecraft_acacia_trapdoor',
-                'minecraft_acacia_wood',
-                'minecraft_activator_rail',
-                'minecraft_amethyst_block',
-                'minecraft_andesite_slab',
-                'minecraft_andesite_stairs',
-                'minecraft_andesite_wall',
-                'minecraft_anvil',
-                'minecraft_armor_stand',
-                'minecraft_arrow',
-                'minecraft_bamboo_block',
-                'minecraft_bamboo_button',
-                'minecraft_bamboo_chest_raft',
-                'minecraft_bamboo_door',
-                'minecraft_bamboo_fence',
-                'minecraft_bamboo_fence_gate',
-                'minecraft_bamboo_hanging_sign',
-                'minecraft_bamboo_mosaic',
-                'minecraft_bamboo_mosaic_slab',
-                'minecraft_bamboo_mosaic_stairs',
-                'minecraft_bamboo_planks',
-                'minecraft_bamboo_pressure_plate',
-                'minecraft_bamboo_raft',
-                'minecraft_bamboo_sign',
-                'minecraft_bamboo_slab',
-                'minecraft_bamboo_stairs',
-                'minecraft_bamboo_trapdoor',
-                'minecraft_barrel',
-                'minecraft_beacon',
-                'minecraft_beehive',
-                'minecraft_beetroot_soup',
-                'minecraft_birch_boat',
-                'minecraft_birch_button',
-                'minecraft_birch_chest_boat',
-                'minecraft_birch_door',
-                'minecraft_birch_fence',
-                'minecraft_birch_fence_gate',
-                'minecraft_birch_hanging_sign',
-                'minecraft_birch_planks',
-                'minecraft_birch_pressure_plate',
-                'minecraft_birch_sign',
-                'minecraft_birch_slab',
-                'minecraft_birch_stairs',
-                'minecraft_birch_trapdoor',
-                'minecraft_birch_wood',
-                'minecraft_black_banner',
-                'minecraft_black_bed',
-                'minecraft_black_candle',
-                'minecraft_black_carpet',
-                'minecraft_black_concrete_powder',
-                'minecraft_black_dye',
-                'minecraft_black_shulker_box',
-                'minecraft_black_stained_glass',
-                'minecraft_black_stained_glass_pane',
-                'minecraft_black_terracotta',
-                'minecraft_black_wool',
-                'minecraft_blackstone_slab',
-                'minecraft_blackstone_stairs',
-                'minecraft_blackstone_wall',
-                'minecraft_blast_furnace',
-                'minecraft_blaze_powder',
-                'minecraft_blue_banner',
-                'minecraft_blue_bed',
-                'minecraft_blue_candle',
-                'minecraft_blue_carpet',
-                'minecraft_blue_concrete_powder',
-                'minecraft_blue_dye',
-                'minecraft_blue_shulker_box',
-                'minecraft_blue_stained_glass',
-                'minecraft_blue_stained_glass_pane',
-                'minecraft_blue_terracotta',
-                'minecraft_blue_wool',
-                'minecraft_bone_block',
-                'minecraft_bone_meal',
-                'minecraft_book',
-                'minecraft_bookshelf',
-                'minecraft_bow',
-                'minecraft_bowl',
-                'minecraft_bread',
-                'minecraft_brewing_stand',
-                'minecraft_brick_slab',
-                'minecraft_brick_stairs',
-                'minecraft_brick_wall',
-                'minecraft_bricks',
-                'minecraft_brown_banner',
-                'minecraft_brown_bed',
-                'minecraft_brown_candle',
-                'minecraft_brown_carpet',
-                'minecraft_brown_concrete_powder',
-                'minecraft_brown_dye',
-                'minecraft_brown_shulker_box',
-                'minecraft_brown_stained_glass',
-                'minecraft_brown_stained_glass_pane',
-                'minecraft_brown_terracotta',
-                'minecraft_brown_wool',
-                'minecraft_brush',
-                'minecraft_bucket',
-                'minecraft_bundle',
-                'minecraft_cake',
-                'minecraft_calibrated_sculk_sensor',
-                'minecraft_campfire',
-                'minecraft_candle',
-                'minecraft_carrot_on_a_stick',
-                'minecraft_cartography_table',
-                'minecraft_cauldron',
-                'minecraft_chain',
-                'minecraft_cherry_boat',
-                'minecraft_cherry_button',
-                'minecraft_cherry_chest_boat',
-                'minecraft_cherry_door',
-                'minecraft_cherry_fence',
-                'minecraft_cherry_fence_gate',
-                'minecraft_cherry_hanging_sign',
-                'minecraft_cherry_planks',
-                'minecraft_cherry_pressure_plate',
-                'minecraft_cherry_sign',
-                'minecraft_cherry_slab',
-                'minecraft_cherry_stairs',
-                'minecraft_cherry_trapdoor',
-                'minecraft_cherry_wood',
-                'minecraft_chest',
-                'minecraft_chest_minecart',
-                'minecraft_chiseled_bookshelf',
-                'minecraft_chiseled_copper',
-                'minecraft_chiseled_deepslate',
-                'minecraft_chiseled_nether_bricks',
-                'minecraft_chiseled_polished_blackstone',
-                'minecraft_chiseled_quartz_block',
-                'minecraft_chiseled_red_sandstone',
-                'minecraft_chiseled_sandstone',
-                'minecraft_chiseled_stone_bricks',
-                'minecraft_chiseled_tuff',
-                'minecraft_chiseled_tuff_bricks',
-                'minecraft_clock',
-                'minecraft_coal_block',
-                'minecraft_coarse_dirt',
-                'minecraft_cobbled_deepslate_slab',
-                'minecraft_cobbled_deepslate_stairs',
-                'minecraft_cobbled_deepslate_wall',
-                'minecraft_cobblestone_slab',
-                'minecraft_cobblestone_stairs',
-                'minecraft_cobblestone_wall',
-                'minecraft_comparator',
-                'minecraft_compass',
-                'minecraft_composter',
-                'minecraft_conduit',
-                'minecraft_cookie',
-                'minecraft_copper_block',
-                'minecraft_copper_bulb',
-                'minecraft_copper_door',
-                'minecraft_copper_grate',
-                'minecraft_copper_trapdoor',
-                'minecraft_crafter',
-                'minecraft_crafting_table',
-                'minecraft_crimson_button',
-                'minecraft_crimson_door',
-                'minecraft_crimson_fence',
-                'minecraft_crimson_fence_gate',
-                'minecraft_crimson_hanging_sign',
-                'minecraft_crimson_hyphae',
-                'minecraft_crimson_planks',
-                'minecraft_crimson_pressure_plate',
-                'minecraft_crimson_sign',
-                'minecraft_crimson_slab',
-                'minecraft_crimson_stairs',
-                'minecraft_crimson_trapdoor',
-                'minecraft_crossbow',
-                'minecraft_cut_copper',
-                'minecraft_cut_copper_slab',
-                'minecraft_cut_copper_stairs',
-                'minecraft_cut_red_sandstone',
-                'minecraft_cut_red_sandstone_slab',
-                'minecraft_cut_sandstone',
-                'minecraft_cut_sandstone_slab',
-                'minecraft_cyan_banner',
-                'minecraft_cyan_bed',
-                'minecraft_cyan_candle',
-                'minecraft_cyan_carpet',
-                'minecraft_cyan_concrete_powder',
-                'minecraft_cyan_dye',
-                'minecraft_cyan_shulker_box',
-                'minecraft_cyan_stained_glass',
-                'minecraft_cyan_stained_glass_pane',
-                'minecraft_cyan_terracotta',
-                'minecraft_cyan_wool',
-                'minecraft_dark_oak_boat',
-                'minecraft_dark_oak_button',
-                'minecraft_dark_oak_chest_boat',
-                'minecraft_dark_oak_door',
-                'minecraft_dark_oak_fence',
-                'minecraft_dark_oak_fence_gate',
-                'minecraft_dark_oak_hanging_sign',
-                'minecraft_dark_oak_planks',
-                'minecraft_dark_oak_pressure_plate',
-                'minecraft_dark_oak_sign',
-                'minecraft_dark_oak_slab',
-                'minecraft_dark_oak_stairs',
-                'minecraft_dark_oak_trapdoor',
-                'minecraft_dark_oak_wood',
-                'minecraft_dark_prismarine',
-                'minecraft_dark_prismarine_slab',
-                'minecraft_dark_prismarine_stairs',
-                'minecraft_daylight_detector',
-                'minecraft_decorated_pot',
-                'minecraft_deepslate_brick_slab',
-                'minecraft_deepslate_brick_stairs',
-                'minecraft_deepslate_brick_wall',
-                'minecraft_deepslate_bricks',
-                'minecraft_deepslate_tile_slab',
-                'minecraft_deepslate_tile_stairs',
-                'minecraft_deepslate_tile_wall',
-                'minecraft_deepslate_tiles',
-                'minecraft_detector_rail',
-                'minecraft_diamond_axe',
-                'minecraft_diamond_block',
-                'minecraft_diamond_boots',
-                'minecraft_diamond_chestplate',
-                'minecraft_diamond_helmet',
-                'minecraft_diamond_hoe',
-                'minecraft_diamond_leggings',
-                'minecraft_diamond_pickaxe',
-                'minecraft_diamond_shovel',
-                'minecraft_diamond_sword',
-                'minecraft_diorite_slab',
-                'minecraft_diorite_stairs',
-                'minecraft_diorite_wall',
-                'minecraft_dispenser',
-                'minecraft_dried_kelp_block',
-                'minecraft_dripstone_block',
-                'minecraft_dropper',
-                'minecraft_emerald_block',
-                'minecraft_enchanting_table',
-                'minecraft_end_crystal',
-                'minecraft_end_rod',
-                'minecraft_end_stone_brick_slab',
-                'minecraft_end_stone_brick_stairs',
-                'minecraft_end_stone_brick_wall',
-                'minecraft_end_stone_bricks',
-                'minecraft_ender_chest',
-                'minecraft_ender_eye',
-                'minecraft_fermented_spider_eye',
-                'minecraft_fire_charge',
-                'minecraft_firework_rocket',
-                'minecraft_firework_star',
-                'minecraft_fishing_rod',
-                'minecraft_fletching_table',
-                'minecraft_flint_and_steel',
-                'minecraft_flower_pot',
-                'minecraft_furnace',
-                'minecraft_furnace_minecart',
-                'minecraft_glass_bottle',
-                'minecraft_glass_pane',
-                'minecraft_glistering_melon_slice',
-                'minecraft_glow_item_frame',
-                'minecraft_glowstone',
-                'minecraft_gold_block',
-                'minecraft_gold_nugget',
-                'minecraft_golden_apple',
-                'minecraft_golden_axe',
-                'minecraft_golden_boots',
-                'minecraft_golden_carrot',
-                'minecraft_golden_chestplate',
-                'minecraft_golden_helmet',
-                'minecraft_golden_hoe',
-                'minecraft_golden_leggings',
-                'minecraft_golden_pickaxe',
-                'minecraft_golden_shovel',
-                'minecraft_golden_sword',
-                'minecraft_granite_slab',
-                'minecraft_granite_stairs',
-                'minecraft_granite_wall',
-                'minecraft_gray_banner',
-                'minecraft_gray_bed',
-                'minecraft_gray_candle',
-                'minecraft_gray_carpet',
-                'minecraft_gray_concrete_powder',
-                'minecraft_gray_dye',
-                'minecraft_gray_shulker_box',
-                'minecraft_gray_stained_glass',
-                'minecraft_gray_stained_glass_pane',
-                'minecraft_gray_terracotta',
-                'minecraft_gray_wool',
-                'minecraft_green_banner',
-                'minecraft_green_bed',
-                'minecraft_green_candle',
-                'minecraft_green_carpet',
-                'minecraft_green_concrete_powder',
-                'minecraft_green_dye',
-                'minecraft_green_shulker_box',
-                'minecraft_green_stained_glass',
-                'minecraft_green_stained_glass_pane',
-                'minecraft_green_terracotta',
-                'minecraft_green_wool',
-                'minecraft_grindstone',
-                'minecraft_hay_block',
-                'minecraft_heavy_weighted_pressure_plate',
-                'minecraft_honey_block',
-                'minecraft_honey_bottle',
-                'minecraft_honeycomb_block',
-                'minecraft_hopper',
-                'minecraft_hopper_minecart',
-                'minecraft_iron_axe',
-                'minecraft_iron_bars',
-                'minecraft_iron_block',
-                'minecraft_iron_boots',
-                'minecraft_iron_chestplate',
-                'minecraft_iron_door',
-                'minecraft_iron_helmet',
-                'minecraft_iron_hoe',
-                'minecraft_iron_leggings',
-                'minecraft_iron_nugget',
-                'minecraft_iron_pickaxe',
-                'minecraft_iron_shovel',
-                'minecraft_iron_sword',
-                'minecraft_iron_trapdoor',
-                'minecraft_item_frame',
-                'minecraft_jack_o_lantern',
-                'minecraft_jukebox',
-                'minecraft_jungle_boat',
-                'minecraft_jungle_button',
-                'minecraft_jungle_chest_boat',
-                'minecraft_jungle_door',
-                'minecraft_jungle_fence',
-                'minecraft_jungle_fence_gate',
-                'minecraft_jungle_hanging_sign',
-                'minecraft_jungle_planks',
-                'minecraft_jungle_pressure_plate',
-                'minecraft_jungle_sign',
-                'minecraft_jungle_slab',
-                'minecraft_jungle_stairs',
-                'minecraft_jungle_trapdoor',
-                'minecraft_jungle_wood',
-                'minecraft_ladder',
-                'minecraft_lantern',
-                'minecraft_lapis_block',
-                'minecraft_lead',
-                'minecraft_leather_boots',
-                'minecraft_leather_chestplate',
-                'minecraft_leather_helmet',
-                'minecraft_leather_leggings',
-                'minecraft_lectern',
-                'minecraft_lever',
-                'minecraft_light_blue_banner',
-                'minecraft_light_blue_bed',
-                'minecraft_light_blue_candle',
-                'minecraft_light_blue_carpet',
-                'minecraft_light_blue_concrete_powder',
-                'minecraft_light_blue_dye',
-                'minecraft_light_blue_shulker_box',
-                'minecraft_light_blue_stained_glass',
-                'minecraft_light_blue_stained_glass_pane',
-                'minecraft_light_blue_terracotta',
-                'minecraft_light_blue_wool',
-                'minecraft_light_gray_banner',
-                'minecraft_light_gray_bed',
-                'minecraft_light_gray_candle',
-                'minecraft_light_gray_carpet',
-                'minecraft_light_gray_concrete_powder',
-                'minecraft_light_gray_dye',
-                'minecraft_light_gray_shulker_box',
-                'minecraft_light_gray_stained_glass',
-                'minecraft_light_gray_stained_glass_pane',
-                'minecraft_light_gray_terracotta',
-                'minecraft_light_gray_wool',
-                'minecraft_light_weighted_pressure_plate',
-                'minecraft_lightning_rod',
-                'minecraft_lime_banner',
-                'minecraft_lime_bed',
-                'minecraft_lime_candle',
-                'minecraft_lime_carpet',
-                'minecraft_lime_concrete_powder',
-                'minecraft_lime_dye',
-                'minecraft_lime_shulker_box',
-                'minecraft_lime_stained_glass',
-                'minecraft_lime_stained_glass_pane',
-                'minecraft_lime_terracotta',
-                'minecraft_lime_wool',
-                'minecraft_lodestone',
-                'minecraft_loom',
-                'minecraft_mace',
-                'minecraft_magenta_banner',
-                'minecraft_magenta_bed',
-                'minecraft_magenta_candle',
-                'minecraft_magenta_carpet',
-                'minecraft_magenta_concrete_powder',
-                'minecraft_magenta_dye',
-                'minecraft_magenta_shulker_box',
-                'minecraft_magenta_stained_glass',
-                'minecraft_magenta_stained_glass_pane',
-                'minecraft_magenta_terracotta',
-                'minecraft_magenta_wool',
-                'minecraft_magma_block',
-                'minecraft_magma_cream',
-                'minecraft_mangrove_boat',
-                'minecraft_mangrove_button',
-                'minecraft_mangrove_chest_boat',
-                'minecraft_mangrove_door',
-                'minecraft_mangrove_fence',
-                'minecraft_mangrove_fence_gate',
-                'minecraft_mangrove_hanging_sign',
-                'minecraft_mangrove_planks',
-                'minecraft_mangrove_pressure_plate',
-                'minecraft_mangrove_sign',
-                'minecraft_mangrove_slab',
-                'minecraft_mangrove_stairs',
-                'minecraft_mangrove_trapdoor',
-                'minecraft_mangrove_wood',
-                'minecraft_map',
-                'minecraft_melon_seeds',
-                'minecraft_minecart',
-                'minecraft_moss_carpet',
-                'minecraft_mossy_cobblestone',
-                'minecraft_mossy_cobblestone_slab',
-                'minecraft_mossy_cobblestone_stairs',
-                'minecraft_mossy_cobblestone_wall',
-                'minecraft_mossy_stone_brick_slab',
-                'minecraft_mossy_stone_brick_stairs',
-                'minecraft_mossy_stone_brick_wall',
-                'minecraft_mossy_stone_bricks',
-                'minecraft_mud_brick_slab',
-                'minecraft_mud_brick_stairs',
-                'minecraft_mud_brick_wall',
-                'minecraft_mud_bricks',
-                'minecraft_mushroom_stew',
-                'minecraft_nether_brick_fence',
-                'minecraft_nether_brick_slab',
-                'minecraft_nether_brick_stairs',
-                'minecraft_nether_brick_wall',
-                'minecraft_nether_bricks',
-                'minecraft_nether_wart_block',
-                'minecraft_netherite_block',
-                'minecraft_netherite_ingot',
-                'minecraft_note_block',
-                'minecraft_oak_boat',
-                'minecraft_oak_button',
-                'minecraft_oak_chest_boat',
-                'minecraft_oak_door',
-                'minecraft_oak_fence',
-                'minecraft_oak_fence_gate',
-                'minecraft_oak_hanging_sign',
-                'minecraft_oak_planks',
-                'minecraft_oak_pressure_plate',
-                'minecraft_oak_sign',
-                'minecraft_oak_slab',
-                'minecraft_oak_stairs',
-                'minecraft_oak_trapdoor',
-                'minecraft_oak_wood',
-                'minecraft_observer',
-                'minecraft_orange_banner',
-                'minecraft_orange_bed',
-                'minecraft_orange_candle',
-                'minecraft_orange_carpet',
-                'minecraft_orange_concrete_powder',
-                'minecraft_orange_dye',
-                'minecraft_orange_shulker_box',
-                'minecraft_orange_stained_glass',
-                'minecraft_orange_stained_glass_pane',
-                'minecraft_orange_terracotta',
-                'minecraft_orange_wool',
-                'minecraft_packed_mud',
-                'minecraft_painting',
-                'minecraft_paper',
-                'minecraft_pink_banner',
-                'minecraft_pink_bed',
-                'minecraft_pink_candle',
-                'minecraft_pink_carpet',
-                'minecraft_pink_concrete_powder',
-                'minecraft_pink_dye',
-                'minecraft_pink_shulker_box',
-                'minecraft_pink_stained_glass',
-                'minecraft_pink_stained_glass_pane',
-                'minecraft_pink_terracotta',
-                'minecraft_pink_wool',
-                'minecraft_piston',
-                'minecraft_polished_andesite',
-                'minecraft_polished_andesite_slab',
-                'minecraft_polished_andesite_stairs',
-                'minecraft_polished_blackstone',
-                'minecraft_polished_blackstone_brick_slab',
-                'minecraft_polished_blackstone_brick_stairs',
-                'minecraft_polished_blackstone_brick_wall',
-                'minecraft_polished_blackstone_bricks',
-                'minecraft_polished_blackstone_button',
-                'minecraft_polished_blackstone_pressure_plate',
-                'minecraft_polished_blackstone_slab',
-                'minecraft_polished_blackstone_stairs',
-                'minecraft_polished_blackstone_wall',
-                'minecraft_polished_deepslate',
-                'minecraft_polished_deepslate_slab',
-                'minecraft_polished_deepslate_stairs',
-                'minecraft_polished_deepslate_wall',
-                'minecraft_polished_diorite',
-                'minecraft_polished_diorite_slab',
-                'minecraft_polished_diorite_stairs',
-                'minecraft_polished_granite',
-                'minecraft_polished_granite_slab',
-                'minecraft_polished_granite_stairs',
-                'minecraft_polished_tuff',
-                'minecraft_polished_tuff_slab',
-                'minecraft_polished_tuff_stairs',
-                'minecraft_polished_tuff_wall',
-                'minecraft_powered_rail',
-                'minecraft_prismarine',
-                'minecraft_prismarine_brick_slab',
-                'minecraft_prismarine_brick_stairs',
-                'minecraft_prismarine_bricks',
-                'minecraft_prismarine_slab',
-                'minecraft_prismarine_stairs',
-                'minecraft_prismarine_wall',
-                'minecraft_pumpkin_pie',
-                'minecraft_pumpkin_seeds',
-                'minecraft_purple_banner',
-                'minecraft_purple_bed',
-                'minecraft_purple_candle',
-                'minecraft_purple_carpet',
-                'minecraft_purple_concrete_powder',
-                'minecraft_purple_dye',
-                'minecraft_purple_shulker_box',
-                'minecraft_purple_stained_glass',
-                'minecraft_purple_stained_glass_pane',
-                'minecraft_purple_terracotta',
-                'minecraft_purple_wool',
-                'minecraft_purpur_block',
-                'minecraft_purpur_pillar',
-                'minecraft_purpur_slab',
-                'minecraft_purpur_stairs',
-                'minecraft_quartz_block',
-                'minecraft_quartz_bricks',
-                'minecraft_quartz_pillar',
-                'minecraft_quartz_slab',
-                'minecraft_quartz_stairs',
-                'minecraft_rabbit_stew',
-                'minecraft_rail',
-                'minecraft_raw_copper_block',
-                'minecraft_raw_gold_block',
-                'minecraft_raw_iron_block',
-                'minecraft_recovery_compass',
-                'minecraft_red_banner',
-                'minecraft_red_bed',
-                'minecraft_red_candle',
-                'minecraft_red_carpet',
-                'minecraft_red_concrete_powder',
-                'minecraft_red_dye',
-                'minecraft_red_nether_brick_slab',
-                'minecraft_red_nether_brick_stairs',
-                'minecraft_red_nether_brick_wall',
-                'minecraft_red_nether_bricks',
-                'minecraft_red_sandstone',
-                'minecraft_red_sandstone_slab',
-                'minecraft_red_sandstone_stairs',
-                'minecraft_red_sandstone_wall',
-                'minecraft_red_shulker_box',
-                'minecraft_red_stained_glass',
-                'minecraft_red_stained_glass_pane',
-                'minecraft_red_terracotta',
-                'minecraft_red_wool',
-                'minecraft_redstone_block',
-                'minecraft_redstone_lamp',
-                'minecraft_redstone_torch',
-                'minecraft_repeater',
-                'minecraft_respawn_anchor',
-                'minecraft_sandstone',
-                'minecraft_sandstone_slab',
-                'minecraft_sandstone_stairs',
-                'minecraft_sandstone_wall',
-                'minecraft_scaffolding',
-                'minecraft_sea_lantern',
-                'minecraft_shears',
-                'minecraft_shield',
-                'minecraft_shulker_box',
-                'minecraft_slime_block',
-                'minecraft_smithing_table',
-                'minecraft_smoker',
-                'minecraft_smooth_quartz',
-                'minecraft_smooth_quartz_slab',
-                'minecraft_smooth_quartz_stairs',
-                'minecraft_smooth_red_sandstone',
-                'minecraft_smooth_red_sandstone_slab',
-                'minecraft_smooth_red_sandstone_stairs',
-                'minecraft_smooth_sandstone',
-                'minecraft_smooth_sandstone_slab',
-                'minecraft_smooth_sandstone_stairs',
-                'minecraft_smooth_stone_slab',
-                'minecraft_snow_block',
-                'minecraft_soul_campfire',
-                'minecraft_soul_lantern',
-                'minecraft_soul_torch',
-                'minecraft_spectral_arrow',
-                'minecraft_spruce_boat',
-                'minecraft_spruce_button',
-                'minecraft_spruce_chest_boat',
-                'minecraft_spruce_door',
-                'minecraft_spruce_fence',
-                'minecraft_spruce_fence_gate',
-                'minecraft_spruce_hanging_sign',
-                'minecraft_spruce_planks',
-                'minecraft_spruce_pressure_plate',
-                'minecraft_spruce_sign',
-                'minecraft_spruce_slab',
-                'minecraft_spruce_stairs',
-                'minecraft_spruce_trapdoor',
-                'minecraft_spruce_wood',
-                'minecraft_spyglass',
-                'minecraft_stick',
-                'minecraft_sticky_piston',
-                'minecraft_stone_axe',
-                'minecraft_stone_brick_slab',
-                'minecraft_stone_brick_stairs',
-                'minecraft_stone_brick_wall',
-                'minecraft_stone_bricks',
-                'minecraft_stone_button',
-                'minecraft_stone_hoe',
-                'minecraft_stone_pickaxe',
-                'minecraft_stone_pressure_plate',
-                'minecraft_stone_shovel',
-                'minecraft_stone_slab',
-                'minecraft_stone_stairs',
-                'minecraft_stone_sword',
-                'minecraft_stonecutter',
-                'minecraft_sugar',
-                'minecraft_suspicious_stew',
-                'minecraft_target',
-                'minecraft_tinted_glass',
-                'minecraft_tipped_arrow',
-                'minecraft_tnt',
-                'minecraft_tnt_minecart',
-                'minecraft_torch',
-                'minecraft_trapped_chest',
-                'minecraft_tripwire_hook',
-                'minecraft_tuff_brick_slab',
-                'minecraft_tuff_brick_stairs',
-                'minecraft_tuff_brick_wall',
-                'minecraft_tuff_bricks',
-                'minecraft_tuff_slab',
-                'minecraft_tuff_stairs',
-                'minecraft_tuff_wall',
-                'minecraft_turtle_helmet',
-                'minecraft_warped_button',
-                'minecraft_warped_door',
-                'minecraft_warped_fence',
-                'minecraft_warped_fence_gate',
-                'minecraft_warped_fungus_on_a_stick',
-                'minecraft_warped_hanging_sign',
-                'minecraft_warped_planks',
-                'minecraft_warped_pressure_plate',
-                'minecraft_warped_sign',
-                'minecraft_warped_slab',
-                'minecraft_warped_stairs',
-                'minecraft_warped_trapdoor',
-                'minecraft_warped_wart_block',
-                'minecraft_white_banner',
-                'minecraft_white_bed',
-                'minecraft_white_candle',
-                'minecraft_white_carpet',
-                'minecraft_white_concrete_powder',
-                'minecraft_white_dye',
-                'minecraft_white_shulker_box',
-                'minecraft_white_stained_glass',
-                'minecraft_white_stained_glass_pane',
-                'minecraft_white_terracotta',
-                'minecraft_white_wool',
-                'minecraft_wolf_armor',
-                'minecraft_wooden_axe',
-                'minecraft_wooden_hoe',
-                'minecraft_wooden_pickaxe',
-                'minecraft_wooden_shovel',
-                'minecraft_wooden_sword',
-                'minecraft_writable_book',
-                'minecraft_yellow_banner',
-                'minecraft_yellow_bed',
-                'minecraft_yellow_candle',
-                'minecraft_yellow_carpet',
-                'minecraft_yellow_concrete_powder',
-                'minecraft_yellow_dye',
-                'minecraft_yellow_shulker_box',
-                'minecraft_yellow_stained_glass',
-                'minecraft_yellow_stained_glass_pane',
-                'minecraft_yellow_terracotta',
-                'minecraft_yellow_wool'
-            ];
-            
-            const items = new Map(itemFileNames.map(fileName => {
-                const itemName = fileName.replace('minecraft_', '').replace('.png', '');
-                const itemId = `minecraft:${itemName}`;
-                return [itemId, { id: itemId, img: `items/${fileName}.png` }];
-            }));
+            // This map will be populated from recipes.js keys later
+            const allItems = new Map();
+
+            function populateFullItemList() {
+                const allItemIds = new Set(Object.keys(recipes));
+                // Add ingredients to the list as well
+                Object.values(recipes).forEach(recipe => {
+                    if (recipe.key) {
+                        Object.values(recipe.key).forEach(keyItems => {
+                            keyItems.forEach(keyItem => allItemIds.add(keyItem.item));
+                        });
+                    }
+                    if (recipe.ingredients) {
+                        recipe.ingredients.forEach(ing => allItemIds.add(ing.item));
+                    }
+                    if (recipe.input) {
+                        allItemIds.add(recipe.input);
+                    }
+                });
+
+                allItemIds.forEach(id => {
+                    const name = id.split(':')[1];
+                    // Assuming you have a folder `items` with images named `minecraft_item_name.png`
+                    const imgUrl = `items/minecraft_${name}.png`;
+                     if (!items.has(id)) {
+                        items.set(id, { id: id, img: imgUrl });
+                     }
+                });
+            }
             
             function renderItemList(filter = '') {
                 itemListContainer.innerHTML = '';
-                items.forEach((item, id) => {
+                const sortedRecipeKeys = [...recipes.keys()].sort();
+
+                sortedRecipeKeys.forEach(id => {
                     if (id.toLowerCase().includes(filter.toLowerCase())) {
-                        const img = document.createElement('img');
-                        img.src = item.img;
-                        img.alt = id.split(':')[1];
-                        img.className = 'item';
-                        img.draggable = true;
-                        img.setAttribute('data-item-id', id);
-                        img.addEventListener('dragstart', (e) => {
-                            e.dataTransfer.setData('source', 'list');
-                            e.dataTransfer.setData('itemId', id);
-                        });
-                        itemListContainer.appendChild(img);
+                        const itemData = items.get(id);
+                        if(itemData) {
+                            const img = document.createElement('img');
+                            img.src = itemData.img;
+                            img.alt = id.split(':')[1];
+                            img.className = 'item';
+                            img.setAttribute('data-item-id', id);
+                            img.addEventListener('click', () => displayRecipe(id));
+                            itemListContainer.appendChild(img);
+                        }
                     }
                 });
             }
 
-            renderItemList();
-            searchBar.addEventListener('input', (e) => renderItemList(e.target.value));
+            function clearInterfaces() {
+                craftingInterface.classList.remove('active');
+                furnaceInterface.classList.remove('active');
+                craftingGrid.innerHTML = '';
+                resultSlotCrafting.innerHTML = '';
+                inputSlotFurnace.innerHTML = '';
+                resultSlotFurnace.innerHTML = '';
+                outputCode.textContent = '';
+                currentRecipe = null;
+                currentFileName = '';
+            }
 
-            allSlots.forEach(slot => {
-                slot.addEventListener('dragover', (e) => { e.preventDefault(); slot.classList.add('drag-over'); });
-                slot.addEventListener('dragleave', () => { slot.classList.remove('drag-over'); });
-                
-                slot.addEventListener('dragstart', (e) => {
-                    if (slot.querySelector('img')) {
-                        draggedSlotElement = slot;
-                        e.dataTransfer.setData('source', 'slot');
-                        e.dataTransfer.setData('variants', slot.dataset.variants || '[]');
-                    } else {
-                        e.preventDefault();
-                    }
-                });
+            function displayRecipe(itemId) {
+                clearInterfaces();
+                const recipeData = recipes[itemId];
+                if (!recipeData) return;
 
-                slot.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    slot.classList.remove('drag-over');
-                    const source = e.dataTransfer.getData('source');
-                    if (source === 'list') {
-                        const itemId = e.dataTransfer.getData('itemId');
-                        handleItemDropFromList(slot, itemId);
-                    } else if (source === 'slot' && draggedSlotElement) {
-                        handleItemDropFromSlot(slot);
-                    }
-                });
-                
-                slot.addEventListener('dblclick', () => { clearSlot(slot); });
-            });
+                currentRecipe = recipeData; // Store the current recipe data
+                const recipeType = recipeData.type;
+                const resultData = recipeData.result;
+                const resultItemId = resultData.item;
+                currentFileName = `${resultItemId.split(':')[1]}.json`;
 
-            function handleItemDropFromList(targetSlot, itemId) {
-                const itemData = items.get(itemId);
-                if (!itemData) return;
-                const existingImg = targetSlot.querySelector('img');
-                let variants = targetSlot.dataset.variants ? JSON.parse(targetSlot.dataset.variants) : [];
-                
-                if (existingImg && currentCraftingType === 'shaped' && !variants.includes(itemId)) {
-                    variants.push(itemId);
-                } else if (!existingImg) {
-                    targetSlot.innerHTML = '';
-                    const img = document.createElement('img');
-                    img.src = itemData.img;
-                    img.setAttribute('data-item-id', itemId);
-                    targetSlot.appendChild(img);
-                    variants = [itemId];
+
+                const resultImg = document.createElement('img');
+                const resultItemInfo = items.get(resultItemId);
+                if (resultItemInfo) {
+                    resultImg.src = resultItemInfo.img;
                 }
-                targetSlot.dataset.variants = JSON.stringify(variants);
-                targetSlot.draggable = true;
-                updateSlotVisuals(targetSlot);
-            }
 
-            function handleItemDropFromSlot(targetSlot) {
-                if (draggedSlotElement === targetSlot) return;
-                const sourceVariants = draggedSlotElement.dataset.variants;
-                const sourceHTML = draggedSlotElement.innerHTML;
-                const targetVariants = targetSlot.dataset.variants;
-                const targetHTML = targetSlot.innerHTML;
-
-                if (targetHTML) { 
-                    draggedSlotElement.innerHTML = targetHTML;
-                    draggedSlotElement.dataset.variants = targetVariants;
-                    draggedSlotElement.draggable = true;
-                } else { 
-                    clearSlot(draggedSlotElement);
-                }
-                targetSlot.innerHTML = sourceHTML;
-                targetSlot.dataset.variants = sourceVariants;
-                targetSlot.draggable = true;
-                updateSlotVisuals(draggedSlotElement);
-                updateSlotVisuals(targetSlot);
-                draggedSlotElement = null;
-            }
-                
-            function clearSlot(slot) {
-                slot.innerHTML = '';
-                delete slot.dataset.variants;
-                slot.draggable = false;
-                updateSlotVisuals(slot);
-            }
-
-            function updateSlotVisuals(slot) {
-                let variants = slot.dataset.variants ? JSON.parse(slot.dataset.variants) : [];
-                let indicator = slot.querySelector('.variant-indicator');
-                if (variants.length > 1 && currentCraftingType === 'shaped') {
-                    if (!indicator) {
-                        indicator = document.createElement('div');
-                        indicator.className = 'variant-indicator';
-                        indicator.textContent = '+';
-                        indicator.addEventListener('click', (e) => {
-                           e.stopPropagation();
-                           showVariantModal(variants);
-                        });
-                        slot.appendChild(indicator);
+                if (recipeType === 'furnace') {
+                    furnaceInterface.classList.add('active');
+                    const inputItemInfo = items.get(recipeData.input);
+                    if (inputItemInfo) {
+                        const inputImg = document.createElement('img');
+                        inputImg.src = inputItemInfo.img;
+                        inputSlotFurnace.appendChild(inputImg);
                     }
-                    slot.title = variants.join('\n');
+                    resultSlotFurnace.appendChild(resultImg);
                 } else {
-                    if (indicator) slot.removeChild(indicator);
-                    slot.title = '';
+                    craftingInterface.classList.add('active');
+                    if (recipeType === 'shaped') {
+                        displayShapedRecipe(recipeData.pattern, recipeData.key);
+                    } else { // shapeless
+                        displayShapelessRecipe(recipeData.ingredients);
+                    }
+                    resultSlotCrafting.appendChild(resultImg);
+                }
+                outputCode.textContent = JSON.stringify(formatRecipeForJSON(recipeData), null, 2);
+            }
+
+            function displayShapedRecipe(pattern, key) {
+                const gridMap = Array(9).fill(null);
+                for (let r = 0; r < pattern.length; r++) {
+                    for (let c = 0; c < pattern[r].length; c++) {
+                        const char = pattern[r][c];
+                        if (char !== ' ' && key[char]) {
+                            // Display the first item of the variants
+                            const itemId = key[char][0].item;
+                            const itemInfo = items.get(itemId);
+                            if (itemInfo) {
+                                const img = document.createElement('img');
+                                img.src = itemInfo.img;
+                                gridMap[r * 3 + c] = img;
+                            }
+                        }
+                    }
+                }
+                renderGrid(gridMap);
+            }
+
+            function displayShapelessRecipe(ingredients) {
+                 const gridMap = Array(9).fill(null);
+                 ingredients.forEach((ing, index) => {
+                     const itemInfo = items.get(ing.item);
+                     if(itemInfo) {
+                        const img = document.createElement('img');
+                        img.src = itemInfo.img;
+                        gridMap[index] = img;
+                     }
+                 });
+                 renderGrid(gridMap);
+            }
+            
+            function renderGrid(gridMap) {
+                craftingGrid.innerHTML = '';
+                for(let i = 0; i < 9; i++) {
+                    const slot = document.createElement('div');
+                    slot.className = 'grid-slot';
+                    if (gridMap[i]) {
+                        slot.appendChild(gridMap[i]);
+                    }
+                    craftingGrid.appendChild(slot);
                 }
             }
 
-            clearGridBtn.addEventListener('click', () => {
-                document.querySelectorAll('#crafting-interface .grid-slot').forEach(clearSlot);
-            });
-
-            function switchMode(mode) {
-                currentMode = mode;
-                document.getElementById('crafting-type-selector').style.display = (mode === 'crafting') ? 'flex' : 'none';
-                craftingInterface.style.display = (mode === 'crafting') ? 'flex' : 'none';
-                furnaceInterface.style.display = (mode === 'furnace') ? 'flex' : 'none';
-                experienceControl.style.display = (mode === 'furnace') ? 'flex' : 'none';
-                craftingBtn.classList.toggle('active', mode === 'crafting');
-                furnaceBtn.classList.toggle('active', mode === 'furnace');
+            function formatRecipeForJSON(recipeData){
+                let formattedRecipe = { format_version: "1.0.0" };
+                const type = recipeData.type;
+                
+                if (type === 'shaped') {
+                    formattedRecipe["minecraft:recipe_shaped"] = {
+                        description: { identifier: recipeData.result.item },
+                        tags: ["crafting_table"],
+                        pattern: recipeData.pattern,
+                        key: recipeData.key,
+                        result: recipeData.result
+                    };
+                } else if (type === 'shapeless') {
+                     formattedRecipe["minecraft:recipe_shapeless"] = {
+                        description: { identifier: recipeData.result.item },
+                        tags: ["crafting_table"],
+                        ingredients: recipeData.ingredients,
+                        result: recipeData.result
+                    };
+                } else if (type === 'furnace') {
+                    formattedRecipe["minecraft:recipe_furnace"] = {
+                        description: { identifier: `minecraft:furnace_${recipeData.output.split(':')[1]}` },
+                        tags: recipeData.tags,
+                        experience: recipeData.experience,
+                        input: recipeData.input,
+                        output: recipeData.output
+                    };
+                }
+                return formattedRecipe;
             }
-
-            function switchCraftingType(type) {
-                currentCraftingType = type;
-                shapedBtn.classList.toggle('active', type === 'shaped');
-                shapelessBtn.classList.toggle('active', type === 'shapeless');
-            }
-
-            craftingBtn.addEventListener('click', () => switchMode('crafting'));
-            furnaceBtn.addEventListener('click', () => switchMode('furnace'));
-            shapedBtn.addEventListener('click', () => switchCraftingType('shaped'));
-            shapelessBtn.addEventListener('click', () => switchCraftingType('shapeless'));
-            switchMode('crafting');
 
             downloadBtn.addEventListener('click', () => {
-                const { recipe, fileName } = currentMode === 'crafting' ? generateCraftingRecipe() : generateFurnaceRecipe();
-                if (recipe && fileName) {
-                    const jsonString = JSON.stringify(recipe, null, 2);
-                    outputCode.textContent = jsonString;
+                if (currentRecipe) {
+                    const recipeToDownload = formatRecipeForJSON(currentRecipe);
+                    const jsonString = JSON.stringify(recipeToDownload, null, 2);
                     const blob = new Blob([jsonString], { type: 'application/json' });
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
-                    a.download = fileName;
+                    a.download = currentFileName;
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
                     URL.revokeObjectURL(url);
-                }
-            });
-                
-            function generateCraftingRecipe() {
-                const resultItem = document.querySelector('#result-slot-crafting img');
-                if (!resultItem) { outputCode.textContent = "Erreur : Item de résultat manquant."; return {}; }
-                const resultItemId = resultItem.getAttribute('data-item-id');
-                const itemName = resultItemId.split(':')[1];
-                const gridSlots = document.querySelectorAll('#crafting-grid .grid-slot');
-
-                if (!Array.from(gridSlots).some(s => s.querySelector('img'))) {
-                    outputCode.textContent = "Erreur : La grille de craft est vide."; return {};
-                }
-
-                if (currentCraftingType === 'shaped') {
-                    return generateShapedRecipe(itemName, resultItemId, gridSlots);
                 } else {
-                    return generateShapelessRecipe(itemName, resultItemId, gridSlots);
-                }
-            }
-
-            function generateShapedRecipe(itemName, resultItemId, gridSlots) {
-                const recipe = { format_version: "1.0.0", "minecraft:recipe_shaped": { description: { identifier: `minecraft:${itemName}` }, tags: ["crafting_table"], pattern: [], key: {}, result: { item: resultItemId, count: parseInt(resultCountInput.value, 10) || 1 } } };
-                let gridData = Array.from(gridSlots).map(slot => slot.dataset.variants ? JSON.parse(slot.dataset.variants) : null);
-                const charPool = '#*+S/|?@&%';
-                let charIndex = 0;
-                const uniqueItemGroups = new Map();
-
-                gridData.forEach(itemGroup => {
-                    if (itemGroup) {
-                        const sortedGroup = JSON.stringify([...itemGroup].sort());
-                        if (!uniqueItemGroups.has(sortedGroup)) {
-                            uniqueItemGroups.set(sortedGroup, charPool[charIndex++ % charPool.length]);
-                        }
-                    }
-                });
-
-                uniqueItemGroups.forEach((char, groupJson) => {
-                    const group = JSON.parse(groupJson);
-                    recipe["minecraft:recipe_shaped"].key[char] = group.map(id => ({ "item": id }));
-                });
-
-                let minRow = 2, maxRow = 0, minCol = 2, maxCol = 0;
-                let patternGrid = Array(3).fill(null).map(() => Array(3).fill(' '));
-                
-                for (let i = 0; i < 3; i++) {
-                    for (let j = 0; j < 3; j++) {
-                        const itemGroup = gridData[i * 3 + j];
-                        if (itemGroup) {
-                            minRow = Math.min(minRow, i);
-                            maxRow = Math.max(maxRow, i);
-                            minCol = Math.min(minCol, j);
-                            maxCol = Math.max(maxCol, j);
-                            const sortedGroup = JSON.stringify([...itemGroup].sort());
-                            patternGrid[i][j] = uniqueItemGroups.get(sortedGroup);
-                        }
-                    }
-                }
-                
-                const finalPattern = [];
-                for (let i = minRow; i <= maxRow; i++) {
-                    finalPattern.push(patternGrid[i].slice(minCol, maxCol + 1).join(""));
-                }
-                recipe["minecraft:recipe_shaped"].pattern = finalPattern;
-                
-                const usedChars = new Set(finalPattern.join(''));
-                for (const key in recipe["minecraft:recipe_shaped"].key) {
-                    if (!usedChars.has(key)) {
-                        delete recipe["minecraft:recipe_shaped"].key[key];
-                    }
-                }
-                return { recipe, fileName: `${itemName}.json` };
-            }
-
-            function generateShapelessRecipe(itemName, resultItemId, gridSlots) {
-                const ingredients = [];
-                gridSlots.forEach(slot => {
-                    const itemImg = slot.querySelector('img');
-                    if(itemImg) {
-                        ingredients.push({ "item": itemImg.getAttribute('data-item-id') });
-                    }
-                });
-                if (ingredients.length === 0) { outputCode.textContent = "Erreur : Aucun ingrédient."; return {}; }
-                const recipe = { "format_version": "1.0.0", "minecraft:recipe_shapeless": { description: { identifier: `minecraft:${itemName}` }, tags: [ "crafting_table" ], ingredients: ingredients, result: { item: resultItemId, count: parseInt(resultCountInput.value, 10) || 1 } } };
-                return { recipe, fileName: `${itemName}.json` };
-            }
-
-            function generateFurnaceRecipe() {
-                const inputItem = document.querySelector('#input-slot-furnace img');
-                const resultItem = document.querySelector('#result-slot-furnace img');
-                if (!inputItem || !resultItem) { outputCode.textContent = "Erreur : Ingrédient et résultat requis."; return {}; }
-                const inputItemId = inputItem.getAttribute('data-item-id');
-                const resultItemId = resultItem.getAttribute('data-item-id');
-                const resultItemName = resultItemId.split(':')[1];
-                const experience = parseFloat(experienceInput.value) || 0;
-                const recipe = { "format_version": "1.0.0", "minecraft:recipe_furnace": { description: { identifier: `minecraft:furnace_${resultItemName}` }, tags: [ "furnace" ], experience: experience, input: { "item": inputItemId }, output: { "item": resultItemId } } };
-                return { recipe, fileName: `furnace_${resultItemName}.json` };
-            }
-                
-            function showVariantModal(variants) {
-                modalBody.innerHTML = '';
-                variants.forEach(itemId => {
-                    const itemData = items.get(itemId);
-                    if (itemData) {
-                        const itemEl = document.createElement('div');
-                        itemEl.className = 'modal-item';
-                        const img = document.createElement('img');
-                        img.src = itemData.img;
-                        const name = document.createTextNode(itemId.split(':')[1]);
-                        itemEl.appendChild(img);
-                        itemEl.appendChild(name);
-                        modalBody.appendChild(itemEl);
-                    }
-                });
-                variantModal.style.display = 'flex';
-            }
-
-            closeModalBtn.addEventListener('click', () => { variantModal.style.display = 'none'; });
-            variantModal.addEventListener('click', (e) => {
-                if (e.target === variantModal) {
-                    variantModal.style.display = 'none';
+                    outputCode.textContent = "Veuillez d'abord sélectionner une recette.";
                 }
             });
 
-            async function initFirebase() {
-                if (Object.keys(firebaseConfig).length === 0) {
-                    console.warn("Firebase non configuré. Le partage est désactivé.");
-                    downloadBtn.textContent = 'Télécharger Fichier';
-                    return;
-                }
-                try {
-                    const app = initializeApp(firebaseConfig);
-                    const auth = getAuth(app);
-                    db = getFirestore(app);
-                    onAuthStateChanged(auth, user => { userLoggedIn = !!user; });
-                    await signInAnonymously(auth);
-                } catch (error) {
-                    console.error("Erreur d'initialisation Firebase:", error);
-                    downloadBtn.textContent = 'Télécharger (Erreur DB)';
-                }
-            }
-            initFirebase();
+            // Initial population
+            populateFullItemList();
+            renderItemList();
         });
     </script>
 </body>

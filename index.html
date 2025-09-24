@@ -417,26 +417,31 @@
             let activeFurnaceTags = new Set();
             let items = new Map();
 
-            // S'assure que ITEM_NAMES et CRAFTING_RECIPES sont bien chargés
-            if (typeof ITEM_NAMES === 'undefined' || typeof CRAFTING_RECIPES === 'undefined') {
+            // S'assure que ALL_ITEMS et CRAFTING_RECIPES sont bien chargés
+            if (typeof ALL_ITEMS === 'undefined' || typeof CRAFTING_RECIPES === 'undefined') {
                 console.error("Les listes d'items ou de recettes n'ont pas pu être chargées.");
                 itemListContainer.innerHTML = `<p style="color: #3c3c3c; font-size: 10px; text-align: center;">Erreur: Fichiers de données non trouvés.</p>`;
                 return; // Stoppe l'exécution
             }
 
-            items = new Map(ITEM_NAMES.map(itemName => {
-                const itemId = `minecraft:${itemName}`;
-                return [itemId, { id: itemId, img: `items/${itemName}.png` }];
+            // Correction: Utilise ALL_ITEMS (un tableau d'objets) et construit le chemin d'image correct
+            items = new Map(ALL_ITEMS.map(item => {
+                const filename = item.id.replace(':', '_');
+                return [item.id, { id: item.id, name: item.name, img: `items/${filename}.png` }];
             }));
 
             function renderItemList(filter = '') {
                 itemListContainer.innerHTML = '';
-                const sortedItems = new Map([...items.entries()].sort());
+                 // Correction: tri par nom d'item
+                const sortedItems = new Map([...items.entries()].sort((a, b) => a[1].name.localeCompare(b[1].name)));
                 sortedItems.forEach((item, id) => {
-                    if (id.toLowerCase().includes(filter.toLowerCase())) {
+                    // Correction: recherche sur le nom de l'item et son ID
+                    const searchString = `${item.name} ${id}`.toLowerCase();
+                    if (searchString.includes(filter.toLowerCase())) {
                         const img = document.createElement('img');
                         img.src = item.img;
-                        img.alt = id.split(':')[1];
+                        img.alt = item.name; // Utilise le nom de l'item pour l'attribut alt
+                        img.title = item.name; // Ajoute un tooltip avec le nom
                         img.className = 'item';
                         img.draggable = true;
                         img.setAttribute('data-item-id', id);
@@ -444,33 +449,26 @@
                             e.dataTransfer.setData('source', 'list');
                             e.dataTransfer.setData('itemId', id);
                         });
-                        // NOUVEL AJOUT : Écouteur pour le double-clic
                         img.addEventListener('dblclick', () => displayRecipe(id));
                         itemListContainer.appendChild(img);
                     }
                 });
             }
 
-            // NOUVELLE FONCTION : Pour afficher une recette
             function displayRecipe(itemId) {
                 const recipe = CRAFTING_RECIPES[itemId];
-                if (!recipe) return; // Pas de recette
+                if (!recipe) return;
 
-                // Vider les grilles avant de les remplir
-                document.querySelectorAll('#crafting-interface .grid-slot').forEach(clearSlot);
-                clearSlot(document.getElementById('input-slot-furnace'));
-                clearSlot(document.getElementById('result-slot-furnace'));
+                document.querySelectorAll('.grid-slot').forEach(clearSlot);
 
                 if (recipe.type === 'furnace') {
                     switchMode('furnace');
                     const inputSlot = document.getElementById('input-slot-furnace');
                     const resultSlot = document.getElementById('result-slot-furnace');
-                    
                     const inputId = Array.isArray(recipe.input) ? recipe.input[0] : recipe.input;
                     handleItemDropFromList(inputSlot, inputId);
                     handleItemDropFromList(resultSlot, itemId);
-                    
-                } else { // 'shaped' or 'shapeless'
+                } else {
                     switchMode('crafting');
                     const resultSlot = document.getElementById('result-slot-crafting');
                     handleItemDropFromList(resultSlot, itemId);
@@ -480,6 +478,11 @@
                         const pattern = recipe.pattern;
                         const ingredients = recipe.ingredients;
                         const gridSlots = document.querySelectorAll('#crafting-grid .grid-slot');
+                        
+                        const patternHeight = pattern.length;
+                        const patternWidth = pattern[0].length;
+                        const startRow = (patternHeight === 2 && patternWidth < 3) ? 1 : 0;
+                        const startCol = (patternWidth < 3) ? 1 : 0;
 
                         pattern.forEach((row, rowIndex) => {
                             for (let colIndex = 0; colIndex < row.length; colIndex++) {
@@ -487,7 +490,7 @@
                                 if (key !== ' ') {
                                     const ingredientVariants = ingredients[key];
                                     if (ingredientVariants && ingredientVariants.length > 0) {
-                                        const slotIndex = rowIndex * 3 + colIndex;
+                                        const slotIndex = (rowIndex + startRow) * 3 + (colIndex + startCol);
                                         const targetSlot = gridSlots[slotIndex];
                                         if(targetSlot) {
                                            handleItemDropFromList(targetSlot, ingredientVariants[0]);
@@ -509,7 +512,6 @@
                     }
                 }
             }
-
 
             renderItemList();
             searchBar.addEventListener('input', (e) => renderItemList(e.target.value));
@@ -914,7 +916,7 @@
                 if (currentTouchTarget) {
                     currentTouchTarget.classList.remove('drag-over');
                 }
-                document.body.appendChild(touchDragGhost);
+                document.body.removeChild(touchDragGhost);
 
                 touchDragGhost = null;
                 touchDragOriginalSlot = null;

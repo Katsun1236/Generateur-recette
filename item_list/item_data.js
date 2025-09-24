@@ -315,6 +315,7 @@ const ITEM_NAMES = [
 'minecraft_hopper',
 'minecraft_hopper_minecart',
 'minecraft_iron_axe',
+'minecraft_iron_ingot',
 'minecraft_iron_bars',
 'minecraft_iron_block',
 'minecraft_iron_boots',

@@ -481,8 +481,8 @@
                         
                         const patternHeight = pattern.length;
                         const patternWidth = pattern[0].length;
-                        const startRow = (patternHeight === 2 && patternWidth < 3) ? 1 : 0;
-                        const startCol = (patternWidth < 3) ? 1 : 0;
+                        const startRow = (patternHeight < 3 && pattern.every(r => r.length < 3)) ? 1 : 0;
+                        const startCol = (patternWidth < 3 && pattern.every(r => r.length < 3)) ? 1 : 0;
 
                         pattern.forEach((row, rowIndex) => {
                             for (let colIndex = 0; colIndex < row.length; colIndex++) {
@@ -553,7 +553,7 @@
                 
                 if (existingImg && currentCraftingType === 'shaped' && !variants.includes(itemId)) {
                     variants.push(itemId);
-                } else if (!existingImg) {
+                } else { // Remplacer l'item si on n'est pas en shaped, ou s'il n'y a pas d'image
                     targetSlot.innerHTML = '';
                     const img = document.createElement('img');
                     img.src = itemData.img;
@@ -929,3 +929,4 @@
     </script>
 </body>
 </html>
+

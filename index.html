@@ -7,8 +7,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-    <!-- On charge le fichier de données avant le script principal -->
+    <!-- On charge les fichiers de données avant le script principal -->
     <script src="item_list/item_data.js" defer></script>
+    <script src="recipes_config.js" defer></script>
     <style>
         :root {
             --background-color: #585858;
@@ -340,8 +341,8 @@
             <div id="furnace-interface" class="interface-container">
                 <div class="crafting-area">
                     <div class="furnace-slots">
-                        <div id="input-slot-furnace" class="grid-slot"></div>
-                        <div class="flame-icon"></div>
+                         <div id="input-slot-furnace" class="grid-slot"></div>
+                         <div class="flame-icon"></div>
                     </div>
                     <div class="arrow">→</div>
                     <div id="result-slot-furnace" class="grid-slot"></div>
@@ -354,14 +355,14 @@
             </div>
             
              <div class="controls">
-                   <div class="control-group">
-                         <label for="result-count">Quantité</label>
-                         <input type="number" id="result-count" value="1" min="1" max="64">
-                   </div>
-                   <div class="control-group" id="experience-control" style="display: none;">
-                         <label for="furnace-experience">Expérience</label>
-                         <input type="number" id="furnace-experience" value="0.15" step="0.05" min="0">
-                   </div>
+                  <div class="control-group">
+                       <label for="result-count">Quantité</label>
+                       <input type="number" id="result-count" value="1" min="1" max="64">
+                  </div>
+                  <div class="control-group" id="experience-control" style="display: none;">
+                       <label for="furnace-experience">Expérience</label>
+                       <input type="number" id="furnace-experience" value="0.15" step="0.05" min="0">
+                  </div>
              </div>
 
             <div class="main-actions">
@@ -416,14 +417,13 @@
             let activeFurnaceTags = new Set();
             let items = new Map();
 
-            // S'assure que ITEM_NAMES est bien chargé depuis item_data.js
-            if (typeof ITEM_NAMES === 'undefined') {
-                console.error("La liste d'items (ITEM_NAMES) n'a pas pu être chargée. Vérifie que le fichier item_list/item_data.js est correct et bien inclus.");
-                itemListContainer.innerHTML = `<p style="color: #3c3c3c; font-size: 10px; text-align: center;">Erreur: Fichier d'items non trouvé.</p>`;
-                return; // Stoppe l'exécution si les données ne sont pas là
+            // S'assure que ITEM_NAMES et CRAFTING_RECIPES sont bien chargés
+            if (typeof ITEM_NAMES === 'undefined' || typeof CRAFTING_RECIPES === 'undefined') {
+                console.error("Les listes d'items ou de recettes n'ont pas pu être chargées.");
+                itemListContainer.innerHTML = `<p style="color: #3c3c3c; font-size: 10px; text-align: center;">Erreur: Fichiers de données non trouvés.</p>`;
+                return; // Stoppe l'exécution
             }
 
-            // Transformation du tableau de noms en Map d'objets
             items = new Map(ITEM_NAMES.map(itemName => {
                 const itemId = `minecraft:${itemName}`;
                 return [itemId, { id: itemId, img: `items/${itemName}.png` }];
@@ -444,12 +444,74 @@
                             e.dataTransfer.setData('source', 'list');
                             e.dataTransfer.setData('itemId', id);
                         });
+                        // NOUVEL AJOUT : Écouteur pour le double-clic
+                        img.addEventListener('dblclick', () => displayRecipe(id));
                         itemListContainer.appendChild(img);
                     }
                 });
             }
 
-            renderItemList(); // Premier affichage de la liste
+            // NOUVELLE FONCTION : Pour afficher une recette
+            function displayRecipe(itemId) {
+                const recipe = CRAFTING_RECIPES[itemId];
+                if (!recipe) return; // Pas de recette
+
+                // Vider les grilles avant de les remplir
+                document.querySelectorAll('#crafting-interface .grid-slot').forEach(clearSlot);
+                clearSlot(document.getElementById('input-slot-furnace'));
+                clearSlot(document.getElementById('result-slot-furnace'));
+
+                if (recipe.type === 'furnace') {
+                    switchMode('furnace');
+                    const inputSlot = document.getElementById('input-slot-furnace');
+                    const resultSlot = document.getElementById('result-slot-furnace');
+                    
+                    const inputId = Array.isArray(recipe.input) ? recipe.input[0] : recipe.input;
+                    handleItemDropFromList(inputSlot, inputId);
+                    handleItemDropFromList(resultSlot, itemId);
+                    
+                } else { // 'shaped' or 'shapeless'
+                    switchMode('crafting');
+                    const resultSlot = document.getElementById('result-slot-crafting');
+                    handleItemDropFromList(resultSlot, itemId);
+
+                    if (recipe.type === 'shaped') {
+                        switchCraftingType('shaped');
+                        const pattern = recipe.pattern;
+                        const ingredients = recipe.ingredients;
+                        const gridSlots = document.querySelectorAll('#crafting-grid .grid-slot');
+
+                        pattern.forEach((row, rowIndex) => {
+                            for (let colIndex = 0; colIndex < row.length; colIndex++) {
+                                const key = row[colIndex];
+                                if (key !== ' ') {
+                                    const ingredientVariants = ingredients[key];
+                                    if (ingredientVariants && ingredientVariants.length > 0) {
+                                        const slotIndex = rowIndex * 3 + colIndex;
+                                        const targetSlot = gridSlots[slotIndex];
+                                        if(targetSlot) {
+                                           handleItemDropFromList(targetSlot, ingredientVariants[0]);
+                                           targetSlot.dataset.variants = JSON.stringify(ingredientVariants);
+                                           updateSlotVisuals(targetSlot);
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    } else if (recipe.type === 'shapeless') {
+                        switchCraftingType('shapeless');
+                        const gridSlots = document.querySelectorAll('#crafting-grid .grid-slot');
+                        recipe.ingredients.forEach((ingredientId, index) => {
+                            if (gridSlots[index]) {
+                                handleItemDropFromList(gridSlots[index], ingredientId);
+                            }
+                        });
+                    }
+                }
+            }
+
+
+            renderItemList();
             searchBar.addEventListener('input', (e) => renderItemList(e.target.value));
 
             allSlots.forEach(slot => {
@@ -658,7 +720,6 @@
 
                 uniqueItemGroups.forEach((char, groupJson) => {
                     const group = JSON.parse(groupJson);
-                    // MODIFICATION: 'key' contient maintenant toujours un tableau
                     recipe["minecraft:recipe_shaped"].key[char] = group.map(id => ({ "item": id }));
                 });
 
@@ -853,7 +914,7 @@
                 if (currentTouchTarget) {
                     currentTouchTarget.classList.remove('drag-over');
                 }
-                document.body.removeChild(touchDragGhost);
+                document.body.appendChild(touchDragGhost);
 
                 touchDragGhost = null;
                 touchDragOriginalSlot = null;

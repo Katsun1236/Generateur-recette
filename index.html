@@ -417,19 +417,21 @@
             let activeFurnaceTags = new Set();
             let items = new Map();
 
-            // S'assure que ALL_ITEMS et CRAFTING_RECIPES sont bien chargés
-            if (typeof ALL_ITEMS === 'undefined' || typeof CRAFTING_RECIPES === 'undefined') {
-                console.error("Les listes d'items ou de recettes n'ont pas pu être chargées.");
+            // S'assure que ITEM_NAMES et CRAFTING_RECIPES sont bien chargés
+            if (typeof ITEM_NAMES === 'undefined' || typeof CRAFTING_RECIPES === 'undefined') {
+                console.error("Les listes d'items (ITEM_NAMES) ou de recettes n'ont pas pu être chargées.");
                 itemListContainer.innerHTML = `<p style="color: #3c3c3c; font-size: 10px; text-align: center;">Erreur: Fichiers de données non trouvés.</p>`;
                 return; // Stoppe l'exécution
             }
 
-            // Transformation du tableau d'objets en Map d'objets
-            items = new Map(ALL_ITEMS.map(item => {
-                 const filename = item.id.replace(':', '_');
-                 return [item.id, { id: item.id, name: item.name, img: `items/${filename}.png` }];
+            // Transformation du tableau de noms en Map d'objets
+            items = new Map(ITEM_NAMES.map(itemNameString => {
+                const itemId = itemNameString.replace('_', ':'); // ex: 'minecraft:acacia_boat'
+                const nameForDisplay = itemId.split(':')[1].replace(/_/g, ' '); // ex: 'acacia boat'
+                const imagePath = `items/${itemNameString}.png`;
+                
+                return [itemId, { id: itemId, name: nameForDisplay, img: imagePath }];
             }));
-
 
             function renderItemList(filter = '') {
                 itemListContainer.innerHTML = '';
@@ -440,7 +442,7 @@
                         const img = document.createElement('img');
                         img.src = item.img;
                         img.alt = item.name;
-                        img.title = item.name; // Ajoute un tooltip avec le nom de l'item
+                        img.title = item.name;
                         img.className = 'item';
                         img.draggable = true;
                         img.setAttribute('data-item-id', id);

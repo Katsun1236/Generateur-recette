@@ -259,6 +259,7 @@ const ITEM_NAMES = [
 'minecraft_fletching_table',
 'minecraft_flint_and_steel',
 'minecraft_flint',
+'minecraft_feather',
 'minecraft_flower_pot',
 'minecraft_furnace',
 'minecraft_furnace_minecart',

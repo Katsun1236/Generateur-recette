@@ -424,24 +424,23 @@
                 return; // Stoppe l'exécution
             }
 
-            // Correction: Utilise ALL_ITEMS (un tableau d'objets) et construit le chemin d'image correct
+            // Transformation du tableau d'objets en Map d'objets
             items = new Map(ALL_ITEMS.map(item => {
-                const filename = item.id.replace(':', '_');
-                return [item.id, { id: item.id, name: item.name, img: `items/${filename}.png` }];
+                 const filename = item.id.replace(':', '_');
+                 return [item.id, { id: item.id, name: item.name, img: `items/${filename}.png` }];
             }));
+
 
             function renderItemList(filter = '') {
                 itemListContainer.innerHTML = '';
-                 // Correction: tri par nom d'item
                 const sortedItems = new Map([...items.entries()].sort((a, b) => a[1].name.localeCompare(b[1].name)));
                 sortedItems.forEach((item, id) => {
-                    // Correction: recherche sur le nom de l'item et son ID
                     const searchString = `${item.name} ${id}`.toLowerCase();
                     if (searchString.includes(filter.toLowerCase())) {
                         const img = document.createElement('img');
                         img.src = item.img;
-                        img.alt = item.name; // Utilise le nom de l'item pour l'attribut alt
-                        img.title = item.name; // Ajoute un tooltip avec le nom
+                        img.alt = item.name;
+                        img.title = item.name; // Ajoute un tooltip avec le nom de l'item
                         img.className = 'item';
                         img.draggable = true;
                         img.setAttribute('data-item-id', id);
@@ -454,7 +453,7 @@
                     }
                 });
             }
-
+            
             function displayRecipe(itemId) {
                 const recipe = CRAFTING_RECIPES[itemId];
                 if (!recipe) return;
@@ -553,7 +552,7 @@
                 
                 if (existingImg && currentCraftingType === 'shaped' && !variants.includes(itemId)) {
                     variants.push(itemId);
-                } else { // Remplacer l'item si on n'est pas en shaped, ou s'il n'y a pas d'image
+                } else {
                     targetSlot.innerHTML = '';
                     const img = document.createElement('img');
                     img.src = itemData.img;
@@ -929,4 +928,3 @@
     </script>
 </body>
 </html>
-
